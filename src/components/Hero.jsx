@@ -1,4 +1,6 @@
 import React, { useRef, useState } from 'react'
+import Button from './Button';
+import { TiLocationArrow } from 'react-icons/ti';
 
 const Hero = () => {
     const [currentIndex, setCurrentIndex] = useState(1);
@@ -13,12 +15,14 @@ const Hero = () => {
 
      const handleMiniVdClick = () => {
         setHasClicked(true);
-        setCurrentIndex(prevIndex => prevIndex + 1);
+        setCurrentIndex(upcomingVideoIndex);
      }
 
      const handleVideoLoad = () => {
         setLoadedvideos((prev)=> prev + 1)
      }
+
+     const upcomingVideoIndex = (currentIndex % totatVideo) + 1;
 
 
   return (
@@ -38,8 +42,38 @@ const Hero = () => {
                         />
                     </div>
                 </div>
+                <video
+                    ref={nextVideoRef}
+                    src={getVideoSrc(currentIndex)}
+                    loop
+                    muted
+                    id='next-video'
+                    className='absolute-center z-20 object-cover object-center size-64 invisible absolute'
+
+                />
+                <video
+                    src={getVideoSrc(currentIndex === totatVideo - 1? 1 : currentIndex)}
+                    autoPlay
+                    loop
+                    muted
+                    className='absolute left-0 top-0 size-full object-cover object-center'
+                />
+            </div>
+            <h1 className='special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75'>
+                G<b>a</b>ming
+            </h1>
+            <div className='absolute left-0 top-0 z-40 size-full'>
+                <div className='mt-24 px-5 sm:px-10'>
+                    <h1 className='hero-heading special-font text-blue-100'>redefi<b>n</b>e</h1>
+                    <p className='mb-5 max-w-64 font-robert-regular text-blue-100'>Enter the Metagame Layer <br/> Unleash the Play Economy</p>
+                    <Button id="watch-trailer" title="Watch Trailer" leftIcon={<TiLocationArrow/>} containerClass='!bg-yellow-300 flex-center gap-1'/>
+                </div>
+
             </div>
         </div>
+          <h1 className='special-font hero-heading absolute bottom-5 right-5 z-40 text-black'>
+                G<b>a</b>ming
+            </h1>
     </div>
   )
 }
