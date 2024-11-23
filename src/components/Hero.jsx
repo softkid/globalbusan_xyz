@@ -1,8 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Button from './Button';
 import { TiLocationArrow } from 'react-icons/ti';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap'
+import { ScrollTrigger } from "gsap/all";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
     const [currentIndex, setCurrentIndex] = useState(1);
@@ -25,6 +28,12 @@ const Hero = () => {
      }
 
      const upcomingVideoIndex = (currentIndex % totatVideo) + 1;
+
+     useEffect(() => {
+        if(loadedVideos === totatVideo - 1){
+            setIsLoading(false)
+        }
+     }, [loadedVideos])
 
      useGSAP(() => {
         if(hasClicked){
@@ -73,7 +82,19 @@ const Hero = () => {
 
   return (
     <div className='relative h-dvh w-screen overflow-x-hidden'>
+           {isLoading && (
+        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
+
+          <div className="three-body">
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
+          </div>
+        </div>
+      )}
         <div id="video-frame" className='relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75'>
+         
+
             <div>
                 <div className='mask-clip-path absolute-center z-50 cursor-pointer rounded-lg overflow-hidden size-64'>
                     <div onClick={handleMiniVdClick} className='origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100 cursor-pointer'>
@@ -117,7 +138,7 @@ const Hero = () => {
 
             </div>
         </div>
-          <h1 className='special-font hero-heading absolute bottom-5 right-5 z-40 text-black'>
+          <h1 className='special-font hero-heading absolute bottom-5 right-5 text-black'>
                 G<b>a</b>ming
             </h1>
     </div>

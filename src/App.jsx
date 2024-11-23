@@ -9,6 +9,7 @@ function App() {
     <>
       <main className='relaive min-h-screen w-screen overflow-x-hidden'>
         <Hero/>
+        <div className='bg-blue-600 h-78 h-screen'>jdjdjd</div>
       </main>
     </>
   )
