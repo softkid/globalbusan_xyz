@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Hero from './components/Hero'
 
 
 function App() {
@@ -6,9 +7,9 @@ function App() {
 
   return (
     <>
-      <main>
-      <h1 className='font-bold text-orange-500 text-5xl'>Welcome to Awwwards</h1>
-    </main>
+      <main className='relaive min-h-screen w-screen overflow-x-hidden'>
+        <Hero/>
+      </main>
     </>
   )
 }
