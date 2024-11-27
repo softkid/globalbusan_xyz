@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import Hero from './components/Hero'
+import About from './components/About'
+import Navbar from './components/Navbar'
 
 
 function App() {
@@ -8,8 +10,9 @@ function App() {
   return (
     <>
       <main className='relaive min-h-screen w-screen overflow-x-hidden'>
+        <Navbar/>
         <Hero/>
-        <div className='bg-blue-600 h-78 h-screen'>jdjdjd</div>
+        <About/>
       </main>
     </>
   )
