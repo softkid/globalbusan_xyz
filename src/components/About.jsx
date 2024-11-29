@@ -61,4 +61,3 @@ const About = () => {
 };
 
 export default About;
-// hdhd
