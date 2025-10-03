@@ -31,6 +31,31 @@ npm run dev
 
 3. Open [http://localhost:5173](http://localhost:5173) in your browser
 
+## Deployment
+
+### Build for Production
+```bash
+npm run build
+```
+
+### Deploy to Cloudflare Workers
+1. Install Wrangler CLI:
+```bash
+npm install -g wrangler
+```
+
+2. Login to Cloudflare:
+```bash
+wrangler login
+```
+
+3. Deploy:
+```bash
+wrangler deploy
+```
+
+The `wrangler.jsonc` file is already configured for deployment.
+
 ## Project Structure
 
 - `src/components/` - React components

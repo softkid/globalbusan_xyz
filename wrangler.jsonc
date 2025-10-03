@@ -1,0 +1,10 @@
+{
+  "name": "global-busan",
+  "compatibility_date": "2025-01-03",
+  "assets": {
+    "directory": "./dist"
+  },
+  "vars": {
+    "ENVIRONMENT": "production"
+  }
+}
