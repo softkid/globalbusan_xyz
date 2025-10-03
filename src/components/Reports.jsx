@@ -1,0 +1,293 @@
+import React, { useState } from 'react';
+import { FaDownload, FaCalendarAlt, FaChartBar, FaFilePdf, FaShareAlt } from 'react-icons/fa';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/all';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const Reports = () => {
+    const [selectedQuarter, setSelectedQuarter] = useState('Q3-2025');
+    
+    const reportData = {
+        'Q3-2025': {
+            title: 'Q3 2025 Progress Report',
+            period: 'July - September 2025',
+            fundsReceived: 450000,
+            fundsSpent: 320000,
+            milestones: [
+                { title: 'International Partnership MOU Signed', status: 'completed', progress: 100 },
+                { title: 'Busan Office Space Secured', status: 'completed', progress: 100 },
+                { title: 'First International Team Member Onboarded', status: 'completed', progress: 100 },
+                { title: 'Blockchain Integration Completed', status: 'in-progress', progress: 85 },
+                { title: 'Community Building Initiative Launched', status: 'in-progress', progress: 60 }
+            ],
+            impactMetrics: {
+                internationalPartnerships: 3,
+                teamMembers: 8,
+                communityMembers: 1250,
+                socialMediaReach: 45000
+            },
+            keyAchievements: [
+                'Successfully established partnerships with 3 international organizations',
+                'Secured premium office space in Busan\'s business district',
+                'Onboarded first international team member from Philippines',
+                'Launched community building initiatives reaching 1,250+ members',
+                'Achieved 85% completion of blockchain integration'
+            ],
+            nextQuarterGoals: [
+                'Complete blockchain integration and launch transparency features',
+                'Onboard 5 additional international team members',
+                'Establish partnerships with 2 more countries',
+                'Launch first international business collaboration project',
+                'Reach 2,000+ community members'
+            ]
+        },
+        'Q2-2025': {
+            title: 'Q2 2025 Progress Report',
+            period: 'April - June 2025',
+            fundsReceived: 280000,
+            fundsSpent: 180000,
+            milestones: [
+                { title: 'Project Launch', status: 'completed', progress: 100 },
+                { title: 'Website Development', status: 'completed', progress: 100 },
+                { title: 'Initial Team Assembly', status: 'completed', progress: 100 },
+                { title: 'Legal Framework Establishment', status: 'completed', progress: 100 },
+                { title: 'First Donation Campaign', status: 'completed', progress: 100 }
+            ],
+            impactMetrics: {
+                internationalPartnerships: 0,
+                teamMembers: 3,
+                communityMembers: 500,
+                socialMediaReach: 15000
+            },
+            keyAchievements: [
+                'Successfully launched Global Busan XYZ project',
+                'Developed and launched official website',
+                'Assembled core team of 3 members',
+                'Established legal framework for international operations',
+                'Raised initial funding of $280,000'
+            ],
+            nextQuarterGoals: [
+                'Establish first international partnerships',
+                'Secure office space in Busan',
+                'Onboard first international team member',
+                'Launch blockchain integration',
+                'Build community of 1,000+ members'
+            ]
+        }
+    };
+
+    const currentReport = reportData[selectedQuarter];
+
+    useGSAP(() => {
+        gsap.fromTo('.report-card', 
+            { opacity: 0, y: 50 },
+            { 
+                opacity: 1, 
+                y: 0, 
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: '.reports-section',
+                    start: "top 80%",
+                    end: "bottom 20%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }, []);
+
+    const handleDownload = () => {
+        // Simulate PDF download
+        const link = document.createElement('a');
+        link.href = '#';
+        link.download = `Global_Busan_XYZ_${selectedQuarter}_Report.pdf`;
+        link.click();
+    };
+
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: `Global Busan XYZ - ${currentReport.title}`,
+                text: `Check out our ${selectedQuarter} progress report!`,
+                url: window.location.href
+            });
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
+        }
+    };
+
+    return (
+        <section id="reports" className="reports-section py-20 bg-gradient-to-br from-gray-50 to-slate-100">
+            <div className="container mx-auto px-5 sm:px-10">
+                {/* Header */}
+                <div className="text-center mb-16">
+                    <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 mb-8">
+                        Project <span className="text-green-600">Reports</span>
+                    </h2>
+                    <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                        Quarterly progress reports showcasing transparent fund usage, milestone achievements, 
+                        and impact metrics. Stay informed about how your donations are making a difference.
+                    </p>
+                </div>
+
+                {/* Quarter Selector */}
+                <div className="flex justify-center mb-12">
+                    <div className="bg-white rounded-2xl p-2 shadow-lg border border-gray-200">
+                        {Object.keys(reportData).map((quarter) => (
+                            <button
+                                key={quarter}
+                                onClick={() => setSelectedQuarter(quarter)}
+                                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
+                                    selectedQuarter === quarter
+                                        ? 'bg-green-600 text-white shadow-lg'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                {quarter}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Report Content */}
+                <div className="max-w-6xl mx-auto">
+                    {/* Report Header */}
+                    <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-8">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-3xl font-bold text-gray-900 mb-2">{currentReport.title}</h3>
+                                <p className="text-gray-600 flex items-center">
+                                    <FaCalendarAlt className="mr-2" />
+                                    {currentReport.period}
+                                </p>
+                            </div>
+                            <div className="flex space-x-4">
+                                <button 
+                                    onClick={handleDownload}
+                                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
+                                >
+                                    <FaDownload />
+                                    <span>Download PDF</span>
+                                </button>
+                                <button 
+                                    onClick={handleShare}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
+                                >
+                                    <FaShareAlt />
+                                    <span>Share</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Financial Overview */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                            <h4 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                                <FaChartBar className="mr-3 text-green-600" />
+                                Financial Overview
+                            </h4>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+                                    <span className="text-gray-700">Funds Received</span>
+                                    <span className="font-bold text-green-600">${currentReport.fundsReceived.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+                                    <span className="text-gray-700">Funds Spent</span>
+                                    <span className="font-bold text-blue-600">${currentReport.fundsSpent.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-4 bg-purple-50 rounded-lg">
+                                    <span className="text-gray-700">Remaining Balance</span>
+                                    <span className="font-bold text-purple-600">
+                                        ${(currentReport.fundsReceived - currentReport.fundsSpent).toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                            <h4 className="text-2xl font-bold text-gray-900 mb-6">Impact Metrics</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                                    <div className="text-2xl font-bold text-gray-900">{currentReport.impactMetrics.internationalPartnerships}</div>
+                                    <div className="text-sm text-gray-600">International Partnerships</div>
+                                </div>
+                                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                                    <div className="text-2xl font-bold text-gray-900">{currentReport.impactMetrics.teamMembers}</div>
+                                    <div className="text-sm text-gray-600">Team Members</div>
+                                </div>
+                                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                                    <div className="text-2xl font-bold text-gray-900">{currentReport.impactMetrics.communityMembers.toLocaleString()}</div>
+                                    <div className="text-sm text-gray-600">Community Members</div>
+                                </div>
+                                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                                    <div className="text-2xl font-bold text-gray-900">{currentReport.impactMetrics.socialMediaReach.toLocaleString()}</div>
+                                    <div className="text-sm text-gray-600">Social Media Reach</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Milestones */}
+                    <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-8">
+                        <h4 className="text-2xl font-bold text-gray-900 mb-6">Project Milestones</h4>
+                        <div className="space-y-4">
+                            {currentReport.milestones.map((milestone, index) => (
+                                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                    <div className="flex items-center">
+                                        <div className={`w-4 h-4 rounded-full mr-4 ${
+                                            milestone.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
+                                        }`}></div>
+                                        <span className="text-gray-900 font-medium">{milestone.title}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-32 bg-gray-200 rounded-full h-2">
+                                            <div 
+                                                className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                                                style={{ width: `${milestone.progress}%` }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-sm font-semibold text-gray-600">{milestone.progress}%</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Key Achievements and Next Goals */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                            <h4 className="text-2xl font-bold text-gray-900 mb-6">Key Achievements</h4>
+                            <ul className="space-y-3">
+                                {currentReport.keyAchievements.map((achievement, index) => (
+                                    <li key={index} className="flex items-start">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                        <span className="text-gray-700">{achievement}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                            <h4 className="text-2xl font-bold text-gray-900 mb-6">Next Quarter Goals</h4>
+                            <ul className="space-y-3">
+                                {currentReport.nextQuarterGoals.map((goal, index) => (
+                                    <li key={index} className="flex items-start">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                        <span className="text-gray-700">{goal}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default Reports;

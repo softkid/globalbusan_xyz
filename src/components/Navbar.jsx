@@ -1,87 +1,40 @@
-import clsx from "clsx";
-import gsap from "gsap";
-import { useWindowScroll } from "react-use";
-import { useEffect, useRef, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
+import { FaGlobe, FaBuilding, FaBars, FaTimes } from "react-icons/fa";
+import { useState } from "react";
 
 import Button from "./Button";
 
-const navItems = ["Nexus", "Vault", "Prologue", "About", "Contact"];
+const navItems = ["Equity", "Reports", "Roadmap", "Contact"];
 
 const Navbar = () => {
-  // State for toggling audio and visual indicator
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const [isIndicatorActive, setIsIndicatorActive] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Refs for audio and navigation container
-  const audioElementRef = useRef(null);
-  const navContainerRef = useRef(null);
-
-  const { y: currentScrollY } = useWindowScroll();
-  const [isNavVisible, setIsNavVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  // Toggle audio and visual indicator
-  const toggleAudioIndicator = () => {
-    setIsAudioPlaying((prev) => !prev);
-    setIsIndicatorActive((prev) => !prev);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Manage audio playback
-  useEffect(() => {
-    if (isAudioPlaying) {
-      audioElementRef.current.play();
-    } else {
-      audioElementRef.current.pause();
-    }
-  }, [isAudioPlaying]);
-
-  useEffect(() => {
-    if (currentScrollY === 0) {
-      // Topmost position: show navbar without floating-nav
-      setIsNavVisible(true);
-      navContainerRef.current.classList.remove("floating-nav");
-    } else if (currentScrollY > lastScrollY) {
-      // Scrolling down: hide navbar and apply floating-nav
-      setIsNavVisible(false);
-      navContainerRef.current.classList.add("floating-nav");
-    } else if (currentScrollY < lastScrollY) {
-      // Scrolling up: show navbar with floating-nav
-      setIsNavVisible(true);
-      navContainerRef.current.classList.add("floating-nav");
-    }
-
-    setLastScrollY(currentScrollY);
-  }, [currentScrollY, lastScrollY]);
-
-  useEffect(() => {
-    gsap.to(navContainerRef.current, {
-      y: isNavVisible ? 0 : -100,
-      opacity: isNavVisible ? 1 : 0,
-      duration: 0.2,
-    });
-  }, [isNavVisible]);
-
   return (
-    <div
-      ref={navContainerRef}
-      className="fixed inset-x-0 top-4 z-50 h-16 border-none transition-all duration-700 sm:inset-x-6"
-    >
-      <header className="absolute top-1/2 w-full -translate-y-1/2">
-        <nav className="flex size-full items-center justify-between p-4">
-          {/* Logo and Product button */}
+    <div className="fixed inset-x-0 top-0 z-50 h-16 bg-white/90 backdrop-blur-lg border-b border-gray-200">
+      <header className="h-full">
+        <nav className="flex h-full items-center justify-between px-5 sm:px-10">
+          {/* Logo and Invest button */}
           <div className="flex items-center gap-7">
-            <img src="awwwards_public/public/img/logo.png" alt="logo" className="w-10" />
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <FaGlobe className="text-white text-lg" />
+              </div>
+              <span className="text-xl font-bold text-gray-800 hidden sm:block">Global BUSAN</span>
+            </div>
 
             <Button
-              id="product-button"
-              title="Products"
+              id="invest-button"
+              title="Invest Now"
               rightIcon={<TiLocationArrow />}
-              containerClass="bg-blue-50 md:flex hidden items-center justify-center gap-1"
+              containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white md:flex hidden items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600"
             />
           </div>
 
-          {/* Navigation Links and Audio Button */}
+          {/* Desktop Navigation Links */}
           <div className="flex h-full items-center">
             <div className="hidden md:block">
               {navItems.map((item, index) => (
@@ -94,31 +47,49 @@ const Navbar = () => {
                 </a>
               ))}
             </div>
+          </div>
 
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
             <button
-              onClick={toggleAudioIndicator}
-              className="ml-10 flex items-center space-x-0.5"
+              onClick={toggleMobileMenu}
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-300 p-2"
+              aria-label="Toggle mobile menu"
             >
-              <audio
-                ref={audioElementRef}
-                className="hidden"
-                src="awwwards_public/public/audio/loop.mp3"
-                loop
-              />
-              {[1, 2, 3, 4].map((bar) => (
-                <div
-                  key={bar}
-                  className={clsx("indicator-line", {
-                    active: isIndicatorActive,
-                  })}
-                  style={{
-                    animationDelay: `${bar * 0.1}s`,
-                  }}
-                />
-              ))}
+              {isMobileMenuOpen ? (
+                <FaTimes className="text-2xl" />
+              ) : (
+                <FaBars className="text-2xl" />
+              )}
             </button>
           </div>
         </nav>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-lg">
+            <div className="px-5 py-4 space-y-4">
+              {navItems.map((item, index) => (
+                <a
+                  key={index}
+                  href={`#${item.toLowerCase()}`}
+                  className="block text-lg font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300 py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item}
+                </a>
+              ))}
+              <div className="pt-4 border-t border-gray-200">
+                <Button
+                  id="mobile-invest-button"
+                  title="Invest Now"
+                  rightIcon={<TiLocationArrow />}
+                  containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white flex items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600 w-full"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </header>
     </div>
   );

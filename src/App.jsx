@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import Hero from './components/Hero'
-import About from './components/About'
 import Navbar from './components/Navbar'
-import Features from './components/Features'
-import Story from './components/Story'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import EquityStructure from './components/EquityStructure'
+import Reports from './components/Reports'
+import Roadmap from './components/Roadmap'
 
 
 function App() {
@@ -13,12 +13,12 @@ function App() {
 
   return (
     <>
-      <main className='relaive min-h-screen w-screen overflow-x-hidden'>
+      <main className='relative min-h-screen w-screen overflow-x-hidden'>
         <Navbar/>
         <Hero/>
-        <About/>
-        <Features/>
-        <Story/>
+        <EquityStructure/>
+        <Reports/>
+        <Roadmap/>
         <Contact />
         <Footer />
       </main>

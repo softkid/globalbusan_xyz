@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Button from './Button';
-import { TiLocationArrow } from 'react-icons/ti';
+import { FaGlobe, FaHandHoldingHeart, FaChartLine, FaBuilding, FaUsers, FaRocket } from 'react-icons/fa';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/all";
@@ -8,141 +8,155 @@ import { ScrollTrigger } from "gsap/all";
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
-    const [currentIndex, setCurrentIndex] = useState(1);
-    const [hasClicked, setHasClicked] = useState(false)
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadedVideos, setLoadedvideos] = useState(0);
+    const [donationAmount, setDonationAmount] = useState(1250000);
+    const [donorCount, setDonorCount] = useState(342);
     
-    const totatVideo = 4;
-    const nextVideoRef = useRef(null);
+    const heroRef = useRef(null);
 
-    const getVideoSrc = (index) => `awwwards_public/public/videos/hero-${index}.mp4`
+    useEffect(() => {
+        // Simulate real-time donation counter
+        const donationTimer = setInterval(() => {
+            setDonationAmount(prev => prev + Math.random() * 1000);
+            setDonorCount(prev => prev + Math.floor(Math.random() * 3));
+        }, 10000);
 
-     const handleMiniVdClick = () => {
-        setHasClicked(true);
-        setCurrentIndex(upcomingVideoIndex);
-     }
+        return () => {
+            clearInterval(donationTimer);
+        };
+    }, []);
 
-     const handleVideoLoad = () => {
-        setLoadedvideos((prev) => prev + 1)
-     }
-
-     const upcomingVideoIndex = (currentIndex % totatVideo) + 1;
-
-     useEffect(() => {
-        if(loadedVideos === totatVideo - 1){
-            setIsLoading(false)
+    useGSAP(() => {
+        if (heroRef.current) {
+            gsap.fromTo(heroRef.current, 
+                { 
+                    opacity: 0,
+                    y: 50
+                },
+                { 
+                    opacity: 1,
+                    y: 0,
+                    duration: 1.5,
+                    ease: "power2.out"
+                }
+            );
         }
-     }, [loadedVideos])
+    }, []);
 
-     useGSAP(() => {
-        if(hasClicked){
-            gsap.set("#next-video", {visibility: "visible"});
-
-            gsap.to("#next-video",{
-                transformOrigin: "center center",
-                scale:1,
-                width: "100%",
-                height:"100%",
-                duration: 1,
+    useGSAP(() => {
+        gsap.fromTo(".floating-element", 
+            { 
+                y: 0,
+                rotation: 0
+            },
+            { 
+                y: -20,
+                rotation: 5,
+                duration: 3,
                 ease: "power1.inOut",
-                onStart: () => nextVideoRef.current.play()
-            })
+                yoyo: true,
+                repeat: -1,
+                stagger: 0.5
+            }
+        );
+    }, []);
 
-            gsap.from("#current-video", {
-                transformOrigin: "center center",
-                scale: 0,
-                duration: 1.5,
-                ease: "power1.inOut"
-            })
-        }
-     }, {
-      dependencies: [currentIndex],
-      revertOnUpdate: true,
-    })
+    return (
+        <div className='relative min-h-screen w-screen overflow-x-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900'>
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="floating-element absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl"></div>
+                <div className="floating-element absolute top-40 right-20 w-32 h-32 bg-purple-500/20 rounded-full blur-xl"></div>
+                <div className="floating-element absolute bottom-20 left-1/4 w-24 h-24 bg-indigo-500/20 rounded-full blur-xl"></div>
+                <div className="floating-element absolute bottom-40 right-1/3 w-28 h-28 bg-pink-500/20 rounded-full blur-xl"></div>
+            </div>
 
-      useGSAP(() => {
-    gsap.set("#video-frame", {
-      clipPath: "polygon(14% 0, 72% 0, 88% 90%, 0 95%)",
-      borderRadius: "0% 0% 40% 10%",
-    });
-    gsap.from("#video-frame", {
-      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-      borderRadius: "0% 0% 0% 0%",
-      ease: "power1.inOut",
-      scrollTrigger: {
-        trigger: "#video-frame",
-        start: "center center",
-        end: "bottom center",
-        scrub: true,
-      },
-    });
-  });
+            {/* Main Content */}
+            <div ref={heroRef} className='relative z-10 min-h-screen w-screen flex items-center justify-center py-20'>
+                <div className='text-center px-5 sm:px-10 max-w-6xl mx-auto'>
+                    {/* Main Title */}
+                    <h1 className='text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-8'>
+                        Global <span className="text-blue-300">BUSAN</span>
+                    </h1>
+                    
+                    {/* Subtitle */}
+                    <h2 className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-blue-100 mb-8'>
+                        Transform Busan into a Global Business Hub
+                    </h2>
+                    
+                    {/* Description */}
+                    <p className='text-lg sm:text-xl md:text-2xl text-blue-200 mb-12 max-w-4xl mx-auto leading-relaxed'>
+                        Join us in building a transparent, blockchain-powered platform that connects international entrepreneurs 
+                        with Korea's business ecosystem. Together, we'll create a global business hub in Busan.
+                    </p>
 
+                    {/* Stats */}
+                    <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mb-12'>
+                        <div className='bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20'>
+                            <div className='flex items-center justify-center mb-6'>
+                                <FaBuilding className='text-4xl text-green-400' />
+                            </div>
+                            <div className='text-4xl font-bold text-white mb-3'>
+                                ${donationAmount.toLocaleString()}
+                            </div>
+                            <div className='text-xl text-blue-200'>Total Investment</div>
+                        </div>
+                        
+                        <div className='bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20'>
+                            <div className='flex items-center justify-center mb-6'>
+                                <FaUsers className='text-4xl text-blue-400' />
+                            </div>
+                            <div className='text-4xl font-bold text-white mb-3'>
+                                {donorCount}+
+                            </div>
+                            <div className='text-xl text-blue-200'>Global Partners</div>
+                        </div>
+                        
+                        <div className='bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20'>
+                            <div className='flex items-center justify-center mb-6'>
+                                <FaRocket className='text-4xl text-purple-400' />
+                            </div>
+                            <div className='text-4xl font-bold text-white mb-3'>
+                                5
+                            </div>
+                            <div className='text-xl text-blue-200'>Growth Phases</div>
+                        </div>
+                    </div>
 
-  return (
-    <div className='relative h-dvh w-screen overflow-x-hidden'>
-           {isLoading && (
-        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
-
-          <div className="three-body">
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-          </div>
-        </div>
-      )}
-        <div id="video-frame" className='relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75'>
-         
-
-            <div>
-                <div className='mask-clip-path absolute-center z-50 cursor-pointer rounded-lg overflow-hidden size-64'>
-                    <div onClick={handleMiniVdClick} className='origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100 cursor-pointer'>
-                        <video
-                            ref={nextVideoRef}
-                            src={getVideoSrc(currentIndex + 1)}
-                            loop
-                            muted
-                            id="current-video"
-                            className="size-64 origin-center scale-150 object-cover object-center"
-                            onLoadedData={handleVideoLoad}
+                    {/* CTA Buttons */}
+                    <div className='flex flex-col sm:flex-row gap-6 justify-center items-center'>
+                        <Button 
+                            id="invest-now" 
+                            title="Invest Now" 
+                            leftIcon={<FaBuilding/>} 
+                            containerClass='!bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-10 py-5 text-xl font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105'
+                        />
+                        <Button 
+                            id="learn-more" 
+                            title="Learn More" 
+                            leftIcon={<FaRocket/>} 
+                            containerClass='!bg-transparent border-2 border-white/30 text-white hover:bg-white/10 px-10 py-5 text-xl font-bold rounded-full backdrop-blur-lg transition-all duration-300'
                         />
                     </div>
-                </div>
-                <video
-                    ref={nextVideoRef}
-                    src={getVideoSrc(currentIndex)}
-                    loop
-                    muted
-                    id='next-video'
-                    className='absolute-center z-20 object-cover object-center size-64 invisible absolute'
 
-                />
-                <video
-                    src={getVideoSrc(currentIndex === totatVideo - 1? 1 : currentIndex)}
-                    autoPlay
-                    loop
-                    muted
-                    className='absolute left-0 top-0 size-full object-cover object-center'
-                />
+                    {/* Scroll Indicator */}
+                    <div className='absolute bottom-8 left-1/2 transform -translate-x-1/2'>
+                        <div className='animate-bounce'>
+                            <div className='w-6 h-10 border-2 border-white/50 rounded-full flex justify-center'>
+                                <div className='w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse'></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h1 className='special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75'>
-                G<b>a</b>ming
-            </h1>
-            <div className='absolute left-0 top-0 z-40 size-full'>
-                <div className='mt-24 px-5 sm:px-10'>
-                    <h1 className='hero-heading special-font text-blue-100'>redefi<b>n</b>e</h1>
-                    <p className='mb-5 max-w-64 font-robert-regular text-blue-100'>Enter the Metagame Layer <br/> Unleash the Play Economy</p>
-                    <Button id="watch-trailer" title="Watch Trailer" leftIcon={<TiLocationArrow/>} containerClass='!bg-yellow-300 flex-center gap-1'/>
-                </div>
 
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                }}></div>
             </div>
         </div>
-          <h1 className='special-font hero-heading absolute bottom-5 right-5 text-black'>
-                G<b>a</b>ming
-            </h1>
-    </div>
-  )
+    )
 }
 
 export default Hero
