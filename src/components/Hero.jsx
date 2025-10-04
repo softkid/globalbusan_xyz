@@ -4,6 +4,7 @@ import { FaGlobe, FaHandHoldingHeart, FaChartLine, FaBuilding, FaUsers, FaRocket
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/all";
+import { Link } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -124,12 +125,14 @@ const Hero = () => {
 
                     {/* CTA Buttons */}
                     <div className='flex flex-col sm:flex-row gap-6 justify-center items-center'>
-                        <Button 
-                            id="invest-now" 
-                            title="Invest Now" 
-                            leftIcon={<FaBuilding/>} 
-                            containerClass='!bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-10 py-5 text-xl font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105'
-                        />
+                        <Link to="/invest">
+                            <Button 
+                                id="invest-now" 
+                                title="Invest Now" 
+                                leftIcon={<FaBuilding/>} 
+                                containerClass='!bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-10 py-5 text-xl font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105'
+                            />
+                        </Link>
                         <Button 
                             id="learn-more" 
                             title="Learn More" 

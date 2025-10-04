@@ -1,28 +1,15 @@
-import { useState } from 'react'
-import Hero from './components/Hero'
-import Navbar from './components/Navbar'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import EquityStructure from './components/EquityStructure'
-import Reports from './components/Reports'
-import Roadmap from './components/Roadmap'
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import Invest from './pages/Invest'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <main className='relative min-h-screen w-screen overflow-x-hidden'>
-        <Navbar/>
-        <Hero/>
-        <EquityStructure/>
-        <Reports/>
-        <Roadmap/>
-        <Contact />
-        <Footer />
-      </main>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/invest" element={<Invest />} />
+      </Routes>
+    </Router>
   )
 }
 

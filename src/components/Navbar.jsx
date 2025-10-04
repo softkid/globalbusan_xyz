@@ -1,6 +1,7 @@
 import { TiLocationArrow } from "react-icons/ti";
 import { FaGlobe, FaBuilding, FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import Button from "./Button";
 
@@ -26,12 +27,14 @@ const Navbar = () => {
               <span className="text-xl font-bold text-gray-800 hidden sm:block">Global BUSAN</span>
             </div>
 
-            <Button
-              id="invest-button"
-              title="Invest Now"
-              rightIcon={<TiLocationArrow />}
-              containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white md:flex hidden items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600"
-            />
+                  <Link to="/invest">
+                    <Button
+                      id="invest-button"
+                      title="Invest Now"
+                      rightIcon={<TiLocationArrow />}
+                      containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white md:flex hidden items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600"
+                    />
+                  </Link>
           </div>
 
           {/* Desktop Navigation Links */}
@@ -79,14 +82,16 @@ const Navbar = () => {
                   {item}
                 </a>
               ))}
-              <div className="pt-4 border-t border-gray-200">
-                <Button
-                  id="mobile-invest-button"
-                  title="Invest Now"
-                  rightIcon={<TiLocationArrow />}
-                  containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white flex items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600 w-full"
-                />
-              </div>
+                    <div className="pt-4 border-t border-gray-200">
+                      <Link to="/invest" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button
+                          id="mobile-invest-button"
+                          title="Invest Now"
+                          rightIcon={<TiLocationArrow />}
+                          containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white flex items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600 w-full"
+                        />
+                      </Link>
+                    </div>
             </div>
           </div>
         )}
