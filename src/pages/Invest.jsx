@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { FaGoogle, FaWallet, FaEthereum, FaBitcoin, FaChartLine, FaHistory, FaCheckCircle } from 'react-icons/fa'
+import { FaGoogle, FaWallet, FaEthereum, FaBitcoin, FaChartLine, FaHistory, FaCheckCircle, FaCopy, FaQrcode } from 'react-icons/fa'
 import { TiLocationArrow } from 'react-icons/ti'
+import { SiSolana } from 'react-icons/si'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -13,6 +14,15 @@ function Invest() {
   const [selectedCrypto, setSelectedCrypto] = useState('ETH')
   const [donationHistory, setDonationHistory] = useState([])
   const [isDonating, setIsDonating] = useState(false)
+  const [showQRCode, setShowQRCode] = useState(false)
+  const [copiedAddress, setCopiedAddress] = useState('')
+
+  // 실제 기부 주소들
+  const donationAddresses = {
+    SOL: '2pHWvLfFqnnfAndTdeNkg9Q9C8mbpiuRsFmLanmcjWG3',
+    ETH: '0x6EF87606F3AeF06Ee128416595734baDc5B0cA9e',
+    BTC: 'bc1qrrzjv6ksqg2n0fwjuuf27695mgkfejm2ag48ed'
+  }
 
   // Google 로그인
   const handleGoogleLogin = async () => {
@@ -30,20 +40,44 @@ function Invest() {
     }
   }
 
-  // 지갑 연결
-  const handleWalletConnect = async () => {
+  // 지갑 연결 (다중 지갑 지원)
+  const handleWalletConnect = async (walletType = 'metamask') => {
     try {
-      if (window.ethereum) {
+      if (walletType === 'metamask' && window.ethereum) {
         const accounts = await window.ethereum.request({
           method: 'eth_requestAccounts'
         })
         setWalletAddress(accounts[0])
         setIsWalletConnected(true)
+      } else if (walletType === 'walletconnect') {
+        // WalletConnect 구현 (실제로는 WalletConnect SDK 사용)
+        alert('WalletConnect는 곧 지원될 예정입니다.')
+      } else if (walletType === 'coinbase') {
+        // Coinbase Wallet 구현
+        if (window.coinbaseWalletExtension) {
+          const accounts = await window.coinbaseWalletExtension.request({
+            method: 'eth_requestAccounts'
+          })
+          setWalletAddress(accounts[0])
+          setIsWalletConnected(true)
+        } else {
+          alert('Coinbase Wallet이 설치되지 않았습니다.')
+        }
+      } else if (walletType === 'solana') {
+        // Solana 지갑 연결
+        if (window.solana && window.solana.isPhantom) {
+          const response = await window.solana.connect()
+          setWalletAddress(response.publicKey.toString())
+          setIsWalletConnected(true)
+        } else {
+          alert('Phantom 지갑이 설치되지 않았습니다.')
+        }
       } else {
-        alert('MetaMask가 설치되지 않았습니다. MetaMask를 설치해주세요.')
+        alert('지갑이 설치되지 않았습니다. MetaMask, Coinbase Wallet, 또는 Phantom을 설치해주세요.')
       }
     } catch (error) {
       console.error('Wallet connection failed:', error)
+      alert('지갑 연결에 실패했습니다.')
     }
   }
 
@@ -79,6 +113,18 @@ function Invest() {
       alert('기부 처리 중 오류가 발생했습니다.')
     } finally {
       setIsDonating(false)
+    }
+  }
+
+  // 주소 복사 기능
+  const copyAddress = async (crypto) => {
+    const address = donationAddresses[crypto]
+    try {
+      await navigator.clipboard.writeText(address)
+      setCopiedAddress(crypto)
+      setTimeout(() => setCopiedAddress(''), 2000)
+    } catch (error) {
+      console.error('Failed to copy address:', error)
     }
   }
 
@@ -144,15 +190,35 @@ function Invest() {
                       <FaWallet className="text-white text-2xl" />
                     </div>
                     <h3 className="text-2xl font-bold text-white mb-4">지갑 연결</h3>
-                    <p className="text-blue-200 mb-6">MetaMask를 연결하여 투자하세요</p>
+                    <p className="text-blue-200 mb-6">다양한 지갑을 지원합니다</p>
                     
                     {!isWalletConnected ? (
-                      <button
-                        onClick={handleWalletConnect}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-300"
-                      >
-                        지갑 연결
-                      </button>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => handleWalletConnect('metamask')}
+                          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
+                        >
+                          MetaMask
+                        </button>
+                        <button
+                          onClick={() => handleWalletConnect('coinbase')}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
+                        >
+                          Coinbase
+                        </button>
+                        <button
+                          onClick={() => handleWalletConnect('solana')}
+                          className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
+                        >
+                          Phantom
+                        </button>
+                        <button
+                          onClick={() => handleWalletConnect('walletconnect')}
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
+                        >
+                          WalletConnect
+                        </button>
+                      </div>
                     ) : (
                       <div className="bg-green-500/20 border border-green-500 rounded-xl p-4">
                         <div className="flex items-center justify-center mb-2">
@@ -169,6 +235,34 @@ function Invest() {
           </div>
         </section>
 
+        {/* QR Code Modal */}
+        {showQRCode && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-8 max-w-sm mx-4">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">QR 코드</h3>
+                <div className="bg-gray-100 rounded-xl p-8 mb-4">
+                  <div className="w-48 h-48 mx-auto bg-white rounded-lg flex items-center justify-center">
+                    <div className="text-gray-500 text-sm text-center">
+                      QR 코드 생성 중...<br />
+                      (실제 구현에서는 QR 라이브러리 사용)
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  {selectedCrypto} 기부 주소를 스캔하세요
+                </p>
+                <button
+                  onClick={() => setShowQRCode(false)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors duration-300"
+                >
+                  닫기
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Donation Section */}
         {isLoggedIn && isWalletConnected && (
           <section className="py-16">
@@ -180,10 +274,11 @@ function Invest() {
                   {/* Crypto Selection */}
                   <div className="mb-6">
                     <label className="block text-white font-semibold mb-3">암호화폐 선택</label>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       {[
                         { symbol: 'ETH', name: 'Ethereum', icon: FaEthereum, color: 'bg-blue-500' },
-                        { symbol: 'BTC', name: 'Bitcoin', icon: FaBitcoin, color: 'bg-orange-500' }
+                        { symbol: 'BTC', name: 'Bitcoin', icon: FaBitcoin, color: 'bg-orange-500' },
+                        { symbol: 'SOL', name: 'Solana', icon: SiSolana, color: 'bg-purple-500' }
                       ].map((crypto) => (
                         <button
                           key={crypto.symbol}
@@ -198,6 +293,39 @@ function Invest() {
                           <div className="text-white font-semibold">{crypto.symbol}</div>
                         </button>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Donation Address Display */}
+                  <div className="mb-6">
+                    <label className="block text-white font-semibold mb-3">기부 주소</label>
+                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="text-white font-mono text-sm break-all">
+                            {donationAddresses[selectedCrypto]}
+                          </p>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => copyAddress(selectedCrypto)}
+                            className="p-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors duration-300"
+                            title="주소 복사"
+                          >
+                            <FaCopy className="text-white text-sm" />
+                          </button>
+                          <button
+                            onClick={() => setShowQRCode(!showQRCode)}
+                            className="p-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors duration-300"
+                            title="QR 코드 보기"
+                          >
+                            <FaQrcode className="text-white text-sm" />
+                          </button>
+                        </div>
+                      </div>
+                      {copiedAddress === selectedCrypto && (
+                        <p className="text-green-400 text-sm mt-2">주소가 복사되었습니다!</p>
+                      )}
                     </div>
                   </div>
 
