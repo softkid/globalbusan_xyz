@@ -19,17 +19,49 @@ A transparent, blockchain-powered donation platform that connects international 
 
 ## Getting Started
 
-1. Install dependencies:
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+
+### Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/softkid/globalbusan_xyz.git
+cd globalbusan_xyz
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Start development server:
+3. Set up Supabase:
+   - Create a new project at [supabase.com](https://supabase.com)
+   - Copy the project URL and anon key
+   - Create a `.env` file in the root directory:
+   ```bash
+   cp env.example .env
+   ```
+   - Update `.env` with your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=your-supabase-url
+   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
+
+4. Set up the database:
+   - Run the SQL schema in your Supabase SQL editor:
+   ```bash
+   cat supabase-schema.sql
+   ```
+   - Copy and paste the contents into your Supabase SQL editor
+
+5. Start development server:
 ```bash
 npm run dev
 ```
 
-3. Open [http://localhost:5173](http://localhost:5173) in your browser
+6. Open [http://localhost:5173](http://localhost:5173) in your browser
 
 ## Deployment
 
