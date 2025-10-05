@@ -4,6 +4,10 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+// 환경변수 디버깅
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Key:', supabaseKey ? '설정됨' : '설정되지 않음')
+
 // 환경변수가 설정되지 않은 경우 경고
 if (!supabaseUrl || !supabaseKey) {
   console.warn('Supabase 환경변수가 설정되지 않았습니다. env.example 파일을 참고하여 .env 파일을 생성하세요.')
