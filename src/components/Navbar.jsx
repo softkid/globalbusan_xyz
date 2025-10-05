@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import Button from "./Button";
 
-const navItems = ["Equity", "Reports", "Roadmap", "Projects", "Contact"];
+const navItems = ["Equity", "Reports", "Roadmap", "Projects", "Statistics", "Contact"];
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

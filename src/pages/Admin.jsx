@@ -3,13 +3,21 @@ import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaChartLine, FaUsers, FaDolla
 import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { projectService } from '../lib/supabase'
+import { projectService, statsService, investorService, investmentService, expenseService } from '../lib/supabase'
 
 function Admin() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingProject, setEditingProject] = useState(null)
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    totalBudget: 0,
+    totalTeamMembers: 0,
+    totalInvestors: 0,
+    totalInvestments: 0,
+    totalExpenses: 0
+  })
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -59,12 +67,34 @@ function Admin() {
   const loadProjects = async () => {
     try {
       setLoading(true)
-      const data = await projectService.getProjects()
-      setProjects(data || [])
+      const [projectsData, projectStats, investorStats, investmentStats] = await Promise.all([
+        projectService.getProjects(),
+        statsService.getProjectStats(),
+        statsService.getInvestorStats(),
+        statsService.getInvestmentStats()
+      ])
+      
+      setProjects(projectsData || [])
+      setStats({
+        totalProjects: projectStats?.total_projects || 0,
+        totalBudget: projectStats?.total_budget || 0,
+        totalTeamMembers: projectStats?.total_team_members || 0,
+        totalInvestors: investorStats?.total_investors || 0,
+        totalInvestments: investmentStats?.total_investments || 0,
+        totalExpenses: 0 // 지출 통계는 별도로 계산
+      })
     } catch (error) {
-      console.error('프로젝트 로드 실패:', error)
+      console.error('데이터 로드 실패:', error)
       setProjects([])
-      alert('프로젝트를 불러오는데 실패했습니다. Supabase 연결을 확인해주세요.')
+      setStats({
+        totalProjects: 0,
+        totalBudget: 0,
+        totalTeamMembers: 0,
+        totalInvestors: 0,
+        totalInvestments: 0,
+        totalExpenses: 0
+      })
+      alert('데이터를 불러오는데 실패했습니다. Supabase 연결을 확인해주세요.')
     } finally {
       setLoading(false)
     }
@@ -191,25 +221,46 @@ function Admin() {
         {/* 통계 */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaChartLine className="text-4xl text-green-400 mx-auto mb-4" />
-                <div className="text-3xl font-bold text-white mb-2">{projects.length}</div>
+                <div className="text-3xl font-bold text-white mb-2">{stats.totalProjects}</div>
                 <div className="text-blue-200">총 프로젝트</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaDollarSign className="text-4xl text-blue-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">
-                  ${projects.reduce((sum, p) => sum + p.budget, 0).toLocaleString()}
+                  ${stats.totalBudget.toLocaleString()}
                 </div>
                 <div className="text-blue-200">총 예산</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaUsers className="text-4xl text-purple-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">
-                  {projects.reduce((sum, p) => sum + p.team_size, 0)}
+                  {stats.totalTeamMembers}
                 </div>
                 <div className="text-blue-200">총 팀원</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
+                <FaUsers className="text-4xl text-orange-400 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-white mb-2">
+                  {stats.totalInvestors}
+                </div>
+                <div className="text-blue-200">총 투자자</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
+                <FaDollarSign className="text-4xl text-green-400 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-white mb-2">
+                  {stats.totalInvestments}
+                </div>
+                <div className="text-blue-200">총 투자 건수</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
+                <FaChartLine className="text-4xl text-red-400 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-white mb-2">
+                  ${stats.totalExpenses.toLocaleString()}
+                </div>
+                <div className="text-blue-200">총 지출</div>
               </div>
             </div>
           </div>

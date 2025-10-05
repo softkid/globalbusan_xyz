@@ -3,12 +3,18 @@ import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding
 import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { projectService } from '../lib/supabase'
+import { projectService, statsService } from '../lib/supabase'
 
 function Projects() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [stats, setStats] = useState({
+    totalBudget: 0,
+    totalRaised: 0,
+    averageReturn: 0,
+    totalProjects: 0
+  })
 
   // 카테고리별 필터링
   const categories = [
@@ -60,11 +66,27 @@ function Projects() {
   const loadProjects = async () => {
     try {
       setLoading(true)
-      const data = await projectService.getProjects()
-      setProjects(data || [])
+      const [projectsData, statsData] = await Promise.all([
+        projectService.getProjects(),
+        statsService.getProjectStats()
+      ])
+      
+      setProjects(projectsData || [])
+      setStats({
+        totalBudget: statsData?.total_budget || 0,
+        totalRaised: statsData?.total_raised || 0,
+        averageReturn: statsData?.avg_expected_return || 0,
+        totalProjects: statsData?.total_projects || 0
+      })
     } catch (error) {
-      console.error('프로젝트 로드 실패:', error)
+      console.error('데이터 로드 실패:', error)
       setProjects([])
+      setStats({
+        totalBudget: 0,
+        totalRaised: 0,
+        averageReturn: 0,
+        totalProjects: 0
+      })
     } finally {
       setLoading(false)
     }
@@ -75,12 +97,10 @@ function Projects() {
     ? projects 
     : projects.filter(project => project.category === selectedCategory)
 
-  // 총 투자 금액 계산
-  const totalBudget = projects.reduce((sum, project) => sum + project.budget, 0)
-  const totalRaised = projects.reduce((sum, project) => sum + project.raised, 0)
-  const averageReturn = projects.length > 0 
-    ? projects.reduce((sum, project) => sum + project.expected_return, 0) / projects.length 
-    : 0
+  // 통계 계산 (이제 서버에서 가져온 데이터 사용)
+  const totalBudget = stats.totalBudget
+  const totalRaised = stats.totalRaised
+  const averageReturn = stats.averageReturn
 
   if (loading) {
     return (
