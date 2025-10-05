@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaChartLine, FaUsers, FaDollarSign } from 'react-icons/fa'
 import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
-import Navbar from '../components/Navbar'
+import AdminNavbar from '../components/AdminNavbar'
 import Footer from '../components/Footer'
 import { projectService, statsService, investorService, investmentService, expenseService } from '../lib/supabase'
 
@@ -203,7 +203,7 @@ function Admin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-      <Navbar />
+      <AdminNavbar />
       
       <main className="pt-20">
         {/* Header */}

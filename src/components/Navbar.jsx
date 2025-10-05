@@ -1,14 +1,28 @@
 import { TiLocationArrow } from "react-icons/ti";
-import { FaGlobe, FaBuilding, FaBars, FaTimes } from "react-icons/fa";
+import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaFileAlt, FaRoad, FaEnvelope } from "react-icons/fa";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import Button from "./Button";
 
-const navItems = ["Equity", "Reports", "Roadmap", "Projects", "Statistics", "Contact"];
-
-const Navbar = () => {
+const Navbar = ({ isAdmin = false }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // 사용자용 메뉴 아이템
+  const userNavItems = [
+    { name: "Home", path: "/", icon: FaHome },
+    { name: "Projects", path: "/projects", icon: FaProjectDiagram },
+    { name: "Statistics", path: "/statistics", icon: FaChartLine },
+    { name: "Invest", path: "/invest", icon: FaBuilding }
+  ];
+
+  // 홈페이지용 앵커 링크 (스크롤)
+  const homeNavItems = ["Equity", "Reports", "Roadmap", "Contact"];
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -39,16 +53,38 @@ const Navbar = () => {
 
           {/* Desktop Navigation Links */}
           <div className="flex h-full items-center">
-            <div className="hidden md:block">
-              {navItems.map((item, index) => (
-                <a
-                  key={index}
-                  href={`#${item.toLowerCase()}`}
-                  className="nav-hover-btn"
-                >
-                  {item}
-                </a>
-              ))}
+            <div className="hidden md:flex items-center space-x-1">
+              {location.pathname === '/' ? (
+                // 홈페이지에서는 앵커 링크 사용
+                homeNavItems.map((item, index) => (
+                  <a
+                    key={index}
+                    href={`#${item.toLowerCase()}`}
+                    className="nav-hover-btn"
+                  >
+                    {item}
+                  </a>
+                ))
+              ) : (
+                // 다른 페이지에서는 라우터 링크 사용
+                userNavItems.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={index}
+                      to={item.path}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
+                        isActive(item.path)
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                      }`}
+                    >
+                      <Icon className="text-sm" />
+                      {item.name}
+                    </Link>
+                  );
+                })
+              )}
             </div>
           </div>
 
@@ -71,27 +107,50 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-lg">
-            <div className="px-5 py-4 space-y-4">
-              {navItems.map((item, index) => (
-                <a
-                  key={index}
-                  href={`#${item.toLowerCase()}`}
-                  className="block text-lg font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300 py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item}
-                </a>
-              ))}
-                    <div className="pt-4 border-t border-gray-200">
-                      <Link to="/invest" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button
-                          id="mobile-invest-button"
-                          title="Invest Now"
-                          rightIcon={<TiLocationArrow />}
-                          containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white flex items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600 w-full"
-                        />
-                      </Link>
-                    </div>
+            <div className="px-5 py-4 space-y-2">
+              {location.pathname === '/' ? (
+                // 홈페이지에서는 앵커 링크 사용
+                homeNavItems.map((item, index) => (
+                  <a
+                    key={index}
+                    href={`#${item.toLowerCase()}`}
+                    className="block text-lg font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300 py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item}
+                  </a>
+                ))
+              ) : (
+                // 다른 페이지에서는 라우터 링크 사용
+                userNavItems.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={index}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
+                        isActive(item.path)
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Icon className="text-lg" />
+                      {item.name}
+                    </Link>
+                  );
+                })
+              )}
+              <div className="pt-4 border-t border-gray-200">
+                <Link to="/invest" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button
+                    id="mobile-invest-button"
+                    title="Invest Now"
+                    rightIcon={<TiLocationArrow />}
+                    containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white flex items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600 w-full"
+                  />
+                </Link>
+              </div>
             </div>
           </div>
         )}
