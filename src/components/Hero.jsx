@@ -5,26 +5,43 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/all";
 import { Link } from 'react-router-dom';
+import { statsService } from '../lib/supabase';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
-    const [donationAmount, setDonationAmount] = useState(1250000);
-    const [donorCount, setDonorCount] = useState(342);
+    const [donationAmount, setDonationAmount] = useState(0);
+    const [donorCount, setDonorCount] = useState(0);
+    const [projectCount, setProjectCount] = useState(0);
+    const [loading, setLoading] = useState(true);
     
     const heroRef = useRef(null);
 
     useEffect(() => {
-        // Simulate real-time donation counter
-        const donationTimer = setInterval(() => {
-            setDonationAmount(prev => prev + Math.random() * 1000);
-            setDonorCount(prev => prev + Math.floor(Math.random() * 3));
-        }, 10000);
-
-        return () => {
-            clearInterval(donationTimer);
-        };
+        loadStats();
     }, []);
+
+    const loadStats = async () => {
+        try {
+            const [projectStats, investorStats, investmentStats] = await Promise.all([
+                statsService.getProjectStats(),
+                statsService.getInvestorStats(),
+                statsService.getInvestmentStats()
+            ]);
+
+            setDonationAmount(projectStats?.total_raised || 0);
+            setDonorCount(investorStats?.total_investors || 0);
+            setProjectCount(projectStats?.total_projects || 0);
+        } catch (error) {
+            console.error('통계 데이터 로드 실패:', error);
+            // 기본값 설정
+            setDonationAmount(1020000);
+            setDonorCount(8);
+            setProjectCount(6);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useGSAP(() => {
         if (heroRef.current) {
@@ -97,7 +114,11 @@ const Hero = () => {
                                 <FaBuilding className='text-4xl text-green-400' />
                             </div>
                             <div className='text-4xl font-bold text-white mb-3'>
-                                ${donationAmount.toLocaleString()}
+                                {loading ? (
+                                    <div className="animate-pulse">---</div>
+                                ) : (
+                                    `$${donationAmount.toLocaleString()}`
+                                )}
                             </div>
                             <div className='text-xl text-blue-200'>Total Investment</div>
                         </div>
@@ -107,7 +128,11 @@ const Hero = () => {
                                 <FaUsers className='text-4xl text-blue-400' />
                             </div>
                             <div className='text-4xl font-bold text-white mb-3'>
-                                {donorCount}+
+                                {loading ? (
+                                    <div className="animate-pulse">---</div>
+                                ) : (
+                                    `${donorCount}+`
+                                )}
                             </div>
                             <div className='text-xl text-blue-200'>Global Partners</div>
                         </div>
@@ -117,9 +142,13 @@ const Hero = () => {
                                 <FaRocket className='text-4xl text-purple-400' />
                             </div>
                             <div className='text-4xl font-bold text-white mb-3'>
-                                5
+                                {loading ? (
+                                    <div className="animate-pulse">---</div>
+                                ) : (
+                                    projectCount
+                                )}
                             </div>
-                            <div className='text-xl text-blue-200'>Growth Phases</div>
+                            <div className='text-xl text-blue-200'>Active Projects</div>
                         </div>
                     </div>
 

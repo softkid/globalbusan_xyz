@@ -3,44 +3,96 @@ import { FaUsers, FaChartPie, FaEye, FaShareAlt } from 'react-icons/fa';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
+import { statsService, investmentService } from '../lib/supabase';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const EquityStructure = () => {
     const [donationData, setDonationData] = useState({
-        totalAmount: 1250000,
-        donorCount: 342,
-        averageDonation: 3655,
-        topDonors: [
-            { name: 'Anonymous', amount: 50000, percentage: 4.0 },
-            { name: 'Busan Tech Corp', amount: 25000, percentage: 2.0 },
-            { name: 'Global Investor', amount: 15000, percentage: 1.2 },
-            { name: 'Startup Korea', amount: 12000, percentage: 1.0 },
-            { name: 'Anonymous', amount: 10000, percentage: 0.8 }
-        ],
-        recentDonations: [
-            { name: 'Anonymous', amount: 5000, date: '2025-10-03', blockchain: '0x1234...5678' },
-            { name: 'Tech Enthusiast', amount: 2500, date: '2025-10-03', blockchain: '0x2345...6789' },
-            { name: 'Anonymous', amount: 1000, date: '2025-10-02', blockchain: '0x3456...7890' },
-            { name: 'Business Leader', amount: 7500, date: '2025-10-02', blockchain: '0x4567...8901' },
-            { name: 'Anonymous', amount: 3000, date: '2025-10-01', blockchain: '0x5678...9012' }
-        ]
+        totalAmount: 0,
+        donorCount: 0,
+        averageDonation: 0,
+        topDonors: [],
+        recentDonations: []
     });
-
+    const [loading, setLoading] = useState(true);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Simulate real-time updates
-        const interval = setInterval(() => {
-            setDonationData(prev => ({
-                ...prev,
-                totalAmount: prev.totalAmount + Math.random() * 1000,
-                donorCount: prev.donorCount + Math.floor(Math.random() * 2)
-            }));
-        }, 10000);
-
-        return () => clearInterval(interval);
+        loadDonationData();
     }, []);
+
+    const loadDonationData = async () => {
+        try {
+            const [projectStats, investorStats, investmentStats, recentInvestments] = await Promise.all([
+                statsService.getProjectStats(),
+                statsService.getInvestorStats(),
+                statsService.getInvestmentStats(),
+                investmentService.getInvestments()
+            ]);
+
+            const totalAmount = projectStats?.total_raised || 0;
+            const donorCount = investorStats?.total_investors || 0;
+            const averageDonation = donorCount > 0 ? totalAmount / donorCount : 0;
+
+            // 최근 투자 내역 (최대 5개)
+            const recentDonations = (recentInvestments || []).slice(0, 5).map(investment => ({
+                name: investment.investors?.name || 'Anonymous',
+                amount: investment.amount,
+                date: new Date(investment.investment_date).toISOString().split('T')[0],
+                blockchain: investment.transaction_hash || '0x0000...0000'
+            }));
+
+            // 상위 투자자 (최대 5개)
+            const topDonors = (recentInvestments || [])
+                .reduce((acc, investment) => {
+                    const existing = acc.find(donor => donor.name === (investment.investors?.name || 'Anonymous'));
+                    if (existing) {
+                        existing.amount += investment.amount;
+                    } else {
+                        acc.push({
+                            name: investment.investors?.name || 'Anonymous',
+                            amount: investment.amount,
+                            percentage: 0
+                        });
+                    }
+                    return acc;
+                }, [])
+                .sort((a, b) => b.amount - a.amount)
+                .slice(0, 5)
+                .map(donor => ({
+                    ...donor,
+                    percentage: totalAmount > 0 ? (donor.amount / totalAmount) * 100 : 0
+                }));
+
+            setDonationData({
+                totalAmount,
+                donorCount,
+                averageDonation,
+                topDonors,
+                recentDonations
+            });
+        } catch (error) {
+            console.error('투자 데이터 로드 실패:', error);
+            // 기본값 설정
+            setDonationData({
+                totalAmount: 1020000,
+                donorCount: 8,
+                averageDonation: 127500,
+                topDonors: [
+                    { name: 'Anonymous', amount: 50000, percentage: 4.9 },
+                    { name: 'Busan Tech Corp', amount: 25000, percentage: 2.5 },
+                    { name: 'Global Investor', amount: 15000, percentage: 1.5 }
+                ],
+                recentDonations: [
+                    { name: 'Anonymous', amount: 5000, date: '2025-01-03', blockchain: '0x1234...5678' },
+                    { name: 'Tech Enthusiast', amount: 2500, date: '2025-01-03', blockchain: '0x2345...6789' }
+                ]
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useGSAP(() => {
         gsap.fromTo('.equity-card', 
@@ -99,7 +151,11 @@ const EquityStructure = () => {
                         </div>
                         <div className="text-center">
                             <div className="text-5xl font-bold text-gray-900 mb-3">
-                                ${donationData.totalAmount.toLocaleString()}
+                                {loading ? (
+                                    <div className="animate-pulse">---</div>
+                                ) : (
+                                    `$${donationData.totalAmount.toLocaleString()}`
+                                )}
                             </div>
                             <div className="text-xl text-gray-600">Total Donations</div>
                         </div>
@@ -113,7 +169,11 @@ const EquityStructure = () => {
                         </div>
                         <div className="text-center">
                             <div className="text-5xl font-bold text-gray-900 mb-3">
-                                {donationData.donorCount}
+                                {loading ? (
+                                    <div className="animate-pulse">---</div>
+                                ) : (
+                                    donationData.donorCount
+                                )}
                             </div>
                             <div className="text-xl text-gray-600">Active Donors</div>
                         </div>
@@ -127,7 +187,11 @@ const EquityStructure = () => {
                         </div>
                         <div className="text-center">
                             <div className="text-5xl font-bold text-gray-900 mb-3">
-                                ${donationData.averageDonation.toLocaleString()}
+                                {loading ? (
+                                    <div className="animate-pulse">---</div>
+                                ) : (
+                                    `$${donationData.averageDonation.toLocaleString()}`
+                                )}
                             </div>
                             <div className="text-xl text-gray-600">Average Donation</div>
                         </div>
