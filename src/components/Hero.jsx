@@ -34,7 +34,7 @@ const Hero = () => {
             setProjectCount(projectStats?.total_projects || 0);
         } catch (error) {
             console.error('통계 데이터 로드 실패:', error);
-            // 기본값 설정
+            // 폴백 데이터 사용 (supabase.js에서 이미 처리됨)
             setDonationAmount(1020000);
             setDonorCount(8);
             setProjectCount(6);

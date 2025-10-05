@@ -204,18 +204,24 @@ const EquityStructure = () => {
                     <div className="equity-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
                         <h3 className="text-2xl font-bold text-gray-900 mb-6">Donation Distribution</h3>
                         <div className="space-y-4">
-                            {donationData.topDonors.map((donor, index) => (
-                                <div key={index} className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <div className="w-4 h-4 bg-blue-500 rounded-full mr-3"></div>
-                                        <span className="text-gray-700">{donor.name}</span>
+                            {donationData.topDonors && donationData.topDonors.length > 0 ? (
+                                donationData.topDonors.map((donor, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <div className="w-4 h-4 bg-blue-500 rounded-full mr-3"></div>
+                                            <span className="text-gray-700">{donor.name}</span>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-semibold text-gray-900">${donor.amount.toLocaleString()}</div>
+                                            <div className="text-sm text-gray-500">{donor.percentage}%</div>
+                                        </div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="font-semibold text-gray-900">${donor.amount.toLocaleString()}</div>
-                                        <div className="text-sm text-gray-500">{donor.percentage}%</div>
-                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center text-gray-500 py-4">
+                                    {loading ? '로딩 중...' : '투자자 데이터가 없습니다.'}
                                 </div>
-                            ))}
+                            )}
                         </div>
                         <div className="mt-6 pt-6 border-t border-gray-200">
                             <div className="flex items-center justify-between">
@@ -229,18 +235,24 @@ const EquityStructure = () => {
                     <div className="equity-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
                         <h3 className="text-2xl font-bold text-gray-900 mb-6">Recent Donations</h3>
                         <div className="space-y-4">
-                            {donationData.recentDonations.map((donation, index) => (
-                                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div>
-                                        <div className="font-semibold text-gray-900">{donation.name}</div>
-                                        <div className="text-sm text-gray-500">{donation.date}</div>
-                                        <div className="text-xs text-blue-600 font-mono">{donation.blockchain}</div>
+                            {donationData.recentDonations && donationData.recentDonations.length > 0 ? (
+                                donationData.recentDonations.map((donation, index) => (
+                                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <div className="font-semibold text-gray-900">{donation.name}</div>
+                                            <div className="text-sm text-gray-500">{donation.date}</div>
+                                            <div className="text-xs text-blue-600 font-mono">{donation.blockchain}</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-bold text-green-600">${donation.amount.toLocaleString()}</div>
+                                        </div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="font-bold text-green-600">${donation.amount.toLocaleString()}</div>
-                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center text-gray-500 py-4">
+                                    {loading ? '로딩 중...' : '최근 투자 내역이 없습니다.'}
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>

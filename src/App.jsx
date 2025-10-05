@@ -4,10 +4,12 @@ import Invest from './pages/Invest'
 import Projects from './pages/Projects'
 import Statistics from './pages/Statistics'
 import Admin from './pages/Admin'
+import ConnectionStatus from './components/ConnectionStatus'
 
 function App() {
   return (
     <Router>
+      <ConnectionStatus />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/invest" element={<Invest />} />

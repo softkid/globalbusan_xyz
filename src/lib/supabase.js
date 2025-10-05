@@ -10,58 +10,166 @@ console.log('Supabase Key:', supabaseKey ? '설정됨' : '설정되지 않음')
 
 // 환경변수가 설정되지 않은 경우 경고
 if (!supabaseUrl || !supabaseKey) {
-  console.warn('Supabase 환경변수가 설정되지 않았습니다. env.example 파일을 참고하여 .env 파일을 생성하세요.')
+  console.warn('Supabase 환경변수가 설정되지 않았습니다. .env 파일을 확인하세요.')
 }
 
+// Supabase 클라이언트 생성
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co', 
   supabaseKey || 'placeholder-key'
 )
 
+// 연결 상태 확인 함수
+export const checkSupabaseConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('projects').select('count').limit(1)
+    if (error) {
+      console.error('Supabase 연결 실패:', error)
+      return { connected: false, error: error.message }
+    }
+    console.log('Supabase 연결 성공')
+    return { connected: true, error: null }
+  } catch (error) {
+    console.error('Supabase 연결 오류:', error)
+    return { connected: false, error: error.message }
+  }
+}
+
+// 연결 상태 관리
+let connectionStatus = { connected: false, error: null, lastChecked: null }
+
+// 주기적으로 연결 상태 확인 (5분마다)
+setInterval(async () => {
+  const status = await checkSupabaseConnection()
+  connectionStatus = { ...status, lastChecked: new Date() }
+}, 5 * 60 * 1000)
+
+// 초기 연결 확인
+checkSupabaseConnection().then(status => {
+  connectionStatus = { ...status, lastChecked: new Date() }
+})
+
+export { connectionStatus }
+
+// 기본 폴백 데이터
+const fallbackData = {
+  projects: [
+    {
+      id: 1,
+      title: '부산 글로벌 비즈니스 허브 플랫폼',
+      description: '국제 기업과 한국 기업을 연결하는 블록체인 기반 B2B 플랫폼',
+      category: 'infrastructure',
+      status: 'development',
+      budget: 500000,
+      raised: 125000,
+      expected_return: 15.5,
+      timeline: '12개월',
+      crypto_type: 'ETH',
+      progress: 35,
+      team_size: 8,
+      technologies: ['React', 'Node.js', 'Ethereum', 'IPFS']
+    }
+  ],
+  projectStats: {
+    total_projects: 6,
+    total_budget: 3150000,
+    total_raised: 1020000,
+    avg_expected_return: 20.3,
+    total_team_members: 66
+  },
+  investorStats: {
+    total_investors: 8,
+    avg_investment_per_investor: 127500,
+    max_investment: 50000,
+    min_investment: 10000,
+    new_investors_30_days: 2
+  },
+  investmentStats: {
+    total_investments: 23,
+    total_investment_amount: 635000,
+    confirmed_investments: 20,
+    pending_investments: 2,
+    failed_investments: 1,
+    investments_30_days: 5
+  }
+}
+
 // 프로젝트 관련 함수들
 export const projectService = {
   // 모든 프로젝트 가져오기
   async getProjects() {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    if (error) throw error
-    return data
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) {
+        console.warn('프로젝트 데이터 로드 실패, 폴백 데이터 사용:', error.message)
+        return fallbackData.projects
+      }
+      return data || fallbackData.projects
+    } catch (error) {
+      console.error('프로젝트 데이터 로드 오류:', error)
+      return fallbackData.projects
+    }
   },
 
   // 프로젝트 생성
   async createProject(project) {
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([project])
-      .select()
-    
-    if (error) throw error
-    return data[0]
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert([project])
+        .select()
+      
+      if (error) {
+        console.error('프로젝트 생성 실패:', error)
+        throw error
+      }
+      return data[0]
+    } catch (error) {
+      console.error('프로젝트 생성 오류:', error)
+      throw error
+    }
   },
 
   // 프로젝트 업데이트
   async updateProject(id, updates) {
-    const { data, error } = await supabase
-      .from('projects')
-      .update(updates)
-      .eq('id', id)
-      .select()
-    
-    if (error) throw error
-    return data[0]
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .update(updates)
+        .eq('id', id)
+        .select()
+      
+      if (error) {
+        console.error('프로젝트 업데이트 실패:', error)
+        throw error
+      }
+      return data[0]
+    } catch (error) {
+      console.error('프로젝트 업데이트 오류:', error)
+      throw error
+    }
   },
 
   // 프로젝트 삭제
   async deleteProject(id) {
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id)
-    
-    if (error) throw error
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', id)
+      
+      if (error) {
+        console.error('프로젝트 삭제 실패:', error)
+        throw error
+      }
+    } catch (error) {
+      console.error('프로젝트 삭제 오류:', error)
+      throw error
+    }
   }
 }
 
@@ -193,35 +301,59 @@ export const expenseService = {
 export const statsService = {
   // 프로젝트 통계
   async getProjectStats() {
-    const { data, error } = await supabase
-      .from('project_stats')
-      .select('*')
-      .single()
-    
-    if (error) throw error
-    return data
+    try {
+      const { data, error } = await supabase
+        .from('project_stats')
+        .select('*')
+        .single()
+      
+      if (error) {
+        console.warn('프로젝트 통계 로드 실패, 폴백 데이터 사용:', error.message)
+        return fallbackData.projectStats
+      }
+      return data || fallbackData.projectStats
+    } catch (error) {
+      console.error('프로젝트 통계 로드 오류:', error)
+      return fallbackData.projectStats
+    }
   },
 
   // 투자자 통계
   async getInvestorStats() {
-    const { data, error } = await supabase
-      .from('investor_stats')
-      .select('*')
-      .single()
-    
-    if (error) throw error
-    return data
+    try {
+      const { data, error } = await supabase
+        .from('investor_stats')
+        .select('*')
+        .single()
+      
+      if (error) {
+        console.warn('투자자 통계 로드 실패, 폴백 데이터 사용:', error.message)
+        return fallbackData.investorStats
+      }
+      return data || fallbackData.investorStats
+    } catch (error) {
+      console.error('투자자 통계 로드 오류:', error)
+      return fallbackData.investorStats
+    }
   },
 
   // 투자 통계
   async getInvestmentStats() {
-    const { data, error } = await supabase
-      .from('investment_stats')
-      .select('*')
-      .single()
-    
-    if (error) throw error
-    return data
+    try {
+      const { data, error } = await supabase
+        .from('investment_stats')
+        .select('*')
+        .single()
+      
+      if (error) {
+        console.warn('투자 통계 로드 실패, 폴백 데이터 사용:', error.message)
+        return fallbackData.investmentStats
+      }
+      return data || fallbackData.investmentStats
+    } catch (error) {
+      console.error('투자 통계 로드 오류:', error)
+      return fallbackData.investmentStats
+    }
   },
 
   // 프로젝트별 지출 통계

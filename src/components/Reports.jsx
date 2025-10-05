@@ -238,19 +238,25 @@ const Reports = () => {
                 {/* Quarter Selector */}
                 <div className="flex justify-center mb-12">
                     <div className="bg-white rounded-2xl p-2 shadow-lg border border-gray-200">
-                        {Object.keys(reportData).map((quarter) => (
-                            <button
-                                key={quarter}
-                                onClick={() => setSelectedQuarter(quarter)}
-                                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
-                                    selectedQuarter === quarter
-                                        ? 'bg-green-600 text-white shadow-lg'
-                                        : 'text-gray-600 hover:bg-gray-100'
-                                }`}
-                            >
-                                {quarter}
-                            </button>
-                        ))}
+                        {reportData && Object.keys(reportData).length > 0 ? (
+                            Object.keys(reportData).map((quarter) => (
+                                <button
+                                    key={quarter}
+                                    onClick={() => setSelectedQuarter(quarter)}
+                                    className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
+                                        selectedQuarter === quarter
+                                            ? 'bg-green-600 text-white shadow-lg'
+                                            : 'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                                >
+                                    {quarter}
+                                </button>
+                            ))
+                        ) : (
+                            <div className="text-center text-gray-500 py-4">
+                                {loading ? '로딩 중...' : '리포트 데이터가 없습니다.'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -337,25 +343,31 @@ const Reports = () => {
                     <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-8">
                         <h4 className="text-2xl font-bold text-gray-900 mb-6">Project Milestones</h4>
                         <div className="space-y-4">
-                            {currentReport.milestones.map((milestone, index) => (
-                                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div className="flex items-center">
-                                        <div className={`w-4 h-4 rounded-full mr-4 ${
-                                            milestone.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
-                                        }`}></div>
-                                        <span className="text-gray-900 font-medium">{milestone.title}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-32 bg-gray-200 rounded-full h-2">
-                                            <div 
-                                                className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                                                style={{ width: `${milestone.progress}%` }}
-                                            ></div>
+                            {currentReport.milestones && currentReport.milestones.length > 0 ? (
+                                currentReport.milestones.map((milestone, index) => (
+                                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                        <div className="flex items-center">
+                                            <div className={`w-4 h-4 rounded-full mr-4 ${
+                                                milestone.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
+                                            }`}></div>
+                                            <span className="text-gray-900 font-medium">{milestone.title}</span>
                                         </div>
-                                        <span className="text-sm font-semibold text-gray-600">{milestone.progress}%</span>
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-32 bg-gray-200 rounded-full h-2">
+                                                <div 
+                                                    className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                                                    style={{ width: `${milestone.progress}%` }}
+                                                ></div>
+                                            </div>
+                                            <span className="text-sm font-semibold text-gray-600">{milestone.progress}%</span>
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="text-center text-gray-500 py-4">
+                                    {loading ? '로딩 중...' : '마일스톤 데이터가 없습니다.'}
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
 
@@ -364,24 +376,36 @@ const Reports = () => {
                         <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
                             <h4 className="text-2xl font-bold text-gray-900 mb-6">Key Achievements</h4>
                             <ul className="space-y-3">
-                                {currentReport.keyAchievements.map((achievement, index) => (
-                                    <li key={index} className="flex items-start">
-                                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                        <span className="text-gray-700">{achievement}</span>
+                                {currentReport.keyAchievements && currentReport.keyAchievements.length > 0 ? (
+                                    currentReport.keyAchievements.map((achievement, index) => (
+                                        <li key={index} className="flex items-start">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                            <span className="text-gray-700">{achievement}</span>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li className="text-center text-gray-500 py-4">
+                                        {loading ? '로딩 중...' : '주요 성과 데이터가 없습니다.'}
                                     </li>
-                                ))}
+                                )}
                             </ul>
                         </div>
 
                         <div className="report-card bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
                             <h4 className="text-2xl font-bold text-gray-900 mb-6">Next Quarter Goals</h4>
                             <ul className="space-y-3">
-                                {currentReport.nextQuarterGoals.map((goal, index) => (
-                                    <li key={index} className="flex items-start">
-                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                        <span className="text-gray-700">{goal}</span>
+                                {currentReport.nextQuarterGoals && currentReport.nextQuarterGoals.length > 0 ? (
+                                    currentReport.nextQuarterGoals.map((goal, index) => (
+                                        <li key={index} className="flex items-start">
+                                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                            <span className="text-gray-700">{goal}</span>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li className="text-center text-gray-500 py-4">
+                                        {loading ? '로딩 중...' : '다음 분기 목표 데이터가 없습니다.'}
                                     </li>
-                                ))}
+                                )}
                             </ul>
                         </div>
                     </div>
