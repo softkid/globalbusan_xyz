@@ -169,23 +169,32 @@ const Reports = () => {
     const currentReport = reportData[selectedQuarter] || {};
 
     useGSAP(() => {
-        gsap.fromTo('.report-card', 
-            { opacity: 0, y: 50 },
-            { 
-                opacity: 1, 
-                y: 0, 
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: '.reports-section',
-                    start: "top 80%",
-                    end: "bottom 20%",
-                    toggleActions: "play none none reverse"
+        // 로딩 중이거나 데이터가 없을 때는 애니메이션을 실행하지 않음
+        if (loading || !currentReport || Object.keys(currentReport).length === 0) {
+            return;
+        }
+
+        // 요소가 존재하는지 확인 후 애니메이션 실행
+        const reportCards = document.querySelectorAll('.report-card');
+        if (reportCards.length > 0) {
+            gsap.fromTo('.report-card', 
+                { opacity: 0, y: 50 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: '.reports-section',
+                        start: "top 80%",
+                        end: "bottom 20%",
+                        toggleActions: "play none none reverse"
+                    }
                 }
-            }
-        );
-    }, []);
+            );
+        }
+    }, [loading, currentReport]);
 
     const handleDownload = () => {
         // Simulate PDF download
