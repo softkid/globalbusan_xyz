@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS projects (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
-  category VARCHAR(50) NOT NULL CHECK (category IN ('infrastructure', 'defi', 'nft', 'gaming')),
+  category VARCHAR(50) NOT NULL CHECK (category IN ('infrastructure', 'defi', 'nft', 'gaming', 'manufacturing', 'service', 'it', 'bio', 'finance', 'real_estate', 'tourism', 'logistics', 'energy', 'healthcare', 'education', 'agriculture', 'retail', 'construction', 'media', 'other')),
   status VARCHAR(50) NOT NULL CHECK (status IN ('planning', 'development', 'testing', 'launched', 'completed')),
   budget DECIMAL(15,2) NOT NULL,
   raised DECIMAL(15,2) DEFAULT 0,

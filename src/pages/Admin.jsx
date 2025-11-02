@@ -35,9 +35,25 @@ function Admin() {
 
   const categories = [
     { id: 'infrastructure', name: '인프라' },
+    { id: 'it', name: 'IT/소프트웨어' },
+    { id: 'manufacturing', name: '제조업' },
+    { id: 'service', name: '서비스업' },
+    { id: 'bio', name: '바이오/의료' },
+    { id: 'finance', name: '금융' },
+    { id: 'real_estate', name: '부동산' },
+    { id: 'tourism', name: '관광/호텔' },
+    { id: 'logistics', name: '물류/운송' },
+    { id: 'energy', name: '에너지' },
+    { id: 'healthcare', name: '의료/건강' },
+    { id: 'education', name: '교육' },
+    { id: 'agriculture', name: '농업' },
+    { id: 'retail', name: '유통/소매' },
+    { id: 'construction', name: '건설' },
+    { id: 'media', name: '미디어/엔터테인먼트' },
     { id: 'defi', name: 'DeFi' },
     { id: 'nft', name: 'NFT' },
-    { id: 'gaming', name: '게임' }
+    { id: 'gaming', name: '게임' },
+    { id: 'other', name: '기타' }
   ]
 
   const statuses = [

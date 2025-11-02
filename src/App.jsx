@@ -4,6 +4,7 @@ import Invest from './pages/Invest'
 import Projects from './pages/Projects'
 import Statistics from './pages/Statistics'
 import Admin from './pages/Admin'
+import ProjectApplication from './pages/ProjectApplication'
 import ConnectionStatus from './components/ConnectionStatus'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/projects" element={<Projects />} />
         <Route path="/statistics" element={<Statistics />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/apply" element={<ProjectApplication />} />
       </Routes>
     </Router>
   )

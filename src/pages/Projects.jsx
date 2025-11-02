@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding, FaCode, FaGlobe } from 'react-icons/fa'
+import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding, FaCode, FaGlobe, FaFileAlt } from 'react-icons/fa'
 import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { projectService, statsService } from '../lib/supabase'
@@ -20,9 +21,25 @@ function Projects() {
   const categories = [
     { id: 'all', name: '전체', icon: FaRocket },
     { id: 'infrastructure', name: '인프라', icon: FaBuilding },
+    { id: 'it', name: 'IT/소프트웨어', icon: FaCode },
+    { id: 'manufacturing', name: '제조업', icon: FaBuilding },
+    { id: 'service', name: '서비스업', icon: FaGlobe },
+    { id: 'bio', name: '바이오/의료', icon: FaBuilding },
+    { id: 'finance', name: '금융', icon: FaChartLine },
+    { id: 'real_estate', name: '부동산', icon: FaBuilding },
+    { id: 'tourism', name: '관광/호텔', icon: FaGlobe },
+    { id: 'logistics', name: '물류/운송', icon: FaGlobe },
+    { id: 'energy', name: '에너지', icon: FaBuilding },
+    { id: 'healthcare', name: '의료/건강', icon: FaBuilding },
+    { id: 'education', name: '교육', icon: FaGlobe },
+    { id: 'agriculture', name: '농업', icon: FaBuilding },
+    { id: 'retail', name: '유통/소매', icon: FaGlobe },
+    { id: 'construction', name: '건설', icon: FaBuilding },
+    { id: 'media', name: '미디어/엔터', icon: FaGlobe },
     { id: 'defi', name: 'DeFi', icon: FaChartLine },
     { id: 'nft', name: 'NFT', icon: FaCode },
-    { id: 'gaming', name: '게임', icon: FaGlobe }
+    { id: 'gaming', name: '게임', icon: FaGlobe },
+    { id: 'other', name: '기타', icon: FaGlobe }
   ]
 
   // 프로젝트 상태별 색상
@@ -124,9 +141,16 @@ function Projects() {
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-8">
               개발 <span className="text-blue-300">프로젝트</span>
             </h1>
-            <p className="text-xl md:text-2xl text-blue-200 max-w-4xl mx-auto leading-relaxed mb-12">
+            <p className="text-xl md:text-2xl text-blue-200 max-w-4xl mx-auto leading-relaxed mb-8">
               기부금으로 개발되는 혁신적인 프로젝트들을 확인하고 투자 성과를 추적해보세요
             </p>
+            <Link
+              to="/apply"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300"
+            >
+              <FaFileAlt />
+              프로젝트 신청하기
+            </Link>
           </div>
         </section>
 
@@ -190,12 +214,21 @@ function Projects() {
                     ? '아직 등록된 프로젝트가 없습니다.' 
                     : '이 카테고리에 해당하는 프로젝트가 없습니다.'}
                 </p>
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300"
-                >
-                  전체 프로젝트 보기
-                </button>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => setSelectedCategory('all')}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300"
+                  >
+                    전체 프로젝트 보기
+                  </button>
+                  <Link
+                    to="/apply"
+                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300 flex items-center gap-2"
+                  >
+                    <FaFileAlt />
+                    프로젝트 신청하기
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

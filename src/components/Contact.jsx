@@ -1,5 +1,5 @@
 import Button from "./Button";
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe } from 'react-icons/fa';
+import { FaEnvelope, FaMapMarkerAlt, FaGlobe } from 'react-icons/fa';
 
 const Contact = () => {
   return (
@@ -29,16 +29,6 @@ const Contact = () => {
                   <div>
                     <div className="text-white font-semibold text-lg">Email</div>
                     <div className="text-blue-200">info@globalbusan.com</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                    <FaPhone className="text-white text-xl" />
-                  </div>
-                  <div>
-                    <div className="text-white font-semibold text-lg">Phone</div>
-                    <div className="text-blue-200">+82 51 123 4567</div>
                   </div>
                 </div>
 

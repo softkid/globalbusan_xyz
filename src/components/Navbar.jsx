@@ -1,24 +1,45 @@
 import { TiLocationArrow } from "react-icons/ti";
 import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaFileAlt, FaRoad, FaEnvelope } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { setLanguage, getLanguage, t } from "../lib/i18n";
 
 import Button from "./Button";
 
 const Navbar = ({ isAdmin = false }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState(getLanguage());
   const location = useLocation();
 
-  // 사용자용 메뉴 아이템
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      setCurrentLang(getLanguage());
+    };
+    window.addEventListener('languagechange', handleLanguageChange);
+    return () => window.removeEventListener('languagechange', handleLanguageChange);
+  }, []);
+
+  // 사용자용 메뉴 아이템 (i18n 적용)
   const userNavItems = [
-    { name: "Home", path: "/", icon: FaHome },
-    { name: "Projects", path: "/projects", icon: FaProjectDiagram },
-    { name: "Statistics", path: "/statistics", icon: FaChartLine },
-    { name: "Invest", path: "/invest", icon: FaBuilding }
+    { name: t('nav.home'), path: "/", icon: FaHome, key: 'home' },
+    { name: t('nav.projects'), path: "/projects", icon: FaProjectDiagram, key: 'projects' },
+    { name: t('nav.statistics'), path: "/statistics", icon: FaChartLine, key: 'statistics' },
+    { name: t('nav.invest'), path: "/invest", icon: FaBuilding, key: 'invest' }
   ];
 
   // 홈페이지용 앵커 링크 (스크롤)
-  const homeNavItems = ["Equity", "Reports", "Roadmap", "Contact"];
+  const homeNavItems = [
+    { name: t('nav.equity'), anchor: "equity" },
+    { name: t('nav.reports'), anchor: "reports" },
+    { name: t('nav.roadmap'), anchor: "roadmap" },
+    { name: t('nav.contact'), anchor: "contact" }
+  ];
+
+  const toggleLanguage = () => {
+    const newLang = currentLang === 'ko' ? 'en' : 'ko';
+    setLanguage(newLang);
+    setCurrentLang(newLang);
+  };
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -41,14 +62,25 @@ const Navbar = ({ isAdmin = false }) => {
               <span className="text-xl font-bold text-gray-800 hidden sm:block">Global BUSAN</span>
             </div>
 
-                  <Link to="/invest">
-                    <Button
-                      id="invest-button"
-                      title="Invest Now"
-                      rightIcon={<TiLocationArrow />}
-                      containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white md:flex hidden items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600"
-                    />
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    {/* 언어 전환 버튼 */}
+                    <button
+                      onClick={toggleLanguage}
+                      className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold text-gray-700 transition-colors duration-300"
+                      title={currentLang === 'ko' ? 'Switch to English' : '한국어로 전환'}
+                    >
+                      {currentLang === 'ko' ? 'EN' : '한'}
+                    </button>
+
+                    <Link to="/invest">
+                      <Button
+                        id="invest-button"
+                        title={t('nav.invest') + ' Now'}
+                        rightIcon={<TiLocationArrow />}
+                        containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white md:flex hidden items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600"
+                      />
+                    </Link>
+                  </div>
           </div>
 
           {/* Desktop Navigation Links */}
@@ -59,10 +91,10 @@ const Navbar = ({ isAdmin = false }) => {
                 homeNavItems.map((item, index) => (
                   <a
                     key={index}
-                    href={`#${item.toLowerCase()}`}
+                    href={`#${item.anchor}`}
                     className="nav-hover-btn"
                   >
-                    {item}
+                    {item.name}
                   </a>
                 ))
               ) : (
@@ -71,7 +103,7 @@ const Navbar = ({ isAdmin = false }) => {
                   const Icon = item.icon;
                   return (
                     <Link
-                      key={index}
+                      key={item.key || index}
                       to={item.path}
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
                         isActive(item.path)
@@ -113,11 +145,11 @@ const Navbar = ({ isAdmin = false }) => {
                 homeNavItems.map((item, index) => (
                   <a
                     key={index}
-                    href={`#${item.toLowerCase()}`}
+                    href={`#${item.anchor}`}
                     className="block text-lg font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300 py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {item}
+                    {item.name}
                   </a>
                 ))
               ) : (
@@ -126,7 +158,7 @@ const Navbar = ({ isAdmin = false }) => {
                   const Icon = item.icon;
                   return (
                     <Link
-                      key={index}
+                      key={item.key || index}
                       to={item.path}
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
                         isActive(item.path)
@@ -141,11 +173,21 @@ const Navbar = ({ isAdmin = false }) => {
                   );
                 })
               )}
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-200 space-y-3">
+                {/* 모바일 언어 전환 */}
+                <button
+                  onClick={() => {
+                    toggleLanguage();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold text-gray-700 transition-colors duration-300"
+                >
+                  {currentLang === 'ko' ? 'Switch to English' : '한국어로 전환'}
+                </button>
                 <Link to="/invest" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button
                     id="mobile-invest-button"
-                    title="Invest Now"
+                    title={t('nav.invest') + ' Now'}
                     rightIcon={<TiLocationArrow />}
                     containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white flex items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600 w-full"
                   />
