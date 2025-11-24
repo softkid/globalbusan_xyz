@@ -1,39 +1,65 @@
-import { TiLocationArrow } from "react-icons/ti";
-import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaFileAlt, FaRoad, FaEnvelope } from "react-icons/fa";
+import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaHandHoldingHeart, FaUser, FaSignOutAlt, FaInfoCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { setLanguage, getLanguage, t } from "../lib/i18n";
-
-import Button from "./Button";
 
 const Navbar = ({ isAdmin = false }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(getLanguage());
+  const [user, setUser] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleLanguageChange = () => {
       setCurrentLang(getLanguage());
     };
     window.addEventListener('languagechange', handleLanguageChange);
-    return () => window.removeEventListener('languagechange', handleLanguageChange);
-  }, []);
+    
+    // 로그인 정보 확인
+    const savedUser = localStorage.getItem('googleUser');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to parse saved user:', error);
+        localStorage.removeItem('googleUser');
+      }
+    }
+    
+    // 외부 클릭 시 사용자 메뉴 닫기
+    const handleClickOutside = (e) => {
+      if (showUserMenu && !e.target.closest('.user-menu-container')) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('languagechange', handleLanguageChange);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
 
-  // 사용자용 메뉴 아이템 (i18n 적용)
-  const userNavItems = [
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('googleUser');
+    setShowUserMenu(false);
+    navigate('/');
+  };
+
+  // 메인 네비게이션 메뉴 (모든 페이지에서 동일하게 사용)
+  const mainMenuItems = [
     { name: t('nav.home'), path: "/", icon: FaHome, key: 'home' },
     { name: t('nav.projects'), path: "/projects", icon: FaProjectDiagram, key: 'projects' },
     { name: t('nav.statistics'), path: "/statistics", icon: FaChartLine, key: 'statistics' },
     { name: t('nav.invest'), path: "/invest", icon: FaBuilding, key: 'invest' }
   ];
-
-  // 홈페이지용 앵커 링크 (스크롤)
-  const homeNavItems = [
-    { name: t('nav.equity'), anchor: "equity" },
-    { name: t('nav.reports'), anchor: "reports" },
-    { name: t('nav.roadmap'), anchor: "roadmap" },
-    { name: t('nav.contact'), anchor: "contact" }
-  ];
+  
+  // Roadmap 메뉴 아이템
+  const roadmapMenuItem = { name: t('nav.roadmap'), path: "/global-busan", icon: FaInfoCircle, key: 'roadmap' };
 
   const toggleLanguage = () => {
     const newLang = currentLang === 'ko' ? 'en' : 'ko';
@@ -53,71 +79,114 @@ const Navbar = ({ isAdmin = false }) => {
     <div className="fixed inset-x-0 top-0 z-50 h-16 bg-white/90 backdrop-blur-lg border-b border-gray-200">
       <header className="h-full">
         <nav className="flex h-full items-center justify-between px-5 sm:px-10">
-          {/* Logo and Invest button */}
+          {/* Logo */}
           <div className="flex items-center gap-7">
-            <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity duration-300">
               <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <FaGlobe className="text-white text-lg" />
               </div>
               <span className="text-xl font-bold text-gray-800 hidden sm:block">Global BUSAN</span>
-            </div>
-
-                  <div className="flex items-center gap-3">
-                    {/* 언어 전환 버튼 */}
-                    <button
-                      onClick={toggleLanguage}
-                      className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold text-gray-700 transition-colors duration-300"
-                      title={currentLang === 'ko' ? 'Switch to English' : '한국어로 전환'}
-                    >
-                      {currentLang === 'ko' ? 'EN' : '한'}
-                    </button>
-
-                    <Link to="/invest">
-                      <Button
-                        id="invest-button"
-                        title={t('nav.invest') + ' Now'}
-                        rightIcon={<TiLocationArrow />}
-                        containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white md:flex hidden items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600"
-                      />
-                    </Link>
-                  </div>
+            </Link>
           </div>
 
           {/* Desktop Navigation Links */}
           <div className="flex h-full items-center">
             <div className="hidden md:flex items-center space-x-1">
-              {location.pathname === '/' ? (
-                // 홈페이지에서는 앵커 링크 사용
-                homeNavItems.map((item, index) => (
-                  <a
-                    key={index}
-                    href={`#${item.anchor}`}
-                    className="nav-hover-btn"
+              {mainMenuItems.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.key || index}
+                    to={item.path}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
+                      isActive(item.path)
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                    }`}
                   >
+                    <Icon className="text-sm" />
                     {item.name}
-                  </a>
-                ))
-              ) : (
-                // 다른 페이지에서는 라우터 링크 사용
-                userNavItems.map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.key || index}
-                      to={item.path}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
-                        isActive(item.path)
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
-                      }`}
-                    >
-                      <Icon className="text-sm" />
-                      {item.name}
-                    </Link>
-                  );
-                })
-              )}
+                  </Link>
+                );
+              })}
             </div>
+          </div>
+
+          {/* 우측 메뉴: 한영변환, 로그인, Roadmap */}
+          <div className="flex items-center gap-3">
+            {/* 언어 전환 버튼 */}
+            <button
+              onClick={toggleLanguage}
+              className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold text-gray-700 transition-colors duration-300"
+              title={currentLang === 'ko' ? 'Switch to English' : '한국어로 전환'}
+            >
+              {currentLang === 'ko' ? 'EN' : '한'}
+            </button>
+
+            {/* 로그인 정보 */}
+            {user ? (
+              <div className="relative user-menu-container">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-300"
+                >
+                  {user.picture ? (
+                    <img
+                      src={user.picture}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <FaUser className="text-gray-600" />
+                  )}
+                  <span className="text-sm font-semibold text-gray-700 hidden md:block max-w-[100px] truncate">
+                    {user.name}
+                  </span>
+                </button>
+                
+                {/* 사용자 메뉴 드롭다운 */}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <div className="px-4 py-2 border-b border-gray-200">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-200"
+                    >
+                      <FaSignOutAlt />
+                      로그아웃
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/invest"
+                className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300"
+              >
+                로그인
+              </Link>
+            )}
+
+            {/* Roadmap 메뉴 */}
+            {(() => {
+              const Icon = roadmapMenuItem.icon;
+              return (
+                <Link
+                  to={roadmapMenuItem.path}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
+                    isActive(roadmapMenuItem.path)
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                  }`}
+                >
+                  <Icon className="text-sm" />
+                  {roadmapMenuItem.name}
+                </Link>
+              );
+            })()}
           </div>
 
           {/* Mobile Menu Button */}
@@ -140,39 +209,24 @@ const Navbar = ({ isAdmin = false }) => {
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-lg">
             <div className="px-5 py-4 space-y-2">
-              {location.pathname === '/' ? (
-                // 홈페이지에서는 앵커 링크 사용
-                homeNavItems.map((item, index) => (
-                  <a
-                    key={index}
-                    href={`#${item.anchor}`}
-                    className="block text-lg font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300 py-2"
+              {mainMenuItems.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.key || index}
+                    to={item.path}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
+                      isActive(item.path)
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                    }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
+                    <Icon className="text-lg" />
                     {item.name}
-                  </a>
-                ))
-              ) : (
-                // 다른 페이지에서는 라우터 링크 사용
-                userNavItems.map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.key || index}
-                      to={item.path}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
-                        isActive(item.path)
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
-                      }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Icon className="text-lg" />
-                      {item.name}
-                    </Link>
-                  );
-                })
-              )}
+                  </Link>
+                );
+              })}
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 {/* 모바일 언어 전환 */}
                 <button
@@ -184,14 +238,64 @@ const Navbar = ({ isAdmin = false }) => {
                 >
                   {currentLang === 'ko' ? 'Switch to English' : '한국어로 전환'}
                 </button>
-                <Link to="/invest" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button
-                    id="mobile-invest-button"
-                    title={t('nav.invest') + ' Now'}
-                    rightIcon={<TiLocationArrow />}
-                    containerClass="bg-gradient-to-r from-green-500 to-blue-500 text-white flex items-center justify-center gap-2 px-6 py-3 text-lg font-semibold hover:from-green-600 hover:to-blue-600 w-full"
-                  />
-                </Link>
+                
+                {/* 모바일 로그인 정보 */}
+                {user ? (
+                  <div className="px-4 py-3 bg-gray-100 rounded-lg mb-2">
+                    <div className="flex items-center gap-3 mb-2">
+                      {user.picture ? (
+                        <img
+                          src={user.picture}
+                          alt={user.name}
+                          className="w-10 h-10 rounded-full"
+                        />
+                      ) : (
+                        <FaUser className="text-gray-600 text-xl" />
+                      )}
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition-colors duration-300 flex items-center justify-center gap-2"
+                    >
+                      <FaSignOutAlt />
+                      로그아웃
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    to="/invest"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold text-center transition-colors duration-300"
+                  >
+                    로그인
+                  </Link>
+                )}
+                
+                {/* 모바일 Roadmap 메뉴 */}
+                {(() => {
+                  const Icon = roadmapMenuItem.icon;
+                  return (
+                    <Link
+                      to={roadmapMenuItem.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
+                        isActive(roadmapMenuItem.path)
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                      }`}
+                    >
+                      <Icon className="text-lg" />
+                      {roadmapMenuItem.name}
+                    </Link>
+                  );
+                })()}
               </div>
             </div>
           </div>

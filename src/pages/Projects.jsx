@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react'
-import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding, FaCode, FaGlobe, FaFileAlt } from 'react-icons/fa'
+import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding, FaCode, FaGlobe, FaFileAlt, FaGoogle, FaWallet } from 'react-icons/fa'
 import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useGoogleLogin } from '@react-oauth/google'
+import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { t } from '../lib/i18n'
 import { projectService, statsService } from '../lib/supabase'
 
 function Projects() {
+  const navigate = useNavigate()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, setUser] = useState(null)
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -17,9 +23,9 @@ function Projects() {
     totalProjects: 0
   })
 
-  // 카테고리별 필터링
+  // 카테고리별 필터링 (i18n 적용)
   const categories = [
-    { id: 'all', name: '전체', icon: FaRocket },
+    { id: 'all', name: t('projects.allCategories'), icon: FaRocket },
     { id: 'infrastructure', name: '인프라', icon: FaBuilding },
     { id: 'it', name: 'IT/소프트웨어', icon: FaCode },
     { id: 'manufacturing', name: '제조업', icon: FaBuilding },
@@ -55,14 +61,7 @@ function Projects() {
   }
 
   const getStatusText = (status) => {
-    switch (status) {
-      case 'planning': return '기획 중'
-      case 'development': return '개발 중'
-      case 'testing': return '테스트 중'
-      case 'launched': return '출시됨'
-      case 'completed': return '완료됨'
-      default: return '알 수 없음'
-    }
+    return t(`projects.status.${status}`) || status
   }
 
   // 암호화폐 아이콘
@@ -75,25 +74,78 @@ function Projects() {
     }
   }
 
-  // 프로젝트 데이터 로드
+  // Google 로그인
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfoResponse = await axios.get(
+          'https://www.googleapis.com/oauth2/v3/userinfo',
+          {
+            headers: {
+              Authorization: `Bearer ${tokenResponse.access_token}`
+            }
+          }
+        )
+
+        const userData = {
+          name: userInfoResponse.data.name,
+          email: userInfoResponse.data.email,
+          picture: userInfoResponse.data.picture || '',
+          sub: userInfoResponse.data.sub
+        }
+
+        setUser(userData)
+        setIsLoggedIn(true)
+        localStorage.setItem('googleUser', JSON.stringify(userData))
+        loadProjects(userData.email)
+      } catch (error) {
+        console.error('Failed to fetch user info:', error)
+        alert('사용자 정보를 가져오는데 실패했습니다.')
+      }
+    },
+    onError: (error) => {
+      console.error('Google login failed:', error)
+      alert('Google 로그인에 실패했습니다.')
+    }
+  })
+
+  // 프로젝트 데이터 로드 (모든 프로젝트 표시)
   useEffect(() => {
     loadProjects()
+    const savedUser = localStorage.getItem('googleUser')
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser)
+        setUser(userData)
+        setIsLoggedIn(true)
+      } catch (error) {
+        console.error('Failed to parse saved user:', error)
+        localStorage.removeItem('googleUser')
+      }
+    }
   }, [])
 
   const loadProjects = async () => {
     try {
       setLoading(true)
-      const [projectsData, statsData] = await Promise.all([
-        projectService.getProjects(),
-        statsService.getProjectStats()
-      ])
+      const projectsData = await projectService.getProjects()
       
-      setProjects(projectsData || [])
+      // 모든 프로젝트 표시
+      const allProjects = projectsData || []
+      setProjects(allProjects)
+      
+      // 통계는 모든 프로젝트 기준으로 계산
+      const totalBudget = allProjects.reduce((sum, p) => sum + parseFloat(p.budget || 0), 0)
+      const totalRaised = allProjects.reduce((sum, p) => sum + parseFloat(p.raised || 0), 0)
+      const avgReturn = allProjects.length > 0 
+        ? allProjects.reduce((sum, p) => sum + parseFloat(p.expected_return || 0), 0) / allProjects.length 
+        : 0
+      
       setStats({
-        totalBudget: statsData?.total_budget || 0,
-        totalRaised: statsData?.total_raised || 0,
-        averageReturn: statsData?.avg_expected_return || 0,
-        totalProjects: statsData?.total_projects || 0
+        totalBudget,
+        totalRaised,
+        averageReturn: avgReturn,
+        totalProjects: allProjects.length
       })
     } catch (error) {
       console.error('데이터 로드 실패:', error)
@@ -107,6 +159,48 @@ function Projects() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // 투자하기 버튼 클릭 핸들러
+  const handleInvestClick = async (projectId) => {
+    // 로그인 체크
+    if (!isLoggedIn) {
+      // 바로 구글 로그인 실행
+      handleGoogleLogin()
+      return
+    }
+
+    // 지갑 연결 체크
+    let walletAddress = ''
+    let isWalletConnected = false
+
+    try {
+      // MetaMask 우선 시도
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        })
+        walletAddress = accounts[0]
+        isWalletConnected = true
+      } else if (window.solana && window.solana.isPhantom) {
+        // Solana 지갑 시도
+        const response = await window.solana.connect()
+        walletAddress = response.publicKey.toString()
+        isWalletConnected = true
+      }
+    } catch (error) {
+      console.error('지갑 연결 실패:', error)
+      alert('지갑 연결이 필요합니다. 지갑을 연결한 후 다시 시도해주세요.')
+      return
+    }
+
+    if (!isWalletConnected || !walletAddress) {
+      alert('지갑 연결이 필요합니다. 지갑을 연결한 후 다시 시도해주세요.')
+      return
+    }
+
+    // 투자 페이지로 이동 (프로젝트 ID 포함)
+    navigate(`/invest?projectId=${projectId}`)
   }
 
   // 필터링된 프로젝트
@@ -124,7 +218,7 @@ function Projects() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <div className="text-white text-xl">프로젝트를 불러오는 중...</div>
+          <div className="text-white text-xl">{t('common.loading')}</div>
         </div>
       </div>
     )
@@ -139,18 +233,21 @@ function Projects() {
         <section className="py-20 text-center">
           <div className="container mx-auto px-5 sm:px-10">
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-8">
-              개발 <span className="text-blue-300">프로젝트</span>
+              {t('projects.title')} <span className="text-blue-300">{t('projects.subtitle')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-blue-200 max-w-4xl mx-auto leading-relaxed mb-8">
-              기부금으로 개발되는 혁신적인 프로젝트들을 확인하고 투자 성과를 추적해보세요
+              {t('projects.description')}
             </p>
-            <Link
-              to="/apply"
-              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300"
-            >
-              <FaFileAlt />
-              프로젝트 신청하기
-            </Link>
+            
+            {isLoggedIn && (
+              <button
+                onClick={() => navigate('/apply')}
+                className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300"
+              >
+                <FaFileAlt />
+                {t('projects.applyProject')}
+              </button>
+            )}
           </div>
         </section>
 
@@ -208,26 +305,30 @@ function Projects() {
             {filteredProjects.length === 0 ? (
               <div className="text-center py-20">
                 <div className="text-6xl mb-6">📊</div>
-                <h3 className="text-3xl font-bold text-white mb-4">프로젝트가 없습니다</h3>
+                <h3 className="text-3xl font-bold text-white mb-4">{t('projects.noProjects')}</h3>
                 <p className="text-blue-200 text-lg mb-8">
-                  {selectedCategory === 'all' 
-                    ? '아직 등록된 프로젝트가 없습니다.' 
-                    : '이 카테고리에 해당하는 프로젝트가 없습니다.'}
+                  {isLoggedIn 
+                    ? t('projects.noProjects') 
+                    : '로그인하여 신청한 프로젝트를 확인하세요.'}
                 </p>
                 <div className="flex gap-4 justify-center">
-                  <button
-                    onClick={() => setSelectedCategory('all')}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300"
-                  >
-                    전체 프로젝트 보기
-                  </button>
-                  <Link
-                    to="/apply"
-                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300 flex items-center gap-2"
-                  >
-                    <FaFileAlt />
-                    프로젝트 신청하기
-                  </Link>
+                  {isLoggedIn ? (
+                    <button
+                      onClick={() => navigate('/apply')}
+                      className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300 flex items-center gap-2"
+                    >
+                      <FaFileAlt />
+                      {t('projects.applyProject')}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleGoogleLogin}
+                      className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300 flex items-center gap-2"
+                    >
+                      <FaGoogle />
+                      Google로 로그인
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
@@ -311,10 +412,16 @@ function Projects() {
 
                     {/* 액션 버튼 */}
                     <div className="flex gap-3">
-                      <button className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-xl font-semibold transition-all duration-300">
+                      <button 
+                        onClick={() => navigate(`/projects/${project.id}`)}
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-xl font-semibold transition-all duration-300"
+                      >
                         자세히 보기
                       </button>
-                      <button className="px-6 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold transition-all duration-300">
+                      <button 
+                        onClick={() => handleInvestClick(project.id)}
+                        className="px-6 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold transition-all duration-300"
+                      >
                         투자하기
                       </button>
                     </div>

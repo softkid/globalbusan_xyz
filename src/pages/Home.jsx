@@ -5,12 +5,14 @@ import Footer from '../components/Footer'
 import EquityStructure from '../components/EquityStructure'
 import Reports from '../components/Reports'
 import Roadmap from '../components/Roadmap'
+import Donors from '../components/Donors'
 
 function Home() {
   return (
     <main className='relative min-h-screen w-screen overflow-x-hidden'>
       <Navbar/>
       <Hero/>
+      <Donors/>
       <EquityStructure/>
       <Reports/>
       <Roadmap/>

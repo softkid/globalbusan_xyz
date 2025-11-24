@@ -12,6 +12,7 @@
   "dependencies": {
     "@google-cloud/firestore": "^7.11.6",
     "@gsap/react": "^2.1.1",
+    "@react-oauth/google": "^0.12.2",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-react": "^0.15.39",
     "@solana/wallet-adapter-react-ui": "^0.9.39",
@@ -23,6 +24,7 @@
     "@web3-react/core": "^8.2.3",
     "@web3-react/injected-connector": "^6.0.7",
     "@web3-react/walletconnect-connector": "^6.2.13",
+    "axios": "^1.13.1",
     "clsx": "^2.1.1",
     "ethers": "^6.15.0",
     "firebase": "^12.3.0",
