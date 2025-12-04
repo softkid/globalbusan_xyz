@@ -5,20 +5,21 @@ import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { t } from '../lib/i18n'
+import { useTranslation } from 'react-i18next'
 import { projectService, investmentService } from '../lib/supabase'
 
 function Invest() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   // 인증 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState(null)
-  
+
   // 프로젝트 데이터
   const [newProjects, setNewProjects] = useState([])
   const [featuredProjects, setFeaturedProjects] = useState([])
   const [loading, setLoading] = useState(true)
-  
+
   // 투자/기부 내역
   const [investments, setInvestments] = useState([])
   const [donations, setDonations] = useState([])
@@ -45,15 +46,15 @@ function Invest() {
     try {
       setLoading(true)
       const projectsData = await projectService.getProjects()
-      
+
       // 신규 프로젝트 (최근 생성된 순으로 정렬, 최대 3개)
-      const sortedByDate = [...(projectsData || [])].sort((a, b) => 
+      const sortedByDate = [...(projectsData || [])].sort((a, b) =>
         new Date(b.created_at) - new Date(a.created_at)
       )
       setNewProjects(sortedByDate.slice(0, 3))
-      
+
       // 유망 프로젝트 (예상 수익률 높은 순으로 정렬, 최대 3개)
-      const sortedByReturn = [...(projectsData || [])].sort((a, b) => 
+      const sortedByReturn = [...(projectsData || [])].sort((a, b) =>
         (b.expected_return || 0) - (a.expected_return || 0)
       )
       setFeaturedProjects(sortedByReturn.slice(0, 3))
@@ -68,17 +69,17 @@ function Invest() {
 
   const loadUserHistory = async (userEmail) => {
     if (!userEmail) return
-    
+
     try {
       setLoadingHistory(true)
       // 실제로는 사용자 이메일로 투자/기부 내역 조회
       const investmentsData = await investmentService.getInvestments()
       // 사용자의 투자 내역 필터링 (실제로는 API에서 필터링)
       setInvestments(investmentsData || [])
-      
+
       // 기부 내역은 별도로 관리 (실제로는 기부 테이블에서 조회)
       setDonations([])
-      
+
       // 프로젝트 참여 내역 (실제로는 신청한 프로젝트 조회)
       setParticipations([])
     } catch (error) {
@@ -132,16 +133,16 @@ function Invest() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <Navbar />
-      
+
       <main className="pt-20">
         {/* Hero Section */}
         <section className="py-20 text-center">
           <div className="container mx-auto px-5 sm:px-10">
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-8">
-              내 정보 <span className="text-blue-300">My Information</span>
+              {t('invest.myInfo')}
             </h1>
             <p className="text-xl md:text-2xl text-blue-200 max-w-4xl mx-auto leading-relaxed mb-12">
-              투자 및 기부 내역을 확인하고 프로젝트를 탐색하세요
+              {t('invest.description')}
             </p>
           </div>
         </section>
@@ -156,13 +157,13 @@ function Invest() {
                     <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
                       <FaGoogle className="text-white text-2xl" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-4">먼저 로그인하세요</h3>
-                    <p className="text-blue-200 mb-6">투자 및 기부 내역을 확인하려면 로그인이 필요합니다</p>
+                    <h3 className="text-2xl font-bold text-white mb-4">{t('invest.loginRequired')}</h3>
+                    <p className="text-blue-200 mb-6">{t('invest.loginDescription')}</p>
                     <button
                       onClick={handleGoogleLogin}
                       className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-300 w-full"
                     >
-                      Google로 로그인
+                      {t('invest.loginWithGoogle')}
                     </button>
                   </div>
                 </div>
@@ -209,14 +210,14 @@ function Invest() {
                 <div className="max-w-6xl mx-auto">
                   <div className="flex items-center justify-between mb-8">
                     <h2 className="text-4xl font-bold text-white">{t('invest.newProjects')}</h2>
-                    <Link 
+                    <Link
                       to="/projects"
                       className="text-blue-300 hover:text-blue-200 flex items-center gap-2 transition-colors duration-300"
                     >
                       {t('common.viewAll')} <FaArrowRight />
                     </Link>
                   </div>
-                  
+
                   {loading ? (
                     <div className="text-center py-12">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -244,7 +245,7 @@ function Invest() {
                             className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2"
                           >
                             <FaEye />
-                            상세보기
+                            {t('common.viewDetails')}
                           </button>
                         </div>
                       ))}
@@ -260,14 +261,14 @@ function Invest() {
                 <div className="max-w-6xl mx-auto">
                   <div className="flex items-center justify-between mb-8">
                     <h2 className="text-4xl font-bold text-white">{t('invest.featuredProjects')}</h2>
-                    <Link 
+                    <Link
                       to="/projects"
                       className="text-blue-300 hover:text-blue-200 flex items-center gap-2 transition-colors duration-300"
                     >
                       {t('common.viewAll')} <FaArrowRight />
                     </Link>
                   </div>
-                  
+
                   {loading ? (
                     <div className="text-center py-12">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -295,7 +296,7 @@ function Invest() {
                             className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2"
                           >
                             <FaEye />
-                            상세보기
+                            {t('common.viewDetails')}
                           </button>
                         </div>
                       ))}
@@ -316,7 +317,7 @@ function Invest() {
                         <FaBuilding className="text-3xl text-blue-400" />
                         <h3 className="text-2xl font-bold text-white">{t('invest.myInvestments')}</h3>
                       </div>
-                      
+
                       {loadingHistory ? (
                         <div className="text-center py-8">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
@@ -329,7 +330,7 @@ function Invest() {
                             onClick={() => navigate('/projects')}
                             className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold transition-colors duration-300"
                           >
-                            지금 투자하기 <FaArrowRight />
+                            {t('invest.investNow')} <FaArrowRight />
                           </button>
                         </div>
                       ) : (
@@ -348,10 +349,9 @@ function Invest() {
                                     {new Date(investment.investment_date).toLocaleDateString('ko-KR')}
                                   </div>
                                 </div>
-                                <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${
-                                  investment.status === 'confirmed' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                                }`}>
-                                  {investment.status === 'confirmed' ? '완료' : '대기중'}
+                                <span className={`px-3 py-1 rounded-lg text-sm font-semibold ${investment.status === 'confirmed' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                                  }`}>
+                                  {investment.status === 'confirmed' ? t('common.status.completed') : t('common.status.pending')}
                                 </span>
                               </div>
                             </div>
@@ -361,7 +361,7 @@ function Invest() {
                               onClick={() => navigate('/projects')}
                               className="w-full inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300"
                             >
-                              지금 투자하기 <FaArrowRight />
+                              {t('invest.investNow')} <FaArrowRight />
                             </button>
                           </div>
                           {investments.length > 5 && (
@@ -382,7 +382,7 @@ function Invest() {
                         <FaHandHoldingHeart className="text-3xl text-pink-400" />
                         <h3 className="text-2xl font-bold text-white">{t('invest.myDonations')}</h3>
                       </div>
-                      
+
                       {loadingHistory ? (
                         <div className="text-center py-8">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
@@ -412,7 +412,7 @@ function Invest() {
                                   </div>
                                 </div>
                                 <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-sm font-semibold">
-                                  완료
+                                  {t('common.status.completed')}
                                 </span>
                               </div>
                             </div>
@@ -443,11 +443,10 @@ function Invest() {
                             <h4 className="text-white font-semibold mb-2">{project.title}</h4>
                             <p className="text-blue-200 text-sm mb-3 line-clamp-2">{project.description}</p>
                             <div className="flex items-center justify-between">
-                              <span className={`px-3 py-1 rounded-lg text-xs font-semibold ${
-                                project.status === 'development' ? 'bg-blue-500/20 text-blue-400' :
-                                project.status === 'launched' ? 'bg-green-500/20 text-green-400' :
-                                'bg-yellow-500/20 text-yellow-400'
-                              }`}>
+                              <span className={`px-3 py-1 rounded-lg text-xs font-semibold ${project.status === 'development' ? 'bg-blue-500/20 text-blue-400' :
+                                  project.status === 'launched' ? 'bg-green-500/20 text-green-400' :
+                                    'bg-yellow-500/20 text-yellow-400'
+                                }`}>
                                 {t(`projects.status.${project.status}`)}
                               </span>
                               <span className="text-blue-200 text-sm">{project.progress}%</span>

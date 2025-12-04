@@ -7,16 +7,17 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { t } from '../lib/i18n'
+import { useTranslation } from 'react-i18next'
 import { statsService, expenseService } from '../lib/supabase'
 
 function Donation() {
+  const { t } = useTranslation()
   // 인증 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [user, setUser] = useState(null)
   const [walletAddress, setWalletAddress] = useState('')
-  
+
   // 기부 정보
   const [donationAmount, setDonationAmount] = useState('')
   const [selectedCrypto, setSelectedCrypto] = useState('ETH')
@@ -89,12 +90,12 @@ function Donation() {
         localStorage.setItem('googleUser', JSON.stringify(userData))
       } catch (error) {
         console.error('Failed to fetch user info:', error)
-        alert('사용자 정보를 가져오는데 실패했습니다.')
+        alert(t('common.error'))
       }
     },
     onError: (error) => {
       console.error('Google login failed:', error)
-      alert('Google 로그인에 실패했습니다.')
+      alert(t('common.error'))
     }
   })
 
@@ -110,7 +111,7 @@ function Donation() {
   // 지갑 연결
   const handleWalletConnect = async (walletType = 'metamask') => {
     if (!isLoggedIn) {
-      alert('먼저 Google 로그인을 완료해주세요.')
+      alert(t('invest.loginRequired'))
       return
     }
 
@@ -129,7 +130,7 @@ function Donation() {
           setWalletAddress(accounts[0])
           setIsWalletConnected(true)
         } else {
-          alert('Coinbase Wallet이 설치되지 않았습니다.')
+          alert(t('donation.installWallet'))
         }
       } else if (walletType === 'solana') {
         if (window.solana && window.solana.isPhantom) {
@@ -137,26 +138,26 @@ function Donation() {
           setWalletAddress(response.publicKey.toString())
           setIsWalletConnected(true)
         } else {
-          alert('Phantom 지갑이 설치되지 않았습니다.')
+          alert(t('donation.installWallet'))
         }
       } else {
-        alert('지갑이 설치되지 않았습니다.')
+        alert(t('donation.installWallet'))
       }
     } catch (error) {
       console.error('Wallet connection failed:', error)
-      alert('지갑 연결에 실패했습니다.')
+      alert(t('common.error'))
     }
   }
 
   // 기부 처리
   const handleDonation = async () => {
     if (!donationAmount || !walletAddress) {
-      alert('기부 금액과 지갑 주소를 확인해주세요.')
+      alert(t('donation.checkAmountAndAddress'))
       return
     }
 
     setIsDonating(true)
-    
+
     try {
       const mockTransaction = {
         id: Date.now().toString(),
@@ -169,10 +170,10 @@ function Donation() {
 
       setDonationHistory(prev => [mockTransaction, ...prev])
       setDonationAmount('')
-      alert('기부가 성공적으로 완료되었습니다!')
+      alert(t('donation.donationSuccess'))
     } catch (error) {
       console.error('Donation failed:', error)
-      alert('기부 처리 중 오류가 발생했습니다.')
+      alert(t('donation.donationError'))
     } finally {
       setIsDonating(false)
     }
@@ -200,7 +201,7 @@ function Donation() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <Navbar />
-      
+
       <main className="pt-20">
         {/* Hero Section */}
         <section className="py-20 text-center">
@@ -231,13 +232,13 @@ function Donation() {
                   } else if (window.solana && window.solana.isPhantom) {
                     handleWalletConnect('solana')
                   } else {
-                    alert('지갑을 설치해주세요.')
+                    alert(t('donation.installWallet'))
                   }
                 }}
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-300"
               >
                 <FaWallet className="text-xl" />
-                지갑 연결하기
+                {t('common.connectWallet')}
               </button>
             )}
           </div>
@@ -253,13 +254,13 @@ function Donation() {
                     <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
                       <FaGoogle className="text-white text-2xl" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-4">먼저 로그인하세요</h3>
-                    <p className="text-blue-200 mb-6">안전하고 빠른 Google 로그인으로 시작하세요</p>
+                    <h3 className="text-2xl font-bold text-white mb-4">{t('invest.loginRequired')}</h3>
+                    <p className="text-blue-200 mb-6">{t('donation.loginDescription')}</p>
                     <button
                       onClick={handleGoogleLogin}
                       className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-300 w-full"
                     >
-                      Google로 로그인
+                      {t('common.loginWithGoogle')}
                     </button>
                   </div>
                 </div>
@@ -276,9 +277,9 @@ function Donation() {
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
                   <div className="text-center mb-6">
                     {user?.picture ? (
-                      <img 
-                        src={user.picture} 
-                        alt={user.name} 
+                      <img
+                        src={user.picture}
+                        alt={user.name}
                         className="w-16 h-16 rounded-full mx-auto mb-4 border-2 border-green-400"
                       />
                     ) : (
@@ -286,23 +287,23 @@ function Donation() {
                         <FaCheckCircle className="text-white text-xl" />
                       </div>
                     )}
-                    <p className="text-green-400 font-semibold mb-2">로그인 완료</p>
+                    <p className="text-green-400 font-semibold mb-2">{t('donation.loginCompleted')}</p>
                     <p className="text-white text-sm font-semibold mb-1">{user?.name}</p>
                     <p className="text-blue-200 text-xs">{user?.email}</p>
                     <button
                       onClick={handleLogout}
                       className="mt-3 text-red-400 hover:text-red-300 text-xs underline transition-colors duration-200"
                     >
-                      다른 계정으로 로그인
+                      {t('donation.loginDifferentAccount')}
                     </button>
                   </div>
-                  
+
                   <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <FaWallet className="text-white text-2xl" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-4 text-center">지갑 연결</h3>
-                  <p className="text-blue-200 mb-6 text-center">다양한 지갑을 지원합니다</p>
-                  
+                  <h3 className="text-2xl font-bold text-white mb-4 text-center">{t('common.connectWallet')}</h3>
+                  <p className="text-blue-200 mb-6 text-center">{t('donation.supportedWallets')}</p>
+
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => handleWalletConnect('metamask')}
@@ -342,7 +343,7 @@ function Donation() {
               <div className="max-w-2xl mx-auto">
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
                   <h3 className="text-3xl font-bold text-white text-center mb-8">{t('donation.donateNow')}</h3>
-                  
+
                   {/* Crypto Selection */}
                   <div className="mb-6">
                     <label className="block text-white font-semibold mb-3">{t('donation.selectCrypto')}</label>
@@ -355,11 +356,10 @@ function Donation() {
                         <button
                           key={crypto.symbol}
                           onClick={() => setSelectedCrypto(crypto.symbol)}
-                          className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                            selectedCrypto === crypto.symbol
+                          className={`p-4 rounded-xl border-2 transition-all duration-300 ${selectedCrypto === crypto.symbol
                               ? 'border-blue-400 bg-blue-500/20'
                               : 'border-white/20 hover:border-white/40'
-                          }`}
+                            }`}
                         >
                           <crypto.icon className={`text-2xl ${crypto.color.replace('bg-', 'text-')} mx-auto mb-2`} />
                           <div className="text-white font-semibold">{crypto.symbol}</div>
@@ -382,21 +382,21 @@ function Donation() {
                           <button
                             onClick={() => copyAddress(selectedCrypto)}
                             className="p-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors duration-300"
-                            title="주소 복사"
+                            title={t('donation.copyAddress')}
                           >
                             <FaCopy className="text-white text-sm" />
                           </button>
                           <button
                             onClick={() => setShowQRCode(!showQRCode)}
                             className="p-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors duration-300"
-                            title="QR 코드 보기"
+                            title={t('donation.viewQRCode')}
                           >
                             <FaQrcode className="text-white text-sm" />
                           </button>
                         </div>
                       </div>
                       {copiedAddress === selectedCrypto && (
-                        <p className="text-green-400 text-sm mt-2">주소가 복사되었습니다!</p>
+                        <p className="text-green-400 text-sm mt-2">{t('donation.addressCopied')}</p>
                       )}
                     </div>
                   </div>
@@ -422,7 +422,7 @@ function Donation() {
                     {isDonating ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        처리 중...
+                        {t('donation.processing')}
                       </>
                     ) : (
                       <>
@@ -443,7 +443,7 @@ function Donation() {
             <div className="max-w-6xl mx-auto">
               <h2 className="text-4xl font-bold text-white text-center mb-4">{t('donation.usageTitle')}</h2>
               <p className="text-blue-200 text-center mb-12">{t('donation.usageDescription')}</p>
-              
+
               {loadingUsage ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -481,7 +481,7 @@ function Donation() {
             <div className="container mx-auto px-5 sm:px-10">
               <div className="max-w-6xl mx-auto">
                 <h3 className="text-4xl font-bold text-white text-center mb-12">{t('donation.myDonations')}</h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                   <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                     <FaChartLine className="text-4xl text-green-400 mx-auto mb-4" />
@@ -491,12 +491,12 @@ function Donation() {
                   <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                     <FaHistory className="text-4xl text-blue-400 mx-auto mb-4" />
                     <div className="text-3xl font-bold text-white mb-2">{donationCount}</div>
-                    <div className="text-blue-200">기부 횟수</div>
+                    <div className="text-blue-200">{t('donation.donationCount')}</div>
                   </div>
                 </div>
 
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-                  <h4 className="text-2xl font-bold text-white mb-6">기부 내역</h4>
+                  <h4 className="text-2xl font-bold text-white mb-6">{t('donation.donationHistory')}</h4>
                   <div className="space-y-4">
                     {donationHistory.map((transaction) => (
                       <div key={transaction.id} className="bg-white/5 rounded-xl p-4 border border-white/10">
@@ -510,7 +510,7 @@ function Donation() {
                             </div>
                           </div>
                           <div className="text-green-400 font-semibold">
-                            {transaction.status === 'completed' ? '완료' : '처리중'}
+                            {transaction.status === 'completed' ? t('common.status.completed') : t('common.status.pending')}
                           </div>
                         </div>
                       </div>
@@ -527,21 +527,21 @@ function Donation() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-8 max-w-sm mx-4">
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">QR 코드</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('donation.qrCode')}</h3>
                 <div className="bg-gray-100 rounded-xl p-8 mb-4">
                   <div className="w-48 h-48 mx-auto bg-white rounded-lg flex items-center justify-center">
                     <div className="text-gray-500 text-sm text-center">
-                      QR 코드 생성 중...<br />
-                      (실제 구현에서는 QR 라이브러리 사용)
+                      {t('donation.generatingQRCode')}<br />
+                      {t('donation.qrCodePlaceholder')}
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-600 mb-4">{selectedCrypto} 주소를 스캔하세요</p>
+                <p className="text-gray-600 mb-4">{selectedCrypto} {t('donation.scanAddress')}</p>
                 <button
                   onClick={() => setShowQRCode(false)}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors duration-300"
                 >
-                  닫기
+                  {t('common.close')}
                 </button>
               </div>
             </div>

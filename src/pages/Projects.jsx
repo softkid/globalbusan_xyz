@@ -6,11 +6,12 @@ import { useGoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { t } from '../lib/i18n'
+import { useTranslation } from 'react-i18next'
 import { projectService, statsService } from '../lib/supabase'
 
 function Projects() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState(null)
   const [projects, setProjects] = useState([])
@@ -25,27 +26,27 @@ function Projects() {
 
   // 카테고리별 필터링 (i18n 적용)
   const categories = [
-    { id: 'all', name: t('projects.allCategories'), icon: FaRocket },
-    { id: 'infrastructure', name: '인프라', icon: FaBuilding },
-    { id: 'it', name: 'IT/소프트웨어', icon: FaCode },
-    { id: 'manufacturing', name: '제조업', icon: FaBuilding },
-    { id: 'service', name: '서비스업', icon: FaGlobe },
-    { id: 'bio', name: '바이오/의료', icon: FaBuilding },
-    { id: 'finance', name: '금융', icon: FaChartLine },
-    { id: 'real_estate', name: '부동산', icon: FaBuilding },
-    { id: 'tourism', name: '관광/호텔', icon: FaGlobe },
-    { id: 'logistics', name: '물류/운송', icon: FaGlobe },
-    { id: 'energy', name: '에너지', icon: FaBuilding },
-    { id: 'healthcare', name: '의료/건강', icon: FaBuilding },
-    { id: 'education', name: '교육', icon: FaGlobe },
-    { id: 'agriculture', name: '농업', icon: FaBuilding },
-    { id: 'retail', name: '유통/소매', icon: FaGlobe },
-    { id: 'construction', name: '건설', icon: FaBuilding },
-    { id: 'media', name: '미디어/엔터', icon: FaGlobe },
-    { id: 'defi', name: 'DeFi', icon: FaChartLine },
-    { id: 'nft', name: 'NFT', icon: FaCode },
-    { id: 'gaming', name: '게임', icon: FaGlobe },
-    { id: 'other', name: '기타', icon: FaGlobe }
+    { id: 'all', name: t('projects.categories.all'), icon: FaRocket },
+    { id: 'infrastructure', name: t('projects.categories.infrastructure'), icon: FaBuilding },
+    { id: 'it', name: t('projects.categories.it'), icon: FaCode },
+    { id: 'manufacturing', name: t('projects.categories.manufacturing'), icon: FaBuilding },
+    { id: 'service', name: t('projects.categories.service'), icon: FaGlobe },
+    { id: 'bio', name: t('projects.categories.bio'), icon: FaBuilding },
+    { id: 'finance', name: t('projects.categories.finance'), icon: FaChartLine },
+    { id: 'real_estate', name: t('projects.categories.real_estate'), icon: FaBuilding },
+    { id: 'tourism', name: t('projects.categories.tourism'), icon: FaGlobe },
+    { id: 'logistics', name: t('projects.categories.logistics'), icon: FaGlobe },
+    { id: 'energy', name: t('projects.categories.energy'), icon: FaBuilding },
+    { id: 'healthcare', name: t('projects.categories.healthcare'), icon: FaBuilding },
+    { id: 'education', name: t('projects.categories.education'), icon: FaGlobe },
+    { id: 'agriculture', name: t('projects.categories.agriculture'), icon: FaBuilding },
+    { id: 'retail', name: t('projects.categories.retail'), icon: FaGlobe },
+    { id: 'construction', name: t('projects.categories.construction'), icon: FaBuilding },
+    { id: 'media', name: t('projects.categories.media'), icon: FaGlobe },
+    { id: 'defi', name: t('projects.categories.defi'), icon: FaChartLine },
+    { id: 'nft', name: t('projects.categories.nft'), icon: FaCode },
+    { id: 'gaming', name: t('projects.categories.gaming'), icon: FaGlobe },
+    { id: 'other', name: t('projects.categories.other'), icon: FaGlobe }
   ]
 
   // 프로젝트 상태별 색상
@@ -129,18 +130,18 @@ function Projects() {
     try {
       setLoading(true)
       const projectsData = await projectService.getProjects()
-      
+
       // 모든 프로젝트 표시
       const allProjects = projectsData || []
       setProjects(allProjects)
-      
+
       // 통계는 모든 프로젝트 기준으로 계산
       const totalBudget = allProjects.reduce((sum, p) => sum + parseFloat(p.budget || 0), 0)
       const totalRaised = allProjects.reduce((sum, p) => sum + parseFloat(p.raised || 0), 0)
-      const avgReturn = allProjects.length > 0 
-        ? allProjects.reduce((sum, p) => sum + parseFloat(p.expected_return || 0), 0) / allProjects.length 
+      const avgReturn = allProjects.length > 0
+        ? allProjects.reduce((sum, p) => sum + parseFloat(p.expected_return || 0), 0) / allProjects.length
         : 0
-      
+
       setStats({
         totalBudget,
         totalRaised,
@@ -204,8 +205,8 @@ function Projects() {
   }
 
   // 필터링된 프로젝트
-  const filteredProjects = selectedCategory === 'all' 
-    ? projects 
+  const filteredProjects = selectedCategory === 'all'
+    ? projects
     : projects.filter(project => project.category === selectedCategory)
 
   // 통계 계산 (이제 서버에서 가져온 데이터 사용)
@@ -227,7 +228,7 @@ function Projects() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <Navbar />
-      
+
       <main className="pt-20">
         {/* Hero Section */}
         <section className="py-20 text-center">
@@ -238,7 +239,7 @@ function Projects() {
             <p className="text-xl md:text-2xl text-blue-200 max-w-4xl mx-auto leading-relaxed mb-8">
               {t('projects.description')}
             </p>
-            
+
             {isLoggedIn && (
               <button
                 onClick={() => navigate('/apply')}
@@ -258,17 +259,17 @@ function Projects() {
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaDollarSign className="text-4xl text-green-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">${totalBudget.toLocaleString()}</div>
-                <div className="text-blue-200">총 예산</div>
+                <div className="text-blue-200">{t('projects.totalBudget')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaChartLine className="text-4xl text-blue-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">${totalRaised.toLocaleString()}</div>
-                <div className="text-blue-200">모금된 금액</div>
+                <div className="text-blue-200">{t('projects.totalRaised')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaRocket className="text-4xl text-purple-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">{averageReturn.toFixed(1)}%</div>
-                <div className="text-blue-200">평균 예상 수익률</div>
+                <div className="text-blue-200">{t('projects.averageReturn')}</div>
               </div>
             </div>
           </div>
@@ -284,11 +285,10 @@ function Projects() {
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                      selectedCategory === category.id
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${selectedCategory === category.id
                         ? 'bg-blue-500 text-white'
                         : 'bg-white/10 text-blue-200 hover:bg-white/20'
-                    }`}
+                      }`}
                   >
                     <Icon className="text-lg" />
                     {category.name}
@@ -307,9 +307,9 @@ function Projects() {
                 <div className="text-6xl mb-6">📊</div>
                 <h3 className="text-3xl font-bold text-white mb-4">{t('projects.noProjects')}</h3>
                 <p className="text-blue-200 text-lg mb-8">
-                  {isLoggedIn 
-                    ? t('projects.noProjects') 
-                    : '로그인하여 신청한 프로젝트를 확인하세요.'}
+                  {isLoggedIn
+                    ? t('projects.noProjects')
+                    : t('projects.loginToView')}
                 </p>
                 <div className="flex gap-4 justify-center">
                   {isLoggedIn ? (
@@ -326,7 +326,7 @@ function Projects() {
                       className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300 flex items-center gap-2"
                     >
                       <FaGoogle />
-                      Google로 로그인
+                      {t('common.loginWithGoogle')}
                     </button>
                   )}
                 </div>
@@ -334,100 +334,100 @@ function Projects() {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {filteredProjects.map((project) => {
-                const CryptoIcon = getCryptoIcon(project.crypto_type)
-                const progressPercentage = (project.raised / project.budget) * 100
-                
-                return (
-                  <div key={project.id} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                    {/* 프로젝트 헤더 */}
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
-                        <p className="text-blue-200 mb-4">{project.description}</p>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span className={`px-3 py-1 rounded-full text-white ${getStatusColor(project.status)}`}>
-                            {getStatusText(project.status)}
-                          </span>
-                          <span className="text-blue-200 flex items-center gap-1">
-                            <FaCalendarAlt className="text-xs" />
-                            {project.timeline}
-                          </span>
-                          <span className="text-blue-200 flex items-center gap-1">
-                            <FaUsers className="text-xs" />
-                            {project.team_size}명
-                          </span>
+                  const CryptoIcon = getCryptoIcon(project.crypto_type)
+                  const progressPercentage = (project.raised / project.budget) * 100
+
+                  return (
+                    <div key={project.id} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                      {/* 프로젝트 헤더 */}
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
+                          <p className="text-blue-200 mb-4">{project.description}</p>
+                          <div className="flex items-center gap-4 text-sm">
+                            <span className={`px-3 py-1 rounded-full text-white ${getStatusColor(project.status)}`}>
+                              {getStatusText(project.status)}
+                            </span>
+                            <span className="text-blue-200 flex items-center gap-1">
+                              <FaCalendarAlt className="text-xs" />
+                              {project.timeline}
+                            </span>
+                            <span className="text-blue-200 flex items-center gap-1">
+                              <FaUsers className="text-xs" />
+                              {project.team_size}명
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          <CryptoIcon className="text-2xl text-blue-400" />
+                          <span className="text-white font-semibold">{project.crypto_type}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        <CryptoIcon className="text-2xl text-blue-400" />
-                        <span className="text-white font-semibold">{project.crypto_type}</span>
-                      </div>
-                    </div>
 
-                    {/* 진행률 바 */}
-                    <div className="mb-6">
-                      <div className="flex justify-between text-sm text-blue-200 mb-2">
-                        <span>진행률</span>
-                        <span>{project.progress}%</span>
+                      {/* 진행률 바 */}
+                      <div className="mb-6">
+                        <div className="flex justify-between text-sm text-blue-200 mb-2">
+                          <span>{t('projects.progress')}</span>
+                          <span>{project.progress}%</span>
+                        </div>
+                        <div className="w-full bg-white/20 rounded-full h-3">
+                          <div
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                            style={{ width: `${project.progress}%` }}
+                          ></div>
+                        </div>
                       </div>
-                      <div className="w-full bg-white/20 rounded-full h-3">
-                        <div 
-                          className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                          style={{ width: `${project.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
 
-                    {/* 예산 정보 */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-white/5 rounded-xl p-4">
-                        <div className="text-blue-200 text-sm mb-1">예산</div>
-                        <div className="text-white font-bold text-lg">${project.budget.toLocaleString()}</div>
+                      {/* 예산 정보 */}
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="bg-white/5 rounded-xl p-4">
+                          <div className="text-blue-200 text-sm mb-1">{t('projects.budget')}</div>
+                          <div className="text-white font-bold text-lg">${project.budget.toLocaleString()}</div>
+                        </div>
+                        <div className="bg-white/5 rounded-xl p-4">
+                          <div className="text-blue-200 text-sm mb-1">{t('projects.raised')}</div>
+                          <div className="text-white font-bold text-lg">${project.raised.toLocaleString()}</div>
+                        </div>
                       </div>
-                      <div className="bg-white/5 rounded-xl p-4">
-                        <div className="text-blue-200 text-sm mb-1">모금액</div>
-                        <div className="text-white font-bold text-lg">${project.raised.toLocaleString()}</div>
-                      </div>
-                    </div>
 
-                    {/* 예상 수익률 */}
-                    <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-4 mb-6">
-                      <div className="flex items-center justify-between">
-                        <span className="text-green-200 text-sm">예상 수익률</span>
-                        <span className="text-green-400 font-bold text-xl">{project.expected_return}%</span>
+                      {/* 예상 수익률 */}
+                      <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-4 mb-6">
+                        <div className="flex items-center justify-between">
+                          <span className="text-green-200 text-sm">{t('projects.expectedReturn')}</span>
+                          <span className="text-green-400 font-bold text-xl">{project.expected_return}%</span>
+                        </div>
+                      </div>
+
+                      {/* 기술 스택 */}
+                      <div className="mb-6">
+                        <div className="text-blue-200 text-sm mb-2">{t('projects.techStack')}</div>
+                        <div className="flex flex-wrap gap-2">
+                          {project.technologies.map((tech, index) => (
+                            <span key={index} className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* 액션 버튼 */}
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => navigate(`/projects/${project.id}`)}
+                          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-xl font-semibold transition-all duration-300"
+                        >
+                          {t('common.viewDetails')}
+                        </button>
+                        <button
+                          onClick={() => handleInvestClick(project.id)}
+                          className="px-6 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold transition-all duration-300"
+                        >
+                          {t('common.invest')}
+                        </button>
                       </div>
                     </div>
-
-                    {/* 기술 스택 */}
-                    <div className="mb-6">
-                      <div className="text-blue-200 text-sm mb-2">기술 스택</div>
-                      <div className="flex flex-wrap gap-2">
-                        {project.technologies.map((tech, index) => (
-                          <span key={index} className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* 액션 버튼 */}
-                    <div className="flex gap-3">
-                      <button 
-                        onClick={() => navigate(`/projects/${project.id}`)}
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-xl font-semibold transition-all duration-300"
-                      >
-                        자세히 보기
-                      </button>
-                      <button 
-                        onClick={() => handleInvestClick(project.id)}
-                        className="px-6 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold transition-all duration-300"
-                      >
-                        투자하기
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
               </div>
             )}
           </div>

@@ -3,9 +3,11 @@ import { FaChartLine, FaUsers, FaDollarSign, FaBuilding, FaCalendarAlt } from 'r
 import { SiEthereum, SiSolana, SiBitcoin } from 'react-icons/si'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { useTranslation } from 'react-i18next'
 import { statsService } from '../lib/supabase'
 
 function Statistics() {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
   const [projectStats, setProjectStats] = useState({})
   const [investorStats, setInvestorStats] = useState({})
@@ -67,7 +69,7 @@ function Statistics() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <div className="text-white text-xl">통계를 불러오는 중...</div>
+          <div className="text-white text-xl">{t('common.loading')}</div>
         </div>
       </div>
     )
@@ -76,16 +78,16 @@ function Statistics() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <Navbar />
-      
+
       <main className="pt-20">
         {/* Header */}
         <section className="py-20 text-center">
           <div className="container mx-auto px-5 sm:px-10">
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-8">
-              투자 <span className="text-blue-300">통계</span>
+              {t('nav.invest')} <span className="text-blue-300">{t('statistics.title')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-blue-200 max-w-4xl mx-auto leading-relaxed mb-12">
-              Global BUSAN 프로젝트의 투자 현황과 성과를 실시간으로 확인하세요
+              {t('statistics.description')}
             </p>
           </div>
         </section>
@@ -93,27 +95,27 @@ function Statistics() {
         {/* 주요 지표 */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">주요 지표</h2>
+            <h2 className="text-3xl font-bold text-white text-center mb-12">{t('statistics.keyMetrics')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaBuilding className="text-4xl text-blue-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">{projectStats.total_projects || 0}</div>
-                <div className="text-blue-200">총 프로젝트</div>
+                <div className="text-blue-200">{t('statistics.totalProjects')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaUsers className="text-4xl text-green-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">{investorStats.total_investors || 0}</div>
-                <div className="text-blue-200">총 투자자</div>
+                <div className="text-blue-200">{t('statistics.totalInvestors')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaDollarSign className="text-4xl text-purple-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">{formatCurrency(investmentStats.total_investment_amount || 0)}</div>
-                <div className="text-blue-200">총 투자금</div>
+                <div className="text-blue-200">{t('statistics.totalInvestment')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <FaChartLine className="text-4xl text-orange-400 mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">{investmentStats.total_investments || 0}</div>
-                <div className="text-blue-200">총 투자 건수</div>
+                <div className="text-blue-200">{t('statistics.totalInvestmentCount')}</div>
               </div>
             </div>
           </div>
@@ -122,48 +124,48 @@ function Statistics() {
         {/* 투자자 분석 */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">투자자 분석</h2>
+            <h2 className="text-3xl font-bold text-white text-center mb-12">{t('statistics.investorAnalysis')}</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-                <h3 className="text-2xl font-bold text-white mb-6">투자자 현황</h3>
+                <h3 className="text-2xl font-bold text-white mb-6">{t('statistics.investorStatus')}</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">평균 투자 금액</span>
+                    <span className="text-blue-200">{t('statistics.avgInvestment')}</span>
                     <span className="text-white font-semibold">{formatCurrency(investorStats.avg_investment_per_investor || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">최대 투자 금액</span>
+                    <span className="text-blue-200">{t('statistics.maxInvestment')}</span>
                     <span className="text-white font-semibold">{formatCurrency(investorStats.max_investment || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">최소 투자 금액</span>
+                    <span className="text-blue-200">{t('statistics.minInvestment')}</span>
                     <span className="text-white font-semibold">{formatCurrency(investorStats.min_investment || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">최근 30일 신규 투자자</span>
-                    <span className="text-white font-semibold">{investorStats.new_investors_30_days || 0}명</span>
+                    <span className="text-blue-200">{t('statistics.newInvestors30Days')}</span>
+                    <span className="text-white font-semibold">{investorStats.new_investors_30_days || 0}{t('common.people')}</span>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-                <h3 className="text-2xl font-bold text-white mb-6">투자 현황</h3>
+                <h3 className="text-2xl font-bold text-white mb-6">{t('statistics.investmentStatus')}</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">확정된 투자</span>
-                    <span className="text-green-400 font-semibold">{investmentStats.confirmed_investments || 0}건</span>
+                    <span className="text-blue-200">{t('statistics.confirmedInvestments')}</span>
+                    <span className="text-green-400 font-semibold">{investmentStats.confirmed_investments || 0}{t('common.count')}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">대기 중인 투자</span>
-                    <span className="text-yellow-400 font-semibold">{investmentStats.pending_investments || 0}건</span>
+                    <span className="text-blue-200">{t('statistics.pendingInvestments')}</span>
+                    <span className="text-yellow-400 font-semibold">{investmentStats.pending_investments || 0}{t('common.count')}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">실패한 투자</span>
-                    <span className="text-red-400 font-semibold">{investmentStats.failed_investments || 0}건</span>
+                    <span className="text-blue-200">{t('statistics.failedInvestments')}</span>
+                    <span className="text-red-400 font-semibold">{investmentStats.failed_investments || 0}{t('common.count')}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-200">최근 30일 투자</span>
-                    <span className="text-white font-semibold">{investmentStats.investments_30_days || 0}건</span>
+                    <span className="text-blue-200">{t('statistics.investments30Days')}</span>
+                    <span className="text-white font-semibold">{investmentStats.investments_30_days || 0}{t('common.count')}</span>
                   </div>
                 </div>
               </div>
@@ -174,16 +176,16 @@ function Statistics() {
         {/* 월별 투자 추이 */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">월별 투자 추이</h2>
+            <h2 className="text-3xl font-bold text-white text-center mb-12">{t('statistics.monthlyInvestmentTrends')}</h2>
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
               <div className="overflow-x-auto">
                 <table className="w-full text-white">
                   <thead>
                     <tr className="border-b border-white/20">
-                      <th className="text-left py-4 px-2">월</th>
-                      <th className="text-right py-4 px-2">투자 건수</th>
-                      <th className="text-right py-4 px-2">투자 금액</th>
-                      <th className="text-right py-4 px-2">고유 투자자</th>
+                      <th className="text-left py-4 px-2">{t('common.month')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.investmentCount')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.investmentAmount')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.uniqueInvestors')}</th>
                       <th className="text-right py-4 px-2">ETH</th>
                       <th className="text-right py-4 px-2">SOL</th>
                       <th className="text-right py-4 px-2">BTC</th>
@@ -211,20 +213,20 @@ function Statistics() {
         {/* 월별 지출 추이 */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">월별 지출 추이</h2>
+            <h2 className="text-3xl font-bold text-white text-center mb-12">{t('statistics.monthlyExpenseTrends')}</h2>
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
               <div className="overflow-x-auto">
                 <table className="w-full text-white">
                   <thead>
                     <tr className="border-b border-white/20">
-                      <th className="text-left py-4 px-2">월</th>
-                      <th className="text-right py-4 px-2">지출 건수</th>
-                      <th className="text-right py-4 px-2">총 지출</th>
-                      <th className="text-right py-4 px-2">개발</th>
-                      <th className="text-right py-4 px-2">마케팅</th>
-                      <th className="text-right py-4 px-2">인프라</th>
-                      <th className="text-right py-4 px-2">법무</th>
-                      <th className="text-right py-4 px-2">운영</th>
+                      <th className="text-left py-4 px-2">{t('common.month')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.expenseCount')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.totalExpenses')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.categories.development')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.categories.marketing')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.categories.infrastructure')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.categories.legal')}</th>
+                      <th className="text-right py-4 px-2">{t('statistics.categories.operations')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -250,7 +252,7 @@ function Statistics() {
         {/* 암호화폐별 투자 현황 */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">암호화폐별 투자 현황</h2>
+            <h2 className="text-3xl font-bold text-white text-center mb-12">{t('statistics.cryptoInvestmentStatus')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <SiEthereum className="text-6xl text-blue-400 mx-auto mb-4" />
@@ -258,7 +260,7 @@ function Statistics() {
                 <div className="text-3xl font-bold text-white mb-2">
                   {monthlyInvestmentStats.reduce((sum, stat) => sum + stat.eth_investments, 0)}
                 </div>
-                <div className="text-blue-200">총 투자 건수</div>
+                <div className="text-blue-200">{t('statistics.totalInvestmentCount')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <SiSolana className="text-6xl text-purple-400 mx-auto mb-4" />
@@ -266,7 +268,7 @@ function Statistics() {
                 <div className="text-3xl font-bold text-white mb-2">
                   {monthlyInvestmentStats.reduce((sum, stat) => sum + stat.sol_investments, 0)}
                 </div>
-                <div className="text-blue-200">총 투자 건수</div>
+                <div className="text-blue-200">{t('statistics.totalInvestmentCount')}</div>
               </div>
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
                 <SiBitcoin className="text-6xl text-orange-400 mx-auto mb-4" />
@@ -274,7 +276,7 @@ function Statistics() {
                 <div className="text-3xl font-bold text-white mb-2">
                   {monthlyInvestmentStats.reduce((sum, stat) => sum + stat.btc_investments, 0)}
                 </div>
-                <div className="text-blue-200">총 투자 건수</div>
+                <div className="text-blue-200">{t('statistics.totalInvestmentCount')}</div>
               </div>
             </div>
           </div>

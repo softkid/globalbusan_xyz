@@ -11,6 +11,8 @@ import Donation from './pages/Donation'
 import GlobalBusan from './pages/GlobalBusan'
 import Roadmap from './pages/Roadmap'
 import ConnectionStatus from './components/ConnectionStatus'
+import MobileHeader from './components/MobileHeader'
+import BottomNav from './components/BottomNav'
 
 // Google OAuth Client ID (환경 변수 또는 기본값 사용)
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '299500936836-elk8daqqn64np59q473u66lt9ud0u7cj.apps.googleusercontent.com'
@@ -20,6 +22,7 @@ function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <Router>
         <ConnectionStatus />
+        <MobileHeader />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/invest" element={<Invest />} />
@@ -32,6 +35,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/apply" element={<ProjectApplication />} />
         </Routes>
+        <BottomNav />
       </Router>
     </GoogleOAuthProvider>
   )

@@ -1,22 +1,18 @@
 import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaHandHoldingHeart, FaUser, FaSignOutAlt, FaInfoCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { setLanguage, getLanguage, t } from "../lib/i18n";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = ({ isAdmin = false }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState(getLanguage());
   const [user, setUser] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
-    const handleLanguageChange = () => {
-      setCurrentLang(getLanguage());
-    };
-    window.addEventListener('languagechange', handleLanguageChange);
-    
     // 로그인 정보 확인
     const savedUser = localStorage.getItem('googleUser');
     if (savedUser) {
@@ -28,7 +24,7 @@ const Navbar = ({ isAdmin = false }) => {
         localStorage.removeItem('googleUser');
       }
     }
-    
+
     // 외부 클릭 시 사용자 메뉴 닫기
     const handleClickOutside = (e) => {
       if (showUserMenu && !e.target.closest('.user-menu-container')) {
@@ -36,9 +32,8 @@ const Navbar = ({ isAdmin = false }) => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     return () => {
-      window.removeEventListener('languagechange', handleLanguageChange);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showUserMenu]);
@@ -57,15 +52,9 @@ const Navbar = ({ isAdmin = false }) => {
     { name: t('nav.statistics'), path: "/statistics", icon: FaChartLine, key: 'statistics' },
     { name: t('nav.invest'), path: "/invest", icon: FaBuilding, key: 'invest' }
   ];
-  
+
   // Roadmap 메뉴 아이템
   const roadmapMenuItem = { name: t('nav.roadmap'), path: "/global-busan", icon: FaInfoCircle, key: 'roadmap' };
-
-  const toggleLanguage = () => {
-    const newLang = currentLang === 'ko' ? 'en' : 'ko';
-    setLanguage(newLang);
-    setCurrentLang(newLang);
-  };
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -76,7 +65,7 @@ const Navbar = ({ isAdmin = false }) => {
   };
 
   return (
-    <div className="fixed inset-x-0 top-0 z-50 h-16 bg-white/90 backdrop-blur-lg border-b border-gray-200">
+    <div className="hidden md:block fixed inset-x-0 top-0 z-50 h-16 bg-white/90 backdrop-blur-lg border-b border-gray-200">
       <header className="h-full">
         <nav className="flex h-full items-center justify-between px-5 sm:px-10">
           {/* Logo */}
@@ -98,11 +87,10 @@ const Navbar = ({ isAdmin = false }) => {
                   <Link
                     key={item.key || index}
                     to={item.path}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
-                      isActive(item.path)
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
-                    }`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${isActive(item.path)
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                      }`}
                   >
                     <Icon className="text-sm" />
                     {item.name}
@@ -112,16 +100,10 @@ const Navbar = ({ isAdmin = false }) => {
             </div>
           </div>
 
-          {/* 우측 메뉴: 한영변환, 로그인, Roadmap */}
+          {/* 우측 메뉴: 언어 선택, 로그인, Roadmap */}
           <div className="flex items-center gap-3">
-            {/* 언어 전환 버튼 */}
-            <button
-              onClick={toggleLanguage}
-              className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold text-gray-700 transition-colors duration-300"
-              title={currentLang === 'ko' ? 'Switch to English' : '한국어로 전환'}
-            >
-              {currentLang === 'ko' ? 'EN' : '한'}
-            </button>
+            {/* 언어 전환 컴포넌트 */}
+            <LanguageSwitcher />
 
             {/* 로그인 정보 */}
             {user ? (
@@ -143,7 +125,7 @@ const Navbar = ({ isAdmin = false }) => {
                     {user.name}
                   </span>
                 </button>
-                
+
                 {/* 사용자 메뉴 드롭다운 */}
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
@@ -176,11 +158,10 @@ const Navbar = ({ isAdmin = false }) => {
               return (
                 <Link
                   to={roadmapMenuItem.path}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
-                    isActive(roadmapMenuItem.path)
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${isActive(roadmapMenuItem.path)
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                    }`}
                 >
                   <Icon className="text-sm" />
                   {roadmapMenuItem.name}
@@ -215,11 +196,10 @@ const Navbar = ({ isAdmin = false }) => {
                   <Link
                     key={item.key || index}
                     to={item.path}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
-                      isActive(item.path)
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${isActive(item.path)
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                      }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Icon className="text-lg" />
@@ -229,16 +209,10 @@ const Navbar = ({ isAdmin = false }) => {
               })}
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 {/* 모바일 언어 전환 */}
-                <button
-                  onClick={() => {
-                    toggleLanguage();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold text-gray-700 transition-colors duration-300"
-                >
-                  {currentLang === 'ko' ? 'Switch to English' : '한국어로 전환'}
-                </button>
-                
+                <div className="flex justify-center">
+                  <LanguageSwitcher />
+                </div>
+
                 {/* 모바일 로그인 정보 */}
                 {user ? (
                   <div className="px-4 py-3 bg-gray-100 rounded-lg mb-2">
@@ -277,7 +251,7 @@ const Navbar = ({ isAdmin = false }) => {
                     로그인
                   </Link>
                 )}
-                
+
                 {/* 모바일 Roadmap 메뉴 */}
                 {(() => {
                   const Icon = roadmapMenuItem.icon;
@@ -285,11 +259,10 @@ const Navbar = ({ isAdmin = false }) => {
                     <Link
                       to={roadmapMenuItem.path}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
-                        isActive(roadmapMenuItem.path)
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
-                      }`}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${isActive(roadmapMenuItem.path)
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                        }`}
                     >
                       <Icon className="text-lg" />
                       {roadmapMenuItem.name}

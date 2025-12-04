@@ -6,15 +6,17 @@ import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/all";
 import { Link } from 'react-router-dom';
 import { statsService } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
+    const { t } = useTranslation();
     const [donationAmount, setDonationAmount] = useState(0);
     const [donorCount, setDonorCount] = useState(0);
     const [projectCount, setProjectCount] = useState(0);
     const [loading, setLoading] = useState(true);
-    
+
     const heroRef = useRef(null);
 
     useEffect(() => {
@@ -45,12 +47,12 @@ const Hero = () => {
 
     useGSAP(() => {
         if (heroRef.current) {
-            gsap.fromTo(heroRef.current, 
-                { 
+            gsap.fromTo(heroRef.current,
+                {
                     opacity: 0,
                     y: 50
                 },
-                { 
+                {
                     opacity: 1,
                     y: 0,
                     duration: 1.5,
@@ -61,12 +63,12 @@ const Hero = () => {
     }, []);
 
     useGSAP(() => {
-        gsap.fromTo(".floating-element", 
-            { 
+        gsap.fromTo(".floating-element",
+            {
                 y: 0,
                 rotation: 0
             },
-            { 
+            {
                 y: -20,
                 rotation: 5,
                 duration: 3,
@@ -93,18 +95,17 @@ const Hero = () => {
                 <div className='text-center px-5 sm:px-10 max-w-6xl mx-auto'>
                     {/* Main Title */}
                     <h1 className='text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-8'>
-                        Global <span className="text-blue-300">BUSAN</span>
+                        {t('home.title')}
                     </h1>
-                    
+
                     {/* Subtitle */}
                     <h2 className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-blue-100 mb-8'>
-                        Transform Busan into a Global Business Hub
+                        {t('home.subtitle')}
                     </h2>
-                    
+
                     {/* Description */}
                     <p className='text-lg sm:text-xl md:text-2xl text-blue-200 mb-12 max-w-4xl mx-auto leading-relaxed'>
-                        Join us in building a transparent, blockchain-powered platform that connects international entrepreneurs 
-                        with Korea's business ecosystem. Together, we'll create a global business hub in Busan.
+                        {t('home.description')}
                     </p>
 
                     {/* Stats */}
@@ -120,9 +121,9 @@ const Hero = () => {
                                     `$${donationAmount.toLocaleString()}`
                                 )}
                             </div>
-                            <div className='text-xl text-blue-200'>Total Investment</div>
+                            <div className='text-xl text-blue-200'>{t('home.totalInvestment')}</div>
                         </div>
-                        
+
                         <div className='bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20'>
                             <div className='flex items-center justify-center mb-6'>
                                 <FaUsers className='text-4xl text-blue-400' />
@@ -134,9 +135,9 @@ const Hero = () => {
                                     `${donorCount}+`
                                 )}
                             </div>
-                            <div className='text-xl text-blue-200'>Global Partners</div>
+                            <div className='text-xl text-blue-200'>{t('home.globalPartners')}</div>
                         </div>
-                        
+
                         <div className='bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20'>
                             <div className='flex items-center justify-center mb-6'>
                                 <FaRocket className='text-4xl text-purple-400' />
@@ -148,24 +149,24 @@ const Hero = () => {
                                     projectCount
                                 )}
                             </div>
-                            <div className='text-xl text-blue-200'>Active Projects</div>
+                            <div className='text-xl text-blue-200'>{t('home.activeProjects')}</div>
                         </div>
                     </div>
 
                     {/* CTA Buttons */}
                     <div className='flex flex-col sm:flex-row gap-6 justify-center items-center'>
                         <Link to="/invest">
-                            <Button 
-                                id="invest-now" 
-                                title="Invest Now" 
-                                leftIcon={<FaBuilding/>} 
+                            <Button
+                                id="invest-now"
+                                title={t('home.investNow')}
+                                leftIcon={<FaBuilding />}
                                 containerClass='!bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-10 py-5 text-xl font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105'
                             />
                         </Link>
-                        <Button 
-                            id="learn-more" 
-                            title="Learn More" 
-                            leftIcon={<FaRocket/>} 
+                        <Button
+                            id="learn-more"
+                            title={t('home.learnMore')}
+                            leftIcon={<FaRocket />}
                             containerClass='!bg-transparent border-2 border-white/30 text-white hover:bg-white/10 px-10 py-5 text-xl font-bold rounded-full backdrop-blur-lg transition-all duration-300'
                         />
                     </div>
