@@ -335,6 +335,19 @@
         "progress": "진행률",
         "lastUpdated": "마지막 업데이트"
     },
+    "fileUpload": {
+        "clickToUpload": "클릭하여 파일 업로드",
+        "dragAndDrop": "또는 드래그 앤 드롭",
+        "upload": "업로드",
+        "uploading": "업로드 중...",
+        "uploadSuccess": "업로드 성공!",
+        "uploadFailed": "업로드 실패",
+        "remove": "제거",
+        "viewFile": "파일 보기",
+        "fileTooLarge": "파일 크기가 너무 큽니다. (최대: {{maxSize}})",
+        "invalidFileType": "지원되지 않는 파일 형식입니다.",
+        "missingInfo": "필수 정보가 누락되었습니다."
+    },
     "common": {
         "loading": "로딩 중...",
         "error": "오류",

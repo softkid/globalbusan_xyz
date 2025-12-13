@@ -335,6 +335,19 @@
         "progress": "Progress",
         "lastUpdated": "Last Updated"
     },
+    "fileUpload": {
+        "clickToUpload": "Click to upload file",
+        "dragAndDrop": "or drag and drop",
+        "upload": "Upload",
+        "uploading": "Uploading...",
+        "uploadSuccess": "Upload successful!",
+        "uploadFailed": "Upload failed",
+        "remove": "Remove",
+        "viewFile": "View file",
+        "fileTooLarge": "File is too large. (Max: {{maxSize}})",
+        "invalidFileType": "Unsupported file type.",
+        "missingInfo": "Required information is missing."
+    },
     "common": {
         "loading": "Loading...",
         "error": "Error",
