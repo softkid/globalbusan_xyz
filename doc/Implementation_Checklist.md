@@ -68,7 +68,7 @@
 - [x] React Router (라우팅)
 - [x] 반응형 디자인 (모바일 우선)
 - [ ] Recharts 또는 D3.js 차트 라이브러리 (현재는 기본 차트만)
-- [ ] 오프라인 지원 (Service Worker)
+- [x] 오프라인 지원 (Service Worker)
 
 ### 2.2 백엔드 및 데이터베이스
 - [x] Supabase 연동
@@ -194,7 +194,7 @@
 - [x] Vite 빌드 최적화
 - [x] 이미지 최적화 (lazy loading) - LazyImage 컴포넌트 및 useLazyImage 훅
 - [x] 코드 스플리팅 - React.lazy 및 Suspense 적용
-- [ ] 캐싱 전략
+- [x] 캐싱 전략 - Service Worker를 통한 캐싱 (네트워크 우선, 캐시 우선 전략)
 - [ ] CDN 설정
 
 ### 5.3 분석 및 모니터링

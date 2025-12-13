@@ -24,8 +24,8 @@ export default defineConfig({
     sourcemap: false,
     // Minification
     minify: 'esbuild',
-    // Target modern browsers for smaller bundle
-    target: 'es2015',
+    // Target modern browsers for smaller bundle (ES2020 required for BigInt support)
+    target: 'es2020',
   },
   // Optimize dependencies
   optimizeDeps: {

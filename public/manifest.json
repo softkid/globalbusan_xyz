@@ -1,0 +1,43 @@
+{
+  "name": "Global BUSAN",
+  "short_name": "Global BUSAN",
+  "description": "투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "투자하기",
+      "short_name": "투자",
+      "description": "프로젝트에 투자하기",
+      "url": "/invest",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "기부하기",
+      "short_name": "기부",
+      "description": "기부하기",
+      "url": "/donation",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
+  ]
+}
+
