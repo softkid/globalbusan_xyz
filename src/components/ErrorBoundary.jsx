@@ -21,6 +21,15 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    // 브라우저 확장 프로그램 오류는 무시
+    const errorString = JSON.stringify({ error, errorInfo })
+    const isExtensionError = /extension:\/\/|chrome-extension:\/\/|moz-extension:\/\/|solanaActionsContentScript|content\.js|Cannot use 'in' operator to search for 'animation' in undefined|createLucideIcon|web-helper\.ts-loader/i.test(errorString)
+    
+    if (isExtensionError) {
+      console.warn('Extension error caught by ErrorBoundary (ignored):', error)
+      return
+    }
+    
     // 에러 리포팅 서비스에 에러를 기록
     console.error('ErrorBoundary caught an error:', error, errorInfo)
     

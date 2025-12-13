@@ -182,11 +182,46 @@ export const handlePaymentError = (error, context = {}) => {
 }
 
 /**
+ * 브라우저 확장 프로그램 오류 패턴
+ */
+const EXTENSION_ERROR_PATTERNS = [
+  /extension:\/\//i,
+  /chrome-extension:\/\//i,
+  /moz-extension:\/\//i,
+  /solanaActionsContentScript/i,
+  /content\.js/i,
+  /Cannot use 'in' operator to search for 'animation' in undefined/i,
+  /createLucideIcon/i,
+  /web-helper\.ts-loader/i,
+]
+
+/**
+ * 브라우저 확장 프로그램 오류인지 확인
+ */
+const isExtensionError = (error) => {
+  if (!error) return false
+  
+  const errorString = JSON.stringify(error)
+  const message = error?.message || error?.toString() || ''
+  const filename = error?.filename || error?.source || ''
+  const stack = error?.stack || ''
+  
+  const fullErrorText = `${errorString} ${message} ${filename} ${stack}`
+  
+  return EXTENSION_ERROR_PATTERNS.some(pattern => pattern.test(fullErrorText))
+}
+
+/**
  * 전역 에러 핸들러 설정
  */
 export const setupGlobalErrorHandlers = () => {
   // Unhandled Promise Rejection
   window.addEventListener('unhandledrejection', (event) => {
+    // 브라우저 확장 프로그램 오류는 무시
+    if (isExtensionError(event.reason)) {
+      return
+    }
+    
     logError(event.reason, {
       type: ErrorTypes.UNKNOWN,
       context: {
@@ -202,6 +237,11 @@ export const setupGlobalErrorHandlers = () => {
 
   // 일반 JavaScript 에러
   window.addEventListener('error', (event) => {
+    // 브라우저 확장 프로그램 오류는 무시
+    if (isExtensionError(event.error || event)) {
+      return
+    }
+    
     logError(event.error || new Error(event.message), {
       type: ErrorTypes.UNKNOWN,
       context: {
@@ -211,6 +251,16 @@ export const setupGlobalErrorHandlers = () => {
       }
     })
   })
+
+  // Console Error Override (확장 프로그램 오류 필터링)
+  const originalConsoleError = console.error
+  console.error = (...args) => {
+    const errorText = args.join(' ')
+    if (EXTENSION_ERROR_PATTERNS.some(pattern => pattern.test(errorText))) {
+      return // 확장 프로그램 오류는 무시
+    }
+    originalConsoleError.apply(console, args)
+  }
 }
 
 /**
