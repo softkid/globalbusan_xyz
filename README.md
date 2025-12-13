@@ -137,12 +137,15 @@ npm run test:watch
 ## 📚 문서
 
 - [구현 체크리스트](./doc/Implementation_Checklist.md)
+- [배포 가이드](./doc/DEPLOYMENT_GUIDE.md) ⭐ 새로 추가
+- [프로젝트 요약](./doc/PROJECT_SUMMARY.md)
 - [Google Search Console 설정 가이드](./doc/GOOGLE_SEARCH_CONSOLE_SETUP.md)
 - [스마트 컨트랙트 배포 가이드](./doc/SMART_CONTRACT_DEPLOYMENT.md)
 - [사용자 수용 테스트 체크리스트](./doc/UAT_CHECKLIST.md)
 - [이미지 최적화 가이드](./doc/IMAGE_OPTIMIZATION_GUIDE.md)
 - [Supabase Auth 통합 가이드](./doc/SUPABASE_AUTH_GUIDE.md)
 - [환경 변수 설정 가이드](./doc/ENVIRONMENT_VARIABLES.md)
+- [모니터링 가이드](./doc/MONITORING_GUIDE.md)
 
 ## 🛠 기술 스택
 
