@@ -111,10 +111,16 @@ const Navbar = ({ isAdmin = false }) => {
             {/* 로그인 정보 */}
             {user ? (
               <div className="relative user-menu-container">
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-300"
-                >
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setShowUserMenu(false)
+              }}
+              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-300"
+              aria-label="사용자 메뉴 열기"
+              aria-expanded={showUserMenu}
+              aria-haspopup="true"
+            >
                   {user.picture ? (
                     <img
                       src={user.picture}
@@ -139,6 +145,7 @@ const Navbar = ({ isAdmin = false }) => {
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-200"
+                      aria-label="로그아웃"
                     >
                       <FaSignOutAlt />
                       로그아웃

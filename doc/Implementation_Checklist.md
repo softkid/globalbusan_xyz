@@ -170,9 +170,11 @@
 
 ### 4.4 접근성
 - [x] 기본 접근성 (시맨틱 HTML)
+- [x] ARIA 레이블 및 속성 추가 (Navbar, 버튼 등)
+- [x] 키보드 네비게이션 지원 (useKeyboardNavigation 훅, AccessibleButton 컴포넌트)
+- [x] 포커스 관리 (useFocusTrap 훅)
 - [ ] WCAG 2.1 AA 준수 검증
-- [ ] 스크린 리더 최적화
-- [ ] 키보드 네비게이션 완전 지원
+- [ ] 스크린 리더 완전 최적화
 - [ ] 색상 대비 검증
 
 ---
@@ -199,9 +201,9 @@
 
 ### 5.3 분석 및 모니터링
 - [x] Google Analytics 설정
-- [ ] Google Search Console 등록
-- [ ] 에러 추적 (Sentry 등)
-- [ ] 성능 모니터링
+- [x] Google Search Console 등록 (가이드 문서 작성 완료)
+- [x] 에러 추적 (ErrorBoundary, 전역 에러 핸들러, Google Analytics 통합)
+- [x] 성능 모니터링 (Web Vitals, Performance API 통합)
 
 ---
 

@@ -37,7 +37,11 @@ function Home() {
   }
 
   return (
-    <main className='relative min-h-screen w-screen overflow-x-hidden'>
+    <main 
+      className='relative min-h-screen w-screen overflow-x-hidden'
+      role="main"
+      aria-label="Global BUSAN 메인 콘텐츠"
+    >
       <SEO
         title={t('home.title') + ' - ' + t('home.subtitle')}
         description={t('home.description')}
