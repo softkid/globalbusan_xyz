@@ -277,6 +277,8 @@ function Donation() {
         throw new Error('Failed to verify payment')
       }
 
+      const verifyData = await verifyResponse.json()
+
       // 데이터베이스에 저장 (백업)
       if (user && user.email) {
         await investmentService.createInvestment({
@@ -295,7 +297,8 @@ function Donation() {
         currency: paymentIntent.currency,
         method: 'card',
         timestamp: new Date(paymentIntent.created * 1000).toISOString(),
-        status: 'completed'
+        status: 'completed',
+        investmentId: verifyData?.investment?.id || null
       }
 
       setDonationHistory(prev => [transaction, ...prev])
