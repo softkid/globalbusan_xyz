@@ -234,9 +234,9 @@
 ### 7.1 단위 테스트
 - [x] Jest 설정
 - [x] React Testing Library 설정
-- [x] 컴포넌트 테스트 (SEO 컴포넌트)
-- [x] 유틸리티 함수 테스트 (payment, blockchain)
-- [ ] 테스트 커버리지 80% 목표 (현재 기본 테스트만 작성)
+- [x] 컴포넌트 테스트 (SEO, Navbar, Footer)
+- [x] 유틸리티 함수 테스트 (payment, blockchain, refund, pdfGenerator, supabase)
+- [ ] 테스트 커버리지 80% 목표 (현재 약 2% → 목표 진행 중)
 
 ### 7.2 통합 테스트
 - [ ] 결제 플로우 테스트
@@ -305,9 +305,9 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 91개
-### 미완료 항목: 54개
-### 전체 진행률: 약 63%
+### 완료된 항목: 94개
+### 미완료 항목: 51개
+### 전체 진행률: 약 65%
 
 ### 우선순위 높은 미완료 항목
 1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
@@ -349,4 +349,5 @@
 - ✅ 스마트 컨트랙트 연동 구조 추가 (Ethereum, Solana)
 - ✅ 환불 처리 기능 구현 (Stripe, Coinbase Commerce)
 - ✅ Polygon 네트워크 연동 (트랜잭션 전송, 검증, 확인)
+- ✅ 추가 테스트 코드 작성 (Navbar, Footer, refund, pdfGenerator, supabase)
 

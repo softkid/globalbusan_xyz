@@ -1,3 +1,16 @@
+// Mock import.meta.env before importing
+Object.defineProperty(global, 'import', {
+  value: {
+    meta: {
+      env: {
+        VITE_ETHEREUM_RPC_URL: 'https://eth.llamarpc.com',
+        VITE_POLYGON_RPC_URL: 'https://polygon.llamarpc.com',
+        VITE_SOLANA_RPC_URL: 'https://api.mainnet-beta.solana.com'
+      }
+    }
+  }
+})
+
 import { getBlockchainExplorerLink, verifyTransaction } from '../blockchain'
 
 // Mock ethers

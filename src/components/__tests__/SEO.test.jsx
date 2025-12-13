@@ -3,29 +3,11 @@ import SEO from '../SEO'
 import { I18nextProvider } from 'react-i18next'
 import i18n from '../../i18n/config'
 
-// Mock document methods
-const mockUpdateMetaTag = jest.fn()
-const mockUpdateLinkTag = jest.fn()
-const mockAddStructuredData = jest.fn()
-
-beforeEach(() => {
-  // Reset mocks
-  jest.clearAllMocks()
-  
-  // Mock document methods
-  document.querySelector = jest.fn()
-  document.createElement = jest.fn((tag) => {
-    const element = {
-      setAttribute: jest.fn(),
-      text: ''
-    }
-    if (tag === 'script') {
-      element.type = ''
-    }
-    return element
-  })
-  document.head.appendChild = jest.fn()
-})
+// Mock react-helmet-async
+jest.mock('react-helmet-async', () => ({
+  Helmet: ({ children }) => children,
+  HelmetProvider: ({ children }) => children
+}))
 
 describe('SEO Component', () => {
   const renderWithI18n = (component) => {
