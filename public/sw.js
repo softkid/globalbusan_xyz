@@ -3,8 +3,8 @@
  * 오프라인 지원 및 캐싱을 위한 Service Worker
  */
 
-const CACHE_NAME = 'global-busan-v1'
-const RUNTIME_CACHE = 'global-busan-runtime-v1'
+const CACHE_NAME = 'global-busan-v2'
+const RUNTIME_CACHE = 'global-busan-runtime-v2'
 
 // 캐싱할 정적 리소스
 const STATIC_ASSETS = [
