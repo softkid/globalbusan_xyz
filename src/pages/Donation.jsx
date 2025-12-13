@@ -14,6 +14,7 @@ import { statsService, expenseService, investmentService } from '../lib/supabase
 import { validatePaymentAmount } from '../lib/payment'
 import { sendTransaction, waitForEthereumTransaction, waitForSolanaTransaction, verifyTransaction } from '../lib/blockchain'
 import { createDonationContract } from '../lib/smartContract'
+import { processStripeRefund, processCoinbaseRefund, canRefund } from '../lib/refund'
 
 function Donation() {
   const { t } = useTranslation()
@@ -702,23 +703,56 @@ function Donation() {
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
                   <h4 className="text-2xl font-bold text-white mb-6">{t('donation.donationHistory')}</h4>
                   <div className="space-y-4">
-                    {donationHistory.map((transaction) => (
-                      <div key={transaction.id} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <div className="text-white font-semibold">
-                              {transaction.amount} {transaction.crypto}
+                    {donationHistory.map((transaction) => {
+                      const refundCheck = canRefund(transaction)
+                      const showRefundButton = 
+                        transaction.status === 'completed' && 
+                        refundCheck.canRefund &&
+                        (transaction.method === 'card' || transaction.currency === 'usd')
+
+                      return (
+                        <div key={transaction.id} className="bg-white/5 rounded-xl p-4 border border-white/10">
+                          <div className="flex justify-between items-center">
+                            <div className="flex-1">
+                              <div className="text-white font-semibold">
+                                {transaction.amount} {transaction.crypto || transaction.currency?.toUpperCase() || 'USD'}
+                              </div>
+                              <div className="text-blue-200 text-sm">
+                                {new Date(transaction.timestamp).toLocaleString()}
+                              </div>
+                              {transaction.transactionHash && (
+                                <div className="text-gray-400 text-xs mt-1 font-mono">
+                                  {transaction.transactionHash.substring(0, 20)}...
+                                </div>
+                              )}
                             </div>
-                            <div className="text-blue-200 text-sm">
-                              {new Date(transaction.timestamp).toLocaleString()}
+                            <div className="flex items-center gap-3">
+                              <div className={`font-semibold ${
+                                transaction.status === 'completed' 
+                                  ? 'text-green-400' 
+                                  : transaction.status === 'refunded'
+                                  ? 'text-red-400'
+                                  : 'text-yellow-400'
+                              }`}>
+                                {transaction.status === 'completed' 
+                                  ? t('common.status.completed') 
+                                  : transaction.status === 'refunded'
+                                  ? '환불됨'
+                                  : t('common.status.pending')}
+                              </div>
+                              {showRefundButton && (
+                                <button
+                                  onClick={() => handleRefund(transaction)}
+                                  className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-semibold transition-colors duration-200"
+                                >
+                                  환불
+                                </button>
+                              )}
                             </div>
-                          </div>
-                          <div className="text-green-400 font-semibold">
-                            {transaction.status === 'completed' ? t('common.status.completed') : t('common.status.pending')}
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               </div>

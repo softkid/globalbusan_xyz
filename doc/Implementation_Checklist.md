@@ -99,7 +99,7 @@
 - [x] 다중 통화 지원 (KRW, USD, ETH, BTC) - UI 완료
 - [x] 결제 완료 후 데이터베이스 업데이트
 - [x] 결제 영수증 생성 (PDF 다운로드 기능 활용)
-- [ ] 환불 처리
+- [x] 환불 처리 (Stripe 전체/부분 환불, Coinbase 수동 처리)
 
 ---
 
@@ -305,9 +305,9 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 89개
-### 미완료 항목: 56개
-### 전체 진행률: 약 61%
+### 완료된 항목: 90개
+### 미완료 항목: 55개
+### 전체 진행률: 약 62%
 
 ### 우선순위 높은 미완료 항목
 1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
@@ -347,4 +347,5 @@
 - ✅ 기본 테스트 코드 작성 (payment, blockchain, SEO)
 - ✅ Supabase Edge Functions 구현 (Stripe, Coinbase Commerce)
 - ✅ 스마트 컨트랙트 연동 구조 추가 (Ethereum, Solana)
+- ✅ 환불 처리 기능 구현 (Stripe, Coinbase Commerce)
 
