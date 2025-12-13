@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/76</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/56</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/72</span>
+                <span class='fraction'>0/73</span>
             </div>
         
             
@@ -542,7 +542,23 @@
 <a name='L477'></a><a href='#L477'>477</a>
 <a name='L478'></a><a href='#L478'>478</a>
 <a name='L479'></a><a href='#L479'>479</a>
-<a name='L480'></a><a href='#L480'>480</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L480'></a><a href='#L480'>480</a>
+<a name='L481'></a><a href='#L481'>481</a>
+<a name='L482'></a><a href='#L482'>482</a>
+<a name='L483'></a><a href='#L483'>483</a>
+<a name='L484'></a><a href='#L484'>484</a>
+<a name='L485'></a><a href='#L485'>485</a>
+<a name='L486'></a><a href='#L486'>486</a>
+<a name='L487'></a><a href='#L487'>487</a>
+<a name='L488'></a><a href='#L488'>488</a>
+<a name='L489'></a><a href='#L489'>489</a>
+<a name='L490'></a><a href='#L490'>490</a>
+<a name='L491'></a><a href='#L491'>491</a>
+<a name='L492'></a><a href='#L492'>492</a>
+<a name='L493'></a><a href='#L493'>493</a>
+<a name='L494'></a><a href='#L494'>494</a>
+<a name='L495'></a><a href='#L495'>495</a>
+<a name='L496'></a><a href='#L496'>496</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -557,6 +573,21 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -676,6 +707,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1035,6 +1067,21 @@ import { projectService, investmentService } from '../lib/supabase'
 function <span class="fstat-no" title="function not covered" >Invest(</span>) {
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate()</span>
   const { t } = <span class="cstat-no" title="statement not covered" >useTranslation()</span>
+  
+  // Structured Data for Investment Page
+  const structuredData = <span class="cstat-no" title="statement not covered" >{</span>
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    "name": "Global BUSAN Investment",
+    "description": t('invest.description') || "투자 기회를 통해 부산의 글로벌 비즈니스 허브 구축에 참여하세요",
+    "provider": {
+      "@type": "Organization",
+      "name": "Global BUSAN",
+      "url": "https://globalbusan.xyz"
+    },
+    "category": "Investment",
+    "url": "https://globalbusan.xyz/invest"
+  }
   // 인증 상태
   const [isLoggedIn, setIsLoggedIn] = <span class="cstat-no" title="statement not covered" >useState(false)</span>
   const [user, setUser] = <span class="cstat-no" title="statement not covered" >useState(null)</span>
@@ -1158,9 +1205,10 @@ function <span class="fstat-no" title="function not covered" >Invest(</span>) {
     &lt;div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900"&gt;
       &lt;SEO
         title={t('invest.title') + ' - Global BUSAN'}
-        description={t('invest.description')}
+        description={t('invest.description') || '투자 기회를 통해 부산의 글로벌 비즈니스 허브 구축에 참여하세요'}
         keywords="투자, 기부, 프로젝트 투자, 부산 투자, 블록체인 투자, 벤처 투자"
         url="https://globalbusan.xyz/invest"
+        structuredData={structuredData}
       /&gt;
       &lt;Navbar /&gt;
 &nbsp;
@@ -1507,7 +1555,7 @@ export default Invest
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-12-13T03:22:48.310Z
+                at 2025-12-13T04:40:27.820Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

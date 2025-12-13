@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
@@ -107,7 +107,24 @@
 <a name='L42'></a><a href='#L42'>42</a>
 <a name='L43'></a><a href='#L43'>43</a>
 <a name='L44'></a><a href='#L44'>44</a>
-<a name='L45'></a><a href='#L45'>45</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -115,7 +132,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -151,21 +182,38 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Suspense, lazy } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import Home from './pages/Home'
-import Invest from './pages/Invest'
-import Projects from './pages/Projects'
-import ProjectDetail from './pages/ProjectDetail'
-import Statistics from './pages/Statistics'
-import Admin from './pages/Admin'
-import ProjectApplication from './pages/ProjectApplication'
-import Donation from './pages/Donation'
-import GlobalBusan from './pages/GlobalBusan'
-import Roadmap from './pages/Roadmap'
 import ConnectionStatus from './components/ConnectionStatus'
 import MobileHeader from './components/MobileHeader'
 import BottomNav from './components/BottomNav'
+&nbsp;
+// Lazy load pages for code splitting
+const Home = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Home'))</span></span>
+const Invest = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Invest'))</span></span>
+const Projects = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Projects'))</span></span>
+const ProjectDetail = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/ProjectDetail'))</span></span>
+const Statistics = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Statistics'))</span></span>
+const Admin = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Admin'))</span></span>
+const ProjectApplication = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/ProjectApplication'))</span></span>
+const Donation = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Donation'))</span></span>
+const GlobalBusan = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/GlobalBusan'))</span></span>
+const Roadmap = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Roadmap'))</span></span>
+const Status = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >import('./pages/Status'))</span></span>
+&nbsp;
+// Loading component
+const PageLoader = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; (</span>
+<span class="cstat-no" title="statement not covered" >  &lt;div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center"&gt;</span>
+    &lt;div className="text-center"&gt;
+      &lt;div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"&gt;&lt;/div&gt;
+      &lt;div className="text-white text-xl"&gt;페이지를 불러오는 중...&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+)
 &nbsp;
 // Google OAuth Client ID (환경 변수 또는 기본값 사용)
 const GOOGLE_CLIENT_ID = <span class="cstat-no" title="statement not covered" >import.meta.env.VITE_GOOGLE_CLIENT_ID || '299500936836-elk8daqqn64np59q473u66lt9ud0u7cj.apps.googleusercontent.com'</span>
@@ -176,18 +224,21 @@ function <span class="fstat-no" title="function not covered" >App(</span>) {
       &lt;Router&gt;
         &lt;ConnectionStatus /&gt;
         &lt;MobileHeader /&gt;
-        &lt;Routes&gt;
-          &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
-          &lt;Route path="/invest" element={&lt;Invest /&gt;} /&gt;
-          &lt;Route path="/projects" element={&lt;Projects /&gt;} /&gt;
-          &lt;Route path="/projects/:id" element={&lt;ProjectDetail /&gt;} /&gt;
-          &lt;Route path="/statistics" element={&lt;Statistics /&gt;} /&gt;
-          &lt;Route path="/donation" element={&lt;Donation /&gt;} /&gt;
-          &lt;Route path="/global-busan" element={&lt;GlobalBusan /&gt;} /&gt;
-          &lt;Route path="/roadmap" element={&lt;Roadmap /&gt;} /&gt;
-          &lt;Route path="/admin" element={&lt;Admin /&gt;} /&gt;
-          &lt;Route path="/apply" element={&lt;ProjectApplication /&gt;} /&gt;
-        &lt;/Routes&gt;
+        &lt;Suspense fallback={&lt;PageLoader /&gt;}&gt;
+          &lt;Routes&gt;
+            &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
+            &lt;Route path="/invest" element={&lt;Invest /&gt;} /&gt;
+            &lt;Route path="/projects" element={&lt;Projects /&gt;} /&gt;
+            &lt;Route path="/projects/:id" element={&lt;ProjectDetail /&gt;} /&gt;
+            &lt;Route path="/statistics" element={&lt;Statistics /&gt;} /&gt;
+            &lt;Route path="/donation" element={&lt;Donation /&gt;} /&gt;
+                &lt;Route path="/global-busan" element={&lt;GlobalBusan /&gt;} /&gt;
+                &lt;Route path="/roadmap" element={&lt;Roadmap /&gt;} /&gt;
+                &lt;Route path="/status" element={&lt;Status /&gt;} /&gt;
+                &lt;Route path="/admin" element={&lt;Admin /&gt;} /&gt;
+                &lt;Route path="/apply" element={&lt;ProjectApplication /&gt;} /&gt;
+          &lt;/Routes&gt;
+        &lt;/Suspense&gt;
         &lt;BottomNav /&gt;
       &lt;/Router&gt;
     &lt;/GoogleOAuthProvider&gt;
@@ -202,7 +253,7 @@ export default App
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-12-13T03:22:48.310Z
+                at 2025-12-13T04:40:27.820Z
             </div>
         <script src="../prettify.js"></script>
         <script>
