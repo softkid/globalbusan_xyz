@@ -243,7 +243,7 @@
 - [x] 유틸리티 함수 테스트 (errorHandler, serviceWorker, webVitals, analytics)
 - [x] 페이지 테스트 (Home, Projects)
 - [x] 통합 테스트 (결제 플로우, 블록체인, API, 데이터베이스)
-- [x] 테스트 커버리지 80% 목표 (진행 중, 약 79% 달성) - AccessibleButton, ConnectionStatus, i18n, smartContract 테스트 추가
+- [x] 테스트 커버리지 80% 목표 (약 80% 달성) - BottomNav, MobileHeader, AdminNavbar, Statistics 테스트 추가
 
 ### 7.2 통합 테스트
 - [x] 결제 플로우 테스트 (기본 구조)
@@ -313,9 +313,9 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 148개
+### 완료된 항목: 149개
 ### 미완료 항목: 1개
-### 전체 진행률: 약 99.7%
+### 전체 진행률: 약 99.8%
 
 ### 우선순위 높은 미완료 항목
 1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
@@ -325,7 +325,7 @@
 5. ~~**프로덕션 배포**~~ ✅ 완료
 6. ~~**백엔드 API 구현**~~ ✅ Supabase Edge Functions 완료
 7. ~~**스마트 컨트랙트 연동**~~ ✅ 구조 완료 (실제 컨트랙트 배포 필요)
-8. ~~**추가 테스트 커버리지 확대**~~ ✅ 약 79% 달성 (AccessibleButton, ConnectionStatus, i18n, smartContract 테스트 추가)
+8. ~~**추가 테스트 커버리지 확대**~~ ✅ 약 80% 달성 (BottomNav, MobileHeader, AdminNavbar, Statistics 테스트 추가)
 9. **스마트 컨트랙트 실제 배포 및 테스트**
 
 ---
