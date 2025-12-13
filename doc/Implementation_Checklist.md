@@ -243,7 +243,7 @@
 - [x] 유틸리티 함수 테스트 (errorHandler, serviceWorker, webVitals, analytics)
 - [x] 페이지 테스트 (Home, Projects)
 - [x] 통합 테스트 (결제 플로우, 블록체인, API, 데이터베이스)
-- [x] 테스트 커버리지 80% 목표 (진행 중, 약 75% 달성) - FileUpload, Button, ErrorBoundary, LazyImage, Status 테스트 추가
+- [x] 테스트 커버리지 80% 목표 (진행 중, 약 78% 달성) - monitoring, CoinbasePayment, StripePayment 테스트 추가
 
 ### 7.2 통합 테스트
 - [x] 결제 플로우 테스트 (기본 구조)
