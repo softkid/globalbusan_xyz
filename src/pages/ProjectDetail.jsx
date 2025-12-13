@@ -4,14 +4,45 @@ import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding
 import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SEO from '../components/SEO'
 import { t } from '../lib/i18n'
 import { projectService } from '../lib/supabase'
+import { useTranslation } from 'react-i18next'
 
 function ProjectDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { t: translate } = useTranslation()
   const [project, setProject] = useState(null)
   const [loading, setLoading] = useState(true)
+  
+  // Structured Data for Project Detail Page
+  const structuredData = project ? {
+    "@context": "https://schema.org",
+    "@type": "Project",
+    "name": project.title,
+    "description": project.description,
+    "url": `https://globalbusan.xyz/projects/${id}`,
+    "funder": {
+      "@type": "Organization",
+      "name": "Global BUSAN",
+      "url": "https://globalbusan.xyz"
+    },
+    "category": project.category,
+    "status": project.status,
+    "budget": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": project.budget
+    },
+    "amountRaised": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": project.raised || 0
+    },
+    "startDate": project.created_at,
+    "expectedReturn": project.expected_return ? `${project.expected_return}%` : undefined
+  } : null
 
   useEffect(() => {
     loadProject()
@@ -91,6 +122,13 @@ function ProjectDetail() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <SEO
+        title={`${project.title} - Global BUSAN`}
+        description={project.description || `프로젝트 상세 정보: ${project.title}`}
+        keywords={`${project.category}, 프로젝트, 투자, 부산, ${project.title}`}
+        url={`https://globalbusan.xyz/projects/${id}`}
+        structuredData={structuredData}
+      />
       <Navbar />
       
       <main className="pt-20">
