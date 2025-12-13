@@ -21,6 +21,13 @@ const NETWORK_FIRST_PATTERNS = [
   /^https:\/\/fonts\.googleapis\.com/,
 ]
 
+// 캐싱하지 않을 경로 (항상 네트워크에서 가져오기)
+const NO_CACHE_PATTERNS = [
+  /\/sitemap\.xml$/,
+  /\/robots\.txt$/,
+  /\/manifest\.json$/,
+]
+
 // 캐시 우선 전략을 사용할 경로
 const CACHE_FIRST_PATTERNS = [
   /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
@@ -93,6 +100,11 @@ self.addEventListener('fetch', (event) => {
 async function handleRequest(request) {
   const url = new URL(request.url)
 
+  // 캐싱하지 않을 경로 (항상 네트워크에서만 가져오기)
+  if (isNoCache(url)) {
+    return networkOnly(request)
+  }
+
   // 네트워크 우선 전략
   if (isNetworkFirst(url)) {
     return networkFirst(request)
@@ -105,6 +117,19 @@ async function handleRequest(request) {
 
   // 기본: 네트워크 우선, 실패 시 캐시
   return networkFirst(request)
+}
+
+/**
+ * 네트워크 전용 전략 (캐싱하지 않음)
+ */
+async function networkOnly(request) {
+  try {
+    const response = await fetch(request)
+    return response
+  } catch (error) {
+    // 네트워크 실패 시에도 캐시를 사용하지 않음
+    throw error
+  }
 }
 
 /**
@@ -178,6 +203,13 @@ function isNetworkFirst(url) {
  */
 function isCacheFirst(url) {
   return CACHE_FIRST_PATTERNS.some((pattern) => pattern.test(url.href))
+}
+
+/**
+ * 캐싱하지 않을 패턴 확인
+ */
+function isNoCache(url) {
+  return NO_CACHE_PATTERNS.some((pattern) => pattern.test(url.pathname))
 }
 
 /**
