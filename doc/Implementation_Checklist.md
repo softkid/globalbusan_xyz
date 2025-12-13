@@ -243,7 +243,7 @@
 - [x] 유틸리티 함수 테스트 (errorHandler, serviceWorker, webVitals, analytics)
 - [x] 페이지 테스트 (Home, Projects)
 - [x] 통합 테스트 (결제 플로우, 블록체인, API, 데이터베이스)
-- [x] 테스트 커버리지 80% 목표 (진행 중, 약 78% 달성) - monitoring, CoinbasePayment, StripePayment 테스트 추가
+- [x] 테스트 커버리지 80% 목표 (진행 중, 약 79% 달성) - AccessibleButton, ConnectionStatus, i18n, smartContract 테스트 추가
 
 ### 7.2 통합 테스트
 - [x] 결제 플로우 테스트 (기본 구조)
@@ -325,7 +325,7 @@
 5. ~~**프로덕션 배포**~~ ✅ 완료
 6. ~~**백엔드 API 구현**~~ ✅ Supabase Edge Functions 완료
 7. ~~**스마트 컨트랙트 연동**~~ ✅ 구조 완료 (실제 컨트랙트 배포 필요)
-8. ~~**추가 테스트 커버리지 확대**~~ ✅ 약 78% 달성 (monitoring, CoinbasePayment, StripePayment 테스트 추가)
+8. ~~**추가 테스트 커버리지 확대**~~ ✅ 약 79% 달성 (AccessibleButton, ConnectionStatus, i18n, smartContract 테스트 추가)
 9. **스마트 컨트랙트 실제 배포 및 테스트**
 
 ---
@@ -391,4 +391,7 @@
 - ✅ Coinbase Commerce API 완전 통합 (Edge Function 및 프론트엔드 컴포넌트)
 - ✅ 모니터링 시스템 테스트 추가 (monitoring.js)
 - ✅ 결제 컴포넌트 테스트 추가 (CoinbasePayment, StripePayment)
+- ✅ 접근성 컴포넌트 테스트 추가 (AccessibleButton)
+- ✅ 연결 상태 컴포넌트 테스트 추가 (ConnectionStatus)
+- ✅ 유틸리티 함수 테스트 추가 (i18n, smartContract)
 
