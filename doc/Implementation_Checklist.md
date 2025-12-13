@@ -310,9 +310,9 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 122개
-### 미완료 항목: 23개
-### 전체 진행률: 약 84%
+### 완료된 항목: 125개
+### 미완료 항목: 20개
+### 전체 진행률: 약 86%
 
 ### 우선순위 높은 미완료 항목
 1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
@@ -370,4 +370,7 @@
 - ✅ Google Search Console 설정 가이드 작성
 - ✅ 접근성 개선 (ARIA 레이블, 키보드 네비게이션, 포커스 관리)
 - ✅ 추가 컴포넌트 테스트 작성 (Hero, EquityStructure, Reports, Roadmap, Donors, Contact, LanguageSwitcher)
+- ✅ 스마트 컨트랙트 배포 가이드 작성 (Ethereum, Polygon, Solana)
+- ✅ 사용자 수용 테스트 체크리스트 작성
+- ✅ 프로젝트 문서화 완료 (README.md 업데이트)
 
