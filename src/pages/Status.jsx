@@ -17,7 +17,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts'
-import { FaChartLine, FaDollarSign, FaUsers, FaProjectDiagram, FaCalendarAlt, FaTrendingUp } from 'react-icons/fa'
+import { FaChartLine, FaDollarSign, FaUsers, FaProjectDiagram, FaCalendarAlt, FaArrowUp } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
@@ -229,7 +229,7 @@ function Status() {
               </div>
               <div className="text-3xl font-bold text-white">${totalRaised.toLocaleString()}</div>
               <div className="text-green-400 text-sm mt-2 flex items-center gap-1">
-                <FaTrendingUp />
+                <FaArrowUp />
                 {t('status.realTime')}
               </div>
             </div>
@@ -241,7 +241,7 @@ function Status() {
               </div>
               <div className="text-3xl font-bold text-white">{totalInvestors}</div>
               <div className="text-blue-400 text-sm mt-2 flex items-center gap-1">
-                <FaTrendingUp />
+                <FaArrowUp />
                 {t('status.realTime')}
               </div>
             </div>
@@ -260,7 +260,7 @@ function Status() {
 
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
               <div className="flex items-center justify-between mb-4">
-                <FaTrendingUp className="text-3xl text-yellow-400" />
+                <FaChartLine className="text-3xl text-yellow-400" />
                 <span className="text-blue-200 text-sm">{t('status.netProfit')}</span>
               </div>
               <div className={`text-3xl font-bold ${netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
