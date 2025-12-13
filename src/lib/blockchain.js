@@ -409,6 +409,34 @@ export const waitForEthereumTransaction = async (txHash, confirmations = 1) => {
 }
 
 /**
+ * 트랜잭션 상태 확인 (Polygon)
+ */
+export const waitForPolygonTransaction = async (txHash, confirmations = 1) => {
+  try {
+    const rpcUrl = import.meta.env.VITE_POLYGON_RPC_URL || 'https://polygon.llamarpc.com'
+    const provider = new ethers.JsonRpcProvider(rpcUrl)
+
+    const receipt = await provider.waitForTransaction(txHash, confirmations)
+
+    return {
+      success: receipt.status === 1,
+      receipt: {
+        status: receipt.status,
+        blockNumber: receipt.blockNumber,
+        gasUsed: receipt.gasUsed.toString(),
+        confirmations: receipt.confirmations
+      }
+    }
+  } catch (error) {
+    console.error('Wait for Polygon transaction error:', error)
+    return {
+      success: false,
+      error: error.message
+    }
+  }
+}
+
+/**
  * 트랜잭션 상태 확인 (Solana)
  */
 export const waitForSolanaTransaction = async (signature, maxWaitTime = 30000) => {
