@@ -12,6 +12,7 @@ import StripePayment from '../components/StripePayment'
 import { useTranslation } from 'react-i18next'
 import { statsService, expenseService, investmentService } from '../lib/supabase'
 import { validatePaymentAmount } from '../lib/payment'
+import { sendTransaction, waitForEthereumTransaction, waitForSolanaTransaction, verifyTransaction } from '../lib/blockchain'
 
 function Donation() {
   const { t } = useTranslation()
@@ -170,15 +171,47 @@ function Donation() {
     setIsDonating(true)
 
     try {
-      // 실제로는 블록체인 트랜잭션을 전송해야 하지만, 여기서는 시뮬레이션
-      const transaction = {
-        id: Date.now().toString(),
-        amount: parseFloat(donationAmount),
-        crypto: selectedCrypto,
-        address: walletAddress,
-        timestamp: new Date().toISOString(),
-        status: 'pending'
+      // 기부 주소 가져오기
+      const toAddress = donationAddresses[selectedCrypto]
+      if (!toAddress) {
+        throw new Error('Invalid crypto selection')
       }
+
+      // 네트워크 결정
+      const network = selectedCrypto === 'SOL' ? 'solana' : 'ethereum'
+
+      // 실제 블록체인 트랜잭션 전송
+      const result = await sendTransaction(
+        toAddress,
+        parseFloat(donationAmount),
+        walletAddress,
+        network
+      )
+
+      if (!result.success) {
+        throw new Error(result.error || 'Transaction failed')
+      }
+
+      // 트랜잭션 확인 대기
+      let confirmationResult
+      if (network === 'solana') {
+        confirmationResult = await waitForSolanaTransaction(result.transactionHash)
+      } else {
+        confirmationResult = await waitForEthereumTransaction(result.transactionHash, 1)
+      }
+
+      if (!confirmationResult.success) {
+        // 트랜잭션은 전송되었지만 확인 실패 - 나중에 확인 가능하도록 저장
+        console.warn('Transaction sent but confirmation failed:', confirmationResult.error)
+      }
+
+      // 트랜잭션 검증
+      const verification = await verifyTransaction(
+        result.transactionHash,
+        network,
+        parseFloat(donationAmount),
+        toAddress
+      )
 
       // 데이터베이스에 저장
       if (user && user.email) {
@@ -186,18 +219,34 @@ function Donation() {
           investor_email: user.email,
           amount: parseFloat(donationAmount),
           crypto_type: selectedCrypto,
-          transaction_hash: `0x${Date.now().toString(16)}`,
-          status: 'pending',
+          transaction_hash: result.transactionHash,
+          status: verification.verified ? 'confirmed' : 'pending',
           investment_date: new Date().toISOString()
         })
       }
 
+      const transaction = {
+        id: result.transactionHash,
+        amount: parseFloat(donationAmount),
+        crypto: selectedCrypto,
+        address: walletAddress,
+        transactionHash: result.transactionHash,
+        timestamp: new Date().toISOString(),
+        status: verification.verified ? 'completed' : 'pending',
+        verified: verification.verified
+      }
+
       setDonationHistory(prev => [transaction, ...prev])
       setDonationAmount('')
-      alert(t('donation.donationSuccess'))
+      
+      if (verification.verified) {
+        alert(t('donation.donationSuccess'))
+      } else {
+        alert('트랜잭션이 전송되었습니다. 확인 중입니다...')
+      }
     } catch (error) {
       console.error('Donation failed:', error)
-      alert(t('donation.donationError'))
+      alert(error.message || t('donation.donationError'))
     } finally {
       setIsDonating(false)
     }

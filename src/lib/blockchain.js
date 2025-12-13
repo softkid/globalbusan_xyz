@@ -175,3 +175,228 @@ export const verifyTransaction = async (txHash, network, expectedAmount, expecte
   }
 }
 
+/**
+ * Ethereum 트랜잭션 전송
+ */
+export const sendEthereumTransaction = async (toAddress, amount, fromAddress, provider) => {
+  try {
+    if (!provider) {
+      // MetaMask 또는 다른 지갑에서 provider 가져오기
+      if (window.ethereum) {
+        provider = new ethers.BrowserProvider(window.ethereum)
+      } else {
+        throw new Error('Ethereum provider not found. Please install MetaMask or connect a wallet.')
+      }
+    }
+
+    // 서명자 가져오기
+    const signer = await provider.getSigner(fromAddress)
+    
+    // 실제 주소 확인
+    const actualFromAddress = await signer.getAddress()
+    if (actualFromAddress.toLowerCase() !== fromAddress.toLowerCase()) {
+      throw new Error('Connected wallet address does not match')
+    }
+
+    // 트랜잭션 생성
+    const tx = {
+      to: toAddress,
+      value: ethers.parseEther(amount.toString()), // ETH를 Wei로 변환
+    }
+
+    // 가스 추정
+    const gasEstimate = await signer.estimateGas(tx)
+    tx.gasLimit = gasEstimate
+
+    // 트랜잭션 전송
+    const transactionResponse = await signer.sendTransaction(tx)
+    
+    // 트랜잭션 해시 반환
+    return {
+      success: true,
+      transactionHash: transactionResponse.hash,
+      from: actualFromAddress,
+      to: toAddress,
+      amount: amount.toString(),
+      network: 'ethereum'
+    }
+  } catch (error) {
+    console.error('Ethereum transaction error:', error)
+    return {
+      success: false,
+      error: error.message || 'Transaction failed',
+      code: error.code
+    }
+  }
+}
+
+/**
+ * Solana 트랜잭션 전송
+ */
+export const sendSolanaTransaction = async (toAddress, amount, fromPublicKey) => {
+  try {
+    if (!window.solana || !window.solana.isPhantom) {
+      throw new Error('Solana wallet not found. Please install Phantom wallet.')
+    }
+
+    // Phantom 지갑 연결 확인
+    if (!window.solana.isConnected) {
+      await window.solana.connect()
+    }
+
+    const provider = window.solana
+    const publicKey = provider.publicKey
+
+    if (!publicKey) {
+      throw new Error('No Solana wallet connected')
+    }
+
+    // @solana/web3.js 사용
+    const { Connection, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction } = await import('@solana/web3.js')
+
+    // RPC 연결
+    const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com'
+    const connection = new Connection(rpcUrl, 'confirmed')
+
+    // 수신 주소 검증
+    const toPublicKey = new PublicKey(toAddress)
+    const fromPublicKeyObj = new PublicKey(publicKey.toString())
+
+    // 트랜잭션 생성
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: fromPublicKeyObj,
+        toPubkey: toPublicKey,
+        lamports: amount * 1e9 // SOL을 lamports로 변환
+      })
+    )
+
+    // 최근 블록해시 가져오기
+    const { blockhash } = await connection.getLatestBlockhash()
+    transaction.recentBlockhash = blockhash
+    transaction.feePayer = fromPublicKeyObj
+
+    // 트랜잭션 서명 및 전송
+    const signedTransaction = await provider.signTransaction(transaction)
+    const signature = await connection.sendRawTransaction(signedTransaction.serialize())
+
+    // 트랜잭션 확인 대기
+    await connection.confirmTransaction(signature, 'confirmed')
+
+    return {
+      success: true,
+      transactionHash: signature,
+      from: publicKey.toString(),
+      to: toAddress,
+      amount: amount.toString(),
+      network: 'solana'
+    }
+  } catch (error) {
+    console.error('Solana transaction error:', error)
+    return {
+      success: false,
+      error: error.message || 'Transaction failed',
+      code: error.code
+    }
+  }
+}
+
+/**
+ * 트랜잭션 전송 (자동 네트워크 감지)
+ */
+export const sendTransaction = async (toAddress, amount, fromAddress, network = 'ethereum') => {
+  if (network === 'solana' || network === 'SOL') {
+    return await sendSolanaTransaction(toAddress, amount, fromAddress)
+  } else {
+    // Ethereum 계열 (ETH, Polygon 등)
+    return await sendEthereumTransaction(toAddress, amount, fromAddress)
+  }
+}
+
+/**
+ * 트랜잭션 상태 확인 (Ethereum)
+ */
+export const waitForEthereumTransaction = async (txHash, confirmations = 1) => {
+  try {
+    const rpcUrl = import.meta.env.VITE_ETHEREUM_RPC_URL || 'https://eth.llamarpc.com'
+    const provider = new ethers.JsonRpcProvider(rpcUrl)
+
+    const receipt = await provider.waitForTransaction(txHash, confirmations)
+
+    return {
+      success: receipt.status === 1,
+      receipt: {
+        status: receipt.status,
+        blockNumber: receipt.blockNumber,
+        gasUsed: receipt.gasUsed.toString(),
+        confirmations: receipt.confirmations
+      }
+    }
+  } catch (error) {
+    console.error('Wait for transaction error:', error)
+    return {
+      success: false,
+      error: error.message
+    }
+  }
+}
+
+/**
+ * 트랜잭션 상태 확인 (Solana)
+ */
+export const waitForSolanaTransaction = async (signature, maxWaitTime = 30000) => {
+  try {
+    const rpcUrl = import.meta.env.VITE_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com'
+    
+    const startTime = Date.now()
+    while (Date.now() - startTime < maxWaitTime) {
+      const response = await fetch(rpcUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getSignatureStatuses',
+          params: [[signature]]
+        })
+      })
+
+      const data = await response.json()
+      const status = data.result?.value?.[0]
+
+      if (status) {
+        if (status.err) {
+          return {
+            success: false,
+            error: 'Transaction failed',
+            status: status.err
+          }
+        }
+        if (status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized') {
+          return {
+            success: true,
+            status: status.confirmationStatus,
+            slot: status.slot
+          }
+        }
+      }
+
+      // 1초 대기 후 재시도
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+
+    return {
+      success: false,
+      error: 'Transaction confirmation timeout'
+    }
+  } catch (error) {
+    console.error('Wait for Solana transaction error:', error)
+    return {
+      success: false,
+      error: error.message
+    }
+  }
+}
+
