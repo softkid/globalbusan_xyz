@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaGoogle, FaWallet, FaEthereum, FaBitcoin, FaCheckCircle, FaCopy, FaQrcode, FaHandHoldingHeart, FaHistory, FaChartLine } from 'react-icons/fa'
+import { FaGoogle, FaWallet, FaEthereum, FaBitcoin, FaCheckCircle, FaCopy, FaQrcode, FaHandHoldingHeart, FaHistory, FaChartLine, FaCreditCard } from 'react-icons/fa'
 import { TiLocationArrow } from 'react-icons/ti'
 import { SiSolana } from 'react-icons/si'
 import { useGoogleLogin } from '@react-oauth/google'
@@ -8,8 +8,10 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
+import StripePayment from '../components/StripePayment'
 import { useTranslation } from 'react-i18next'
-import { statsService, expenseService } from '../lib/supabase'
+import { statsService, expenseService, investmentService } from '../lib/supabase'
+import { validatePaymentAmount } from '../lib/payment'
 
 function Donation() {
   const { t } = useTranslation()
@@ -22,6 +24,7 @@ function Donation() {
   // 기부 정보
   const [donationAmount, setDonationAmount] = useState('')
   const [selectedCrypto, setSelectedCrypto] = useState('ETH')
+  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto' or 'card'
   const [donationHistory, setDonationHistory] = useState([])
   const [isDonating, setIsDonating] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
@@ -150,26 +153,46 @@ function Donation() {
     }
   }
 
-  // 기부 처리
+  // 기부 처리 (암호화폐)
   const handleDonation = async () => {
     if (!donationAmount || !walletAddress) {
       alert(t('donation.checkAmountAndAddress'))
       return
     }
 
+    // 금액 유효성 검사
+    const validation = validatePaymentAmount(parseFloat(donationAmount), selectedCrypto, 'coinbase')
+    if (!validation.valid) {
+      alert(validation.error)
+      return
+    }
+
     setIsDonating(true)
 
     try {
-      const mockTransaction = {
+      // 실제로는 블록체인 트랜잭션을 전송해야 하지만, 여기서는 시뮬레이션
+      const transaction = {
         id: Date.now().toString(),
-        amount: donationAmount,
+        amount: parseFloat(donationAmount),
         crypto: selectedCrypto,
         address: walletAddress,
         timestamp: new Date().toISOString(),
-        status: 'completed'
+        status: 'pending'
       }
 
-      setDonationHistory(prev => [mockTransaction, ...prev])
+      // 데이터베이스에 저장
+      if (user && user.email) {
+        await investmentService.createInvestment({
+          investor_email: user.email,
+          amount: parseFloat(donationAmount),
+          crypto_type: selectedCrypto,
+          transaction_hash: `0x${Date.now().toString(16)}`,
+          status: 'pending',
+          investment_date: new Date().toISOString()
+        })
+      }
+
+      setDonationHistory(prev => [transaction, ...prev])
       setDonationAmount('')
       alert(t('donation.donationSuccess'))
     } catch (error) {
@@ -178,6 +201,45 @@ function Donation() {
     } finally {
       setIsDonating(false)
     }
+  }
+
+  // Stripe 결제 성공 처리
+  const handleStripeSuccess = async (paymentIntent) => {
+    try {
+      // 데이터베이스에 저장
+      if (user && user.email) {
+        await investmentService.createInvestment({
+          investor_email: user.email,
+          amount: paymentIntent.amount,
+          crypto_type: 'USD',
+          transaction_hash: paymentIntent.id,
+          status: 'confirmed',
+          investment_date: new Date(paymentIntent.created * 1000).toISOString()
+        })
+      }
+
+      const transaction = {
+        id: paymentIntent.id,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
+        method: 'card',
+        timestamp: new Date(paymentIntent.created * 1000).toISOString(),
+        status: 'completed'
+      }
+
+      setDonationHistory(prev => [transaction, ...prev])
+      setDonationAmount('')
+      alert(t('donation.donationSuccess'))
+    } catch (error) {
+      console.error('Failed to save payment:', error)
+      alert('Payment succeeded but failed to save record. Please contact support.')
+    }
+  }
+
+  // Stripe 결제 에러 처리
+  const handleStripeError = (error) => {
+    console.error('Stripe payment error:', error)
+    alert(error.message || t('donation.donationError'))
   }
 
   // 주소 복사
@@ -344,40 +406,76 @@ function Donation() {
         )}
 
         {/* Donation Form */}
-        {isLoggedIn && isWalletConnected && (
+        {isLoggedIn && (isWalletConnected || paymentMethod === 'card') && (
           <section className="py-16">
             <div className="container mx-auto px-5 sm:px-10">
               <div className="max-w-2xl mx-auto">
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
                   <h3 className="text-3xl font-bold text-white text-center mb-8">{t('donation.donateNow')}</h3>
 
-                  {/* Crypto Selection */}
+                  {/* Payment Method Selection */}
                   <div className="mb-6">
-                    <label className="block text-white font-semibold mb-3">{t('donation.selectCrypto')}</label>
-                    <div className="grid grid-cols-3 gap-4">
-                      {[
-                        { symbol: 'ETH', name: 'Ethereum', icon: FaEthereum, color: 'bg-blue-500' },
-                        { symbol: 'BTC', name: 'Bitcoin', icon: FaBitcoin, color: 'bg-orange-500' },
-                        { symbol: 'SOL', name: 'Solana', icon: SiSolana, color: 'bg-purple-500' }
-                      ].map((crypto) => (
-                        <button
-                          key={crypto.symbol}
-                          onClick={() => setSelectedCrypto(crypto.symbol)}
-                          className={`p-4 rounded-xl border-2 transition-all duration-300 ${selectedCrypto === crypto.symbol
-                              ? 'border-blue-400 bg-blue-500/20'
-                              : 'border-white/20 hover:border-white/40'
-                            }`}
-                        >
-                          <crypto.icon className={`text-2xl ${crypto.color.replace('bg-', 'text-')} mx-auto mb-2`} />
-                          <div className="text-white font-semibold">{crypto.symbol}</div>
-                        </button>
-                      ))}
+                    <label className="block text-white font-semibold mb-3">결제 방법 선택</label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        onClick={() => {
+                          setPaymentMethod('crypto')
+                          if (!isWalletConnected) {
+                            alert('암호화폐 결제를 위해 지갑을 연결해주세요.')
+                          }
+                        }}
+                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                          paymentMethod === 'crypto'
+                            ? 'border-blue-400 bg-blue-500/20'
+                            : 'border-white/20 hover:border-white/40'
+                        }`}
+                      >
+                        <FaWallet className="text-2xl text-blue-400 mx-auto mb-2" />
+                        <div className="text-white font-semibold">암호화폐</div>
+                      </button>
+                      <button
+                        onClick={() => setPaymentMethod('card')}
+                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                          paymentMethod === 'card'
+                            ? 'border-blue-400 bg-blue-500/20'
+                            : 'border-white/20 hover:border-white/40'
+                        }`}
+                      >
+                        <FaCreditCard className="text-2xl text-green-400 mx-auto mb-2" />
+                        <div className="text-white font-semibold">카드 결제</div>
+                      </button>
                     </div>
                   </div>
 
-                  {/* Donation Address */}
-                  <div className="mb-6">
-                    <label className="block text-white font-semibold mb-3">{t('donation.donationAddress')}</label>
+                  {/* Crypto Selection - Only show for crypto payment */}
+                  {paymentMethod === 'crypto' && (
+                    <>
+                      <div className="mb-6">
+                        <label className="block text-white font-semibold mb-3">{t('donation.selectCrypto')}</label>
+                        <div className="grid grid-cols-3 gap-4">
+                          {[
+                            { symbol: 'ETH', name: 'Ethereum', icon: FaEthereum, color: 'bg-blue-500' },
+                            { symbol: 'BTC', name: 'Bitcoin', icon: FaBitcoin, color: 'bg-orange-500' },
+                            { symbol: 'SOL', name: 'Solana', icon: SiSolana, color: 'bg-purple-500' }
+                          ].map((crypto) => (
+                            <button
+                              key={crypto.symbol}
+                              onClick={() => setSelectedCrypto(crypto.symbol)}
+                              className={`p-4 rounded-xl border-2 transition-all duration-300 ${selectedCrypto === crypto.symbol
+                                  ? 'border-blue-400 bg-blue-500/20'
+                                  : 'border-white/20 hover:border-white/40'
+                                }`}
+                            >
+                              <crypto.icon className={`text-2xl ${crypto.color.replace('bg-', 'text-')} mx-auto mb-2`} />
+                              <div className="text-white font-semibold">{crypto.symbol}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Donation Address */}
+                      <div className="mb-6">
+                        <label className="block text-white font-semibold mb-3">{t('donation.donationAddress')}</label>
                     <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -410,34 +508,63 @@ function Donation() {
 
                   {/* Amount Input */}
                   <div className="mb-6">
-                    <label className="block text-white font-semibold mb-3">{t('donation.amount')} ({selectedCrypto})</label>
+                    <label className="block text-white font-semibold mb-3">
+                      {t('donation.amount')} ({paymentMethod === 'card' ? 'USD' : selectedCrypto})
+                    </label>
                     <input
                       type="number"
                       value={donationAmount}
                       onChange={(e) => setDonationAmount(e.target.value)}
                       placeholder="0.0"
+                      min={paymentMethod === 'card' ? 0.50 : 0}
+                      step={paymentMethod === 'card' ? 0.01 : 0.0001}
                       className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400"
                     />
+                    {paymentMethod === 'card' && (
+                      <p className="text-blue-200 text-sm mt-2">최소 결제 금액: $0.50</p>
+                    )}
                   </div>
 
-                  {/* Donate Button */}
-                  <button
-                    onClick={handleDonation}
-                    disabled={!donationAmount || isDonating}
-                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2"
-                  >
-                    {isDonating ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        {t('donation.processing')}
-                      </>
+                  {/* Payment Form */}
+                  {paymentMethod === 'card' ? (
+                    donationAmount && parseFloat(donationAmount) >= 0.50 ? (
+                      <StripePayment
+                        amount={parseFloat(donationAmount)}
+                        currency="usd"
+                        onSuccess={handleStripeSuccess}
+                        onError={handleStripeError}
+                        metadata={{
+                          name: user?.name || 'Anonymous',
+                          email: user?.email || '',
+                          type: 'donation',
+                          project: 'global-busan'
+                        }}
+                      />
                     ) : (
-                      <>
-                        <TiLocationArrow className="text-xl" />
-                        {t('donation.donateNow')}
-                      </>
-                    )}
-                  </button>
+                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
+                        결제 금액을 입력해주세요 (최소 $0.50)
+                      </div>
+                    )
+                  ) : (
+                    /* Donate Button for Crypto */
+                    <button
+                      onClick={handleDonation}
+                      disabled={!donationAmount || isDonating}
+                      className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      {isDonating ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                          {t('donation.processing')}
+                        </>
+                      ) : (
+                        <>
+                          <TiLocationArrow className="text-xl" />
+                          {t('donation.donateNow')}
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

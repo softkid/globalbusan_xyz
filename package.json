@@ -18,6 +18,8 @@
     "@solana/wallet-adapter-react-ui": "^0.9.39",
     "@solana/wallet-adapter-wallets": "^0.19.37",
     "@solana/web3.js": "^1.98.4",
+    "@stripe/react-stripe-js": "^5.4.1",
+    "@stripe/stripe-js": "^8.5.3",
     "@supabase/supabase-js": "^2.58.0",
     "@walletconnect/modal": "^2.7.0",
     "@walletconnect/web3-provider": "^1.8.0",
