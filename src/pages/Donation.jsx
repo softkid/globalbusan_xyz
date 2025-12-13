@@ -256,7 +256,27 @@ function Donation() {
   // Stripe 결제 성공 처리
   const handleStripeSuccess = async (paymentIntent) => {
     try {
-      // 데이터베이스에 저장
+      // Supabase Edge Function을 통해 결제 검증 및 저장
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const verifyResponse = await fetch(`${supabaseUrl}/functions/v1/verify-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          paymentIntentId: paymentIntent.id,
+          amount: paymentIntent.amount,
+          investorEmail: user?.email || '',
+          cryptoType: 'USD',
+        })
+      })
+
+      if (!verifyResponse.ok) {
+        throw new Error('Failed to verify payment')
+      }
+
+      // 데이터베이스에 저장 (백업)
       if (user && user.email) {
         await investmentService.createInvestment({
           investor_email: user.email,
