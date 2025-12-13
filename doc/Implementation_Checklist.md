@@ -239,9 +239,10 @@
 - [x] React Testing Library 설정
 - [x] 컴포넌트 테스트 (SEO, Navbar, Footer, Hero, EquityStructure, Reports, Roadmap, Donors, Contact, LanguageSwitcher)
 - [x] 유틸리티 함수 테스트 (payment, blockchain, refund, pdfGenerator, supabase)
+- [x] 유틸리티 함수 테스트 (errorHandler, serviceWorker, webVitals, analytics)
 - [x] 페이지 테스트 (Home, Projects)
 - [x] 통합 테스트 (결제 플로우, 블록체인, API, 데이터베이스)
-- [ ] 테스트 커버리지 80% 목표 (진행 중)
+- [ ] 테스트 커버리지 80% 목표 (진행 중, 약 70% 달성)
 
 ### 7.2 통합 테스트
 - [x] 결제 플로우 테스트 (기본 구조)
@@ -311,9 +312,9 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 127개
-### 미완료 항목: 18개
-### 전체 진행률: 약 88%
+### 완료된 항목: 135개
+### 미완료 항목: 10개
+### 전체 진행률: 약 93%
 
 ### 우선순위 높은 미완료 항목
 1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
@@ -375,4 +376,6 @@
 - ✅ 사용자 수용 테스트 체크리스트 작성
 - ✅ 프로젝트 문서화 완료 (README.md 업데이트)
 - ✅ 이미지 최적화 가이드 작성 및 플레이스홀더 이미지 추가
+- ✅ 유틸리티 함수 테스트 추가 (errorHandler, serviceWorker, webVitals, analytics)
+- ✅ analytics.js 유틸리티 모듈 생성 (Google Analytics 통합)
 
