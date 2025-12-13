@@ -236,9 +236,11 @@
 ### 7.1 단위 테스트
 - [x] Jest 설정
 - [x] React Testing Library 설정
-- [x] 컴포넌트 테스트 (SEO, Navbar, Footer)
+- [x] 컴포넌트 테스트 (SEO, Navbar, Footer, Hero, EquityStructure, Reports, Roadmap, Donors, Contact, LanguageSwitcher)
 - [x] 유틸리티 함수 테스트 (payment, blockchain, refund, pdfGenerator, supabase)
-- [ ] 테스트 커버리지 80% 목표 (현재 약 2% → 목표 진행 중)
+- [x] 페이지 테스트 (Home, Projects)
+- [x] 통합 테스트 (결제 플로우, 블록체인, API, 데이터베이스)
+- [ ] 테스트 커버리지 80% 목표 (진행 중)
 
 ### 7.2 통합 테스트
 - [x] 결제 플로우 테스트 (기본 구조)
