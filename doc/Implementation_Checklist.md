@@ -192,8 +192,8 @@
 
 ### 5.2 성능 최적화
 - [x] Vite 빌드 최적화
-- [ ] 이미지 최적화 (lazy loading)
-- [ ] 코드 스플리팅
+- [x] 이미지 최적화 (lazy loading) - LazyImage 컴포넌트 및 useLazyImage 훅
+- [x] 코드 스플리팅 - React.lazy 및 Suspense 적용
 - [ ] 캐싱 전략
 - [ ] CDN 설정
 
