@@ -75,6 +75,9 @@ const Navbar = ({ isAdmin = false }) => {
                 <FaGlobe className="text-white text-lg" />
               </div>
               <span className="text-xl font-bold text-gray-800 hidden sm:block">Global BUSAN</span>
+              <span className="px-2 py-0.5 bg-orange-500 text-white text-xs font-bold rounded-full hidden sm:inline-block">
+                BETA
+              </span>
             </Link>
           </div>
 

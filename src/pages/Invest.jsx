@@ -5,6 +5,7 @@ import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SEO from '../components/SEO'
 import { useTranslation } from 'react-i18next'
 import { projectService, investmentService } from '../lib/supabase'
 
@@ -132,6 +133,12 @@ function Invest() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <SEO
+        title={t('invest.title') + ' - Global BUSAN'}
+        description={t('invest.description')}
+        keywords="투자, 기부, 프로젝트 투자, 부산 투자, 블록체인 투자, 벤처 투자"
+        url="https://globalbusan.xyz/invest"
+      />
       <Navbar />
 
       <main className="pt-20">

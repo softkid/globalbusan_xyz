@@ -14,7 +14,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <h3 className="text-3xl font-bold text-white mb-4">Global BUSAN</h3>
+            <div className="flex items-center gap-3 mb-4">
+              <h3 className="text-3xl font-bold text-white">Global BUSAN</h3>
+              <span className="px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
+                BETA
+              </span>
+            </div>
             <p className="text-lg text-blue-200 mb-6 max-w-md">
               Transforming Busan into a global business hub through transparent, blockchain-powered collaboration.
             </p>
@@ -59,7 +64,7 @@ const Footer = () => {
         <div className="border-t border-white/20 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <p className="text-blue-200 mb-4 md:mb-0">
-              © 2025 Global BUSAN. All rights reserved.
+              © 2025 Global BUSAN. All rights reserved. <span className="text-orange-400 font-semibold">Beta Version</span>
             </p>
             <div className="flex space-x-6">
               <a href="#privacy-policy" className="text-blue-200 hover:text-white transition-colors">

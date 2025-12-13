@@ -6,6 +6,7 @@ import { useGoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SEO from '../components/SEO'
 import { useTranslation } from 'react-i18next'
 import { projectService, statsService } from '../lib/supabase'
 
@@ -227,6 +228,28 @@ function Projects() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <SEO
+        title={t('projects.title') + ' - Global BUSAN'}
+        description={t('projects.description')}
+        keywords="프로젝트, 투자 프로젝트, 부산 프로젝트, 스타트업 프로젝트, 벤처 프로젝트"
+        url="https://globalbusan.xyz/projects"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": t('projects.title'),
+          "description": t('projects.description'),
+          "itemListElement": projects.slice(0, 10).map((project, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "item": {
+              "@type": "CreativeWork",
+              "name": project.title,
+              "description": project.description,
+              "url": `https://globalbusan.xyz/projects/${project.id}`
+            }
+          }))
+        }}
+      />
       <Navbar />
 
       <main className="pt-20">

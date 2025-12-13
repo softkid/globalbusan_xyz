@@ -3,6 +3,7 @@ import { FaChartLine, FaUsers, FaDollarSign, FaBuilding, FaCalendarAlt } from 'r
 import { SiEthereum, SiSolana, SiBitcoin } from 'react-icons/si'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SEO from '../components/SEO'
 import { useTranslation } from 'react-i18next'
 import { statsService } from '../lib/supabase'
 
@@ -77,6 +78,12 @@ function Statistics() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <SEO
+        title={t('statistics.title') + ' - Global BUSAN'}
+        description={t('statistics.description')}
+        keywords="통계, 투자 통계, 프로젝트 통계, 부산 투자 통계, 분석"
+        url="https://globalbusan.xyz/statistics"
+      />
       <Navbar />
 
       <main className="pt-20">

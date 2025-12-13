@@ -7,6 +7,7 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SEO from '../components/SEO'
 import { useTranslation } from 'react-i18next'
 import { statsService, expenseService } from '../lib/supabase'
 
@@ -200,6 +201,12 @@ function Donation() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <SEO
+        title={t('donation.title') + ' - Global BUSAN'}
+        description={t('donation.description')}
+        keywords="기부, 부산 기부, 블록체인 기부, 암호화폐 기부, 투명한 기부"
+        url="https://globalbusan.xyz/donation"
+      />
       <Navbar />
 
       <main className="pt-20">

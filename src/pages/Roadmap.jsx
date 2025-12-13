@@ -5,6 +5,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
+import { useTranslation } from 'react-i18next';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,8 +113,16 @@ function Roadmap() {
         );
     }, []);
 
+    const { t } = useTranslation();
+    
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+            <SEO
+                title={t('roadmap.title') + ' - Global BUSAN'}
+                description={t('roadmap.heroDescription')}
+                keywords="로드맵, 프로젝트 로드맵, 부산 발전, 단계별 계획, 마일스톤"
+                url="https://globalbusan.xyz/roadmap"
+            />
             <Navbar />
             <main className="pt-20">
                 <section className="roadmap-section py-20">

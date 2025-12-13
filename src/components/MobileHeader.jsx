@@ -45,6 +45,9 @@ const MobileHeader = () => {
                             <FaGlobe className="text-white text-lg" />
                         </div>
                         <span className="text-lg font-bold text-white hidden sm:block">Global BUSAN</span>
+                        <span className="px-2 py-0.5 bg-orange-500 text-white text-xs font-bold rounded-full">
+                            BETA
+                        </span>
                     </Link>
 
                     {/* Settings Button */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { FaEnvelope, FaUser, FaBuilding, FaUsers, FaHandshake, FaChartLine, FaPhone, FaMapMarkerAlt, FaGlobe } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SEO from '../components/SEO'
 import { useTranslation } from 'react-i18next'
 
 function GlobalBusan() {
@@ -115,6 +116,12 @@ ${contactForm.message}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <SEO
+        title={t('globalBusan.title') + ' - Global BUSAN'}
+        description={t('globalBusan.descriptionText')}
+        keywords="글로벌 부산, 부산 비즈니스, 국제 협력, 파트너십, 비전, 미션"
+        url="https://globalbusan.xyz/global-busan"
+      />
       <Navbar />
 
       <main className="pt-20">

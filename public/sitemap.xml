@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- 홈페이지 -->
+  <url>
+    <loc>https://globalbusan.xyz/</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/?lang=ar"/>
+  </url>
+  
+  <!-- 투자 페이지 -->
+  <url>
+    <loc>https://globalbusan.xyz/invest</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/invest?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/invest?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/invest?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/invest?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/invest?lang=ar"/>
+  </url>
+  
+  <!-- 프로젝트 목록 -->
+  <url>
+    <loc>https://globalbusan.xyz/projects</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/projects?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/projects?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/projects?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/projects?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/projects?lang=ar"/>
+  </url>
+  
+  <!-- 통계 페이지 -->
+  <url>
+    <loc>https://globalbusan.xyz/statistics</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/statistics?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/statistics?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/statistics?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/statistics?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/statistics?lang=ar"/>
+  </url>
+  
+  <!-- 기부 페이지 -->
+  <url>
+    <loc>https://globalbusan.xyz/donation</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/donation?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/donation?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/donation?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/donation?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/donation?lang=ar"/>
+  </url>
+  
+  <!-- 글로벌 부산 페이지 -->
+  <url>
+    <loc>https://globalbusan.xyz/global-busan</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/global-busan?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/global-busan?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/global-busan?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/global-busan?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/global-busan?lang=ar"/>
+  </url>
+  
+  <!-- 로드맵 페이지 -->
+  <url>
+    <loc>https://globalbusan.xyz/roadmap</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/roadmap?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/roadmap?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/roadmap?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/roadmap?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/roadmap?lang=ar"/>
+  </url>
+  
+  <!-- 프로젝트 신청 페이지 -->
+  <url>
+    <loc>https://globalbusan.xyz/apply</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/apply?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/apply?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/apply?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/apply?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/apply?lang=ar"/>
+  </url>
+</urlset>
+
