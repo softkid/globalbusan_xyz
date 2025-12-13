@@ -165,11 +165,78 @@ export const getBlockchainExplorerLink = (txHash, network = 'ethereum') => {
 }
 
 /**
+ * Polygon 트랜잭션 검증
+ */
+export const verifyPolygonTransaction = async (txHash, expectedAmount, expectedTo) => {
+  try {
+    // Polygon 메인넷 RPC URL
+    const rpcUrl = import.meta.env.VITE_POLYGON_RPC_URL || 'https://polygon.llamarpc.com'
+    const provider = new ethers.JsonRpcProvider(rpcUrl)
+
+    // 트랜잭션 정보 가져오기
+    const tx = await provider.getTransaction(txHash)
+    if (!tx) {
+      return {
+        verified: false,
+        error: 'Transaction not found'
+      }
+    }
+
+    // 트랜잭션 영수증 가져오기
+    const receipt = await provider.getTransactionReceipt(txHash)
+    if (!receipt || receipt.status !== 1) {
+      return {
+        verified: false,
+        error: 'Transaction failed or not confirmed'
+      }
+    }
+
+    // 금액 검증 (MATIC)
+    const txAmount = ethers.formatEther(tx.value)
+    const expectedAmountMatic = ethers.formatEther(expectedAmount || '0')
+    
+    // 수신 주소 검증
+    const toAddress = tx.to?.toLowerCase()
+    const expectedToAddress = expectedTo?.toLowerCase()
+
+    const verified = 
+      (!expectedAmount || Math.abs(parseFloat(txAmount) - parseFloat(expectedAmountMatic)) < 0.001) &&
+      (!expectedTo || toAddress === expectedToAddress)
+
+    return {
+      verified,
+      transaction: {
+        hash: txHash,
+        from: tx.from,
+        to: tx.to,
+        amount: txAmount,
+        blockNumber: receipt.blockNumber,
+        confirmations: receipt.confirmations,
+        timestamp: new Date().toISOString()
+      },
+      receipt: {
+        status: receipt.status,
+        gasUsed: receipt.gasUsed.toString(),
+        blockNumber: receipt.blockNumber
+      }
+    }
+  } catch (error) {
+    console.error('Polygon transaction verification error:', error)
+    return {
+      verified: false,
+      error: error.message || 'Verification failed'
+    }
+  }
+}
+
+/**
  * 트랜잭션 검증 (자동 네트워크 감지)
  */
 export const verifyTransaction = async (txHash, network, expectedAmount, expectedTo) => {
   if (network === 'solana' || network === 'SOL') {
     return await verifySolanaTransaction(txHash, expectedAmount, expectedTo)
+  } else if (network === 'polygon' || network === 'MATIC') {
+    return await verifyPolygonTransaction(txHash, expectedAmount, expectedTo)
   } else {
     return await verifyEthereumTransaction(txHash, expectedAmount, expectedTo)
   }

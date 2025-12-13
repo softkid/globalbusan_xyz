@@ -90,7 +90,7 @@
 - [x] 실제 블록체인 트랜잭션 전송 (Ethereum, Solana)
 - [x] 스마트 컨트랙트 연동 (구조 완료, 실제 컨트랙트 배포 필요)
 - [x] 이더리움 메인넷 연동 (MetaMask 지원)
-- [ ] Polygon 네트워크 연동
+- [x] Polygon 네트워크 연동 (트랜잭션 전송, 검증, 확인)
 - [x] 트랜잭션 검증 로직 (Ethereum, Solana 지원)
 
 ### 2.4 결제 시스템
@@ -305,9 +305,9 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 90개
-### 미완료 항목: 55개
-### 전체 진행률: 약 62%
+### 완료된 항목: 91개
+### 미완료 항목: 54개
+### 전체 진행률: 약 63%
 
 ### 우선순위 높은 미완료 항목
 1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
@@ -348,4 +348,5 @@
 - ✅ Supabase Edge Functions 구현 (Stripe, Coinbase Commerce)
 - ✅ 스마트 컨트랙트 연동 구조 추가 (Ethereum, Solana)
 - ✅ 환불 처리 기능 구현 (Stripe, Coinbase Commerce)
+- ✅ Polygon 네트워크 연동 (트랜잭션 전송, 검증, 확인)
 

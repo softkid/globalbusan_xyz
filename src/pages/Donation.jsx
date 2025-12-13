@@ -12,7 +12,7 @@ import StripePayment from '../components/StripePayment'
 import { useTranslation } from 'react-i18next'
 import { statsService, expenseService, investmentService } from '../lib/supabase'
 import { validatePaymentAmount } from '../lib/payment'
-import { sendTransaction, waitForEthereumTransaction, waitForSolanaTransaction, verifyTransaction } from '../lib/blockchain'
+import { sendTransaction, waitForEthereumTransaction, waitForSolanaTransaction, waitForPolygonTransaction, verifyTransaction } from '../lib/blockchain'
 import { createDonationContract } from '../lib/smartContract'
 import { processStripeRefund, processCoinbaseRefund, canRefund } from '../lib/refund'
 
@@ -39,6 +39,7 @@ function Donation() {
   const donationAddresses = {
     SOL: '2pHWvLfFqnnfAndTdeNkg9Q9C8mbpiuRsFmLanmcjWG3',
     ETH: '0x6EF87606F3AeF06Ee128416595734baDc5B0cA9e',
+    MATIC: '0x6EF87606F3AeF06Ee128416595734baDc5B0cA9e', // Polygon 주소 (예시)
     BTC: 'bc1qrrzjv6ksqg2n0fwjuuf27695mgkfejm2ag48ed'
   }
 
@@ -529,6 +530,7 @@ function Donation() {
                         <div className="grid grid-cols-3 gap-4">
                           {[
                             { symbol: 'ETH', name: 'Ethereum', icon: FaEthereum, color: 'bg-blue-500' },
+                            { symbol: 'MATIC', name: 'Polygon', icon: FaEthereum, color: 'bg-purple-600' },
                             { symbol: 'BTC', name: 'Bitcoin', icon: FaBitcoin, color: 'bg-orange-500' },
                             { symbol: 'SOL', name: 'Solana', icon: SiSolana, color: 'bg-purple-500' }
                           ].map((crypto) => (
@@ -579,6 +581,8 @@ function Donation() {
                       )}
                     </div>
                   </div>
+                    </>
+                  )}
 
                   {/* Amount Input */}
                   <div className="mb-6">
