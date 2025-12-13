@@ -17,7 +17,7 @@ function SEO({
   title,
   description,
   keywords,
-  image = 'https://globalbusan.xyz/og-image.jpg',
+  image = 'https://globalbusan.xyz/og-image-placeholder.svg',
   url,
   type = 'website',
   structuredData

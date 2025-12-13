@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+dist
 dist-ssr
 *.local
 
@@ -22,5 +23,30 @@ dist-ssr
 *.sln
 *.sw?
 
-# Legacy folders to ignore
-awwwards_public/
+# Environment variables
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# Testing
+coverage
+.nyc_output
+
+# Build outputs
+build
+.cache
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Supabase
+.supabase
+
+# Service Worker
+sw.js.map

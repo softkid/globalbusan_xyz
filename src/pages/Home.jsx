@@ -18,7 +18,7 @@ function Home() {
     "name": "Global BUSAN",
     "alternateName": "글로벌 부산",
     "url": "https://globalbusan.xyz",
-    "logo": "https://globalbusan.xyz/logo.png",
+    "logo": "https://globalbusan.xyz/logo-placeholder.svg",
     "description": t('home.description'),
     "address": {
       "@type": "PostalAddress",
