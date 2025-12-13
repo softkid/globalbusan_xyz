@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FaUsers, FaChartPie, FaEye, FaShareAlt } from 'react-icons/fa';
+import { FaUsers, FaChartPie, FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
 import { statsService, investmentService } from '../lib/supabase';
+import { generateEquityStructurePDF } from '../lib/pdfGenerator';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -133,6 +134,16 @@ const EquityStructure = () => {
             // Fallback for browsers that don't support Web Share API
             navigator.clipboard.writeText(window.location.href);
             alert('Link copied to clipboard!');
+        }
+    };
+
+    const handleDownload = async () => {
+        try {
+            const doc = await generateEquityStructurePDF(donationData);
+            doc.save('Global_Busan_XYZ_Equity_Structure_Report.pdf');
+        } catch (error) {
+            console.error('PDF 생성 실패:', error);
+            alert('PDF 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
         }
     };
 
@@ -275,8 +286,25 @@ const EquityStructure = () => {
                                 All donations are recorded on the blockchain for complete transparency and verification.
                             </p>
                             <div className="flex items-center space-x-4">
-                                <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors">
+                                <button 
+                                    onClick={() => {
+                                        if (donationData.recentDonations && donationData.recentDonations.length > 0) {
+                                            const latestTx = donationData.recentDonations[0].blockchain
+                                            if (latestTx) {
+                                                window.open(getBlockchainExplorerLink(latestTx, 'ethereum'), '_blank')
+                                            }
+                                        }
+                                    }}
+                                    className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
+                                >
                                     View on Blockchain
+                                </button>
+                                <button 
+                                    onClick={handleDownload}
+                                    className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                                >
+                                    <FaDownload className="text-sm" />
+                                    <span>Download PDF</span>
                                 </button>
                                 <button 
                                     onClick={handleShare}

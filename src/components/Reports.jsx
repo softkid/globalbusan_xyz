@@ -4,6 +4,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
 import { statsService, expenseService } from '../lib/supabase';
+import { generateReportPDF } from '../lib/pdfGenerator';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -196,12 +197,14 @@ const Reports = () => {
         }
     }, [loading, currentReport]);
 
-    const handleDownload = () => {
-        // Simulate PDF download
-        const link = document.createElement('a');
-        link.href = '#';
-        link.download = `Global_Busan_XYZ_${selectedQuarter}_Report.pdf`;
-        link.click();
+    const handleDownload = async () => {
+        try {
+            const doc = await generateReportPDF(currentReport, selectedQuarter);
+            doc.save(`Global_Busan_XYZ_${selectedQuarter}_Report.pdf`);
+        } catch (error) {
+            console.error('PDF 생성 실패:', error);
+            alert('PDF 다운로드 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
     };
 
     const handleShare = () => {
