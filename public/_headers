@@ -1,0 +1,32 @@
+# Cloudflare Pages Headers Configuration
+# https://developers.cloudflare.com/pages/platform/headers/
+
+# XML files should be served with proper Content-Type
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  X-Content-Type-Options: nosniff
+
+# Robots.txt
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+
+# Manifest file
+/manifest.json
+  Content-Type: application/manifest+json; charset=utf-8
+
+# Service Worker
+/sw.js
+  Content-Type: application/javascript; charset=utf-8
+  Service-Worker-Allowed: /
+
+# HTML files
+/*.html
+  Content-Type: text/html; charset=utf-8
+  X-Content-Type-Options: nosniff
+
+# Security headers for all files
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+
