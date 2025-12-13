@@ -12,6 +12,21 @@ import { projectService, investmentService } from '../lib/supabase'
 function Invest() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  
+  // Structured Data for Investment Page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    "name": "Global BUSAN Investment",
+    "description": t('invest.description') || "투자 기회를 통해 부산의 글로벌 비즈니스 허브 구축에 참여하세요",
+    "provider": {
+      "@type": "Organization",
+      "name": "Global BUSAN",
+      "url": "https://globalbusan.xyz"
+    },
+    "category": "Investment",
+    "url": "https://globalbusan.xyz/invest"
+  }
   // 인증 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState(null)
@@ -135,9 +150,10 @@ function Invest() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <SEO
         title={t('invest.title') + ' - Global BUSAN'}
-        description={t('invest.description')}
+        description={t('invest.description') || '투자 기회를 통해 부산의 글로벌 비즈니스 허브 구축에 참여하세요'}
         keywords="투자, 기부, 프로젝트 투자, 부산 투자, 블록체인 투자, 벤처 투자"
         url="https://globalbusan.xyz/invest"
+        structuredData={structuredData}
       />
       <Navbar />
 

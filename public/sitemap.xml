@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- 홈페이지 -->
   <url>
     <loc>https://globalbusan.xyz/</loc>
     <lastmod>2025-12-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://globalbusan.xyz/og-image.jpg</image:loc>
+      <image:title>Global BUSAN - 부산을 글로벌 비즈니스 허브로</image:title>
+      <image:caption>투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다.</image:caption>
+    </image:image>
     <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/?lang=ko"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/?lang=en"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/?lang=ja"/>

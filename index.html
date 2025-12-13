@@ -38,8 +38,20 @@
   <meta name="twitter:image" content="https://globalbusan.xyz/og-image.jpg" />
   
   <!-- Additional SEO -->
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#1e40af" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Global BUSAN" />
   <link rel="canonical" href="https://globalbusan.xyz/" />
+  
+  <!-- Preconnect for Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="https://www.google-analytics.com" />
   
   <!-- Alternate Languages -->
   <link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/?lang=ko" />
@@ -49,17 +61,72 @@
   <link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/?lang=ar" />
   <link rel="alternate" hreflang="x-default" href="https://globalbusan.xyz/" />
   
-  <!-- Google Analytics -->
+  <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YS88F77Q1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-4YS88F77Q1');
+    gtag('config', 'G-4YS88F77Q1', {
+      'page_path': window.location.pathname,
+      'send_page_view': true
+    });
+    
+    // Enhanced ecommerce tracking for donations
+    gtag('config', 'G-4YS88F77Q1', {
+      'custom_map': {
+        'dimension1': 'donation_method',
+        'dimension2': 'crypto_type'
+      }
+    });
   </script>
   
-  <!-- Google Search Console Verification (실제 verification code로 교체 필요) -->
+  <!-- Google Search Console Verification -->
+  <!-- Verification code는 Google Search Console에서 발급받아 환경 변수로 설정하세요 -->
   <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" /> -->
+  
+  <!-- Structured Data: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Global BUSAN",
+    "alternateName": "글로벌 부산",
+    "url": "https://globalbusan.xyz",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://globalbusan.xyz/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Global BUSAN",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://globalbusan.xyz/logo.png"
+      }
+    }
+  }
+  </script>
+  
+  <!-- Structured Data: BreadcrumbList (for navigation) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://globalbusan.xyz/"
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>

@@ -18,6 +18,22 @@ import { processStripeRefund, processCoinbaseRefund, canRefund } from '../lib/re
 
 function Donation() {
   const { t } = useTranslation()
+  
+  // Structured Data for Donation Page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "DonateAction",
+    "name": "Global BUSAN Donation",
+    "description": t('donation.description') || "투명한 블록체인 기반 기부 플랫폼을 통해 부산의 글로벌 비즈니스 허브 구축을 지원하세요",
+    "recipient": {
+      "@type": "Organization",
+      "name": "Global BUSAN",
+      "url": "https://globalbusan.xyz"
+    },
+    "paymentMethod": ["Cryptocurrency", "CreditCard"],
+    "url": "https://globalbusan.xyz/donation"
+  }
+  
   // 인증 상태
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isWalletConnected, setIsWalletConnected] = useState(false)
@@ -343,6 +359,7 @@ function Donation() {
         description={t('donation.description')}
         keywords="기부, 부산 기부, 블록체인 기부, 암호화폐 기부, 투명한 기부"
         url="https://globalbusan.xyz/donation"
+        structuredData={structuredData}
       />
       <Navbar />
 
