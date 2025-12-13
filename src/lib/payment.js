@@ -38,22 +38,23 @@ export const processStripePayment = async (amount, currency = 'usd', metadata = 
 }
 
 // Coinbase Commerce 결제 처리
-export const processCoinbasePayment = async (amount, currency = 'ETH', metadata = {}) => {
+export const processCoinbasePayment = async (amount, currency = 'USD', metadata = {}) => {
   try {
-    // Coinbase Commerce API 호출
-    const response = await fetch('/api/create-coinbase-charge', {
+    // Supabase Edge Function 호출
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    if (!supabaseUrl) {
+      throw new Error('Supabase URL is not configured')
+    }
+
+    const response = await fetch(`${supabaseUrl}/functions/v1/create-coinbase-charge`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({
-        name: 'Global BUSAN Donation',
-        description: 'Donation to Global BUSAN project',
-        local_price: {
-          amount: amount.toString(),
-          currency: currency.toUpperCase()
-        },
-        pricing_type: 'fixed_price',
+        amount: amount.toString(),
+        currency: currency.toUpperCase(),
         metadata: {
           ...metadata,
           platform: 'global-busan',
@@ -63,7 +64,8 @@ export const processCoinbasePayment = async (amount, currency = 'ETH', metadata 
     })
 
     if (!response.ok) {
-      throw new Error('Coinbase charge creation failed')
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.error?.message || 'Coinbase charge creation failed')
     }
 
     const data = await response.json()
@@ -77,14 +79,27 @@ export const processCoinbasePayment = async (amount, currency = 'ETH', metadata 
 // 결제 상태 확인
 export const checkPaymentStatus = async (paymentId, paymentType = 'stripe') => {
   try {
-    const endpoint = paymentType === 'stripe' 
-      ? `/api/check-payment-intent/${paymentId}`
-      : `/api/check-coinbase-charge/${paymentId}`
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    if (!supabaseUrl) {
+      throw new Error('Supabase URL is not configured')
+    }
 
-    const response = await fetch(endpoint)
+    const endpoint = paymentType === 'stripe' 
+      ? `${supabaseUrl}/functions/v1/verify-payment`
+      : `${supabaseUrl}/functions/v1/check-coinbase-charge/${paymentId}`
+
+    const response = await fetch(endpoint, {
+      method: paymentType === 'stripe' ? 'POST' : 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      },
+      body: paymentType === 'stripe' ? JSON.stringify({ payment_id: paymentId }) : undefined
+    })
     
     if (!response.ok) {
-      throw new Error('Payment status check failed')
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.error?.message || 'Payment status check failed')
     }
 
     const data = await response.json()

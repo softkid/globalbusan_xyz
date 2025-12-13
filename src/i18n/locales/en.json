@@ -335,6 +335,16 @@
         "progress": "Progress",
         "lastUpdated": "Last Updated"
     },
+    "payment": {
+        "error": "Payment error occurred",
+        "redirecting": "Redirecting to payment page...",
+        "openPaymentPage": "Open Payment Page",
+        "cryptoPayment": "Cryptocurrency Payment",
+        "coinbaseDescription": "Pay with cryptocurrency using Coinbase Commerce",
+        "processing": "Processing...",
+        "payWithCrypto": "Pay with Cryptocurrency",
+        "coinbaseSecure": "Secure payment powered by Coinbase Commerce"
+    },
     "fileUpload": {
         "clickToUpload": "Click to upload file",
         "dragAndDrop": "or drag and drop",

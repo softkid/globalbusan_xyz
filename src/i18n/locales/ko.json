@@ -335,6 +335,16 @@
         "progress": "진행률",
         "lastUpdated": "마지막 업데이트"
     },
+    "payment": {
+        "error": "결제 중 오류가 발생했습니다",
+        "redirecting": "결제 페이지로 이동 중...",
+        "openPaymentPage": "결제 페이지 열기",
+        "cryptoPayment": "암호화폐 결제",
+        "coinbaseDescription": "Coinbase Commerce를 사용하여 암호화폐로 결제하세요",
+        "processing": "처리 중...",
+        "payWithCrypto": "암호화폐로 결제",
+        "coinbaseSecure": "Coinbase Commerce로 안전하게 결제"
+    },
     "fileUpload": {
         "clickToUpload": "클릭하여 파일 업로드",
         "dragAndDrop": "또는 드래그 앤 드롭",

@@ -9,6 +9,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
 import StripePayment from '../components/StripePayment'
+import CoinbasePayment from '../components/CoinbasePayment'
 import { useTranslation } from 'react-i18next'
 import { statsService, expenseService, investmentService } from '../lib/supabase'
 import { validatePaymentAmount } from '../lib/payment'
@@ -43,7 +44,7 @@ function Donation() {
   // 기부 정보
   const [donationAmount, setDonationAmount] = useState('')
   const [selectedCrypto, setSelectedCrypto] = useState('ETH')
-  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto' or 'card'
+  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto', 'card', or 'coinbase'
   const [donationHistory, setDonationHistory] = useState([])
   const [isDonating, setIsDonating] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
@@ -498,7 +499,7 @@ function Donation() {
         )}
 
         {/* Donation Form */}
-        {isLoggedIn && (isWalletConnected || paymentMethod === 'card') && (
+        {isLoggedIn && (isWalletConnected || paymentMethod === 'card' || paymentMethod === 'coinbase') && (
           <section className="py-16">
             <div className="container mx-auto px-5 sm:px-10">
               <div className="max-w-2xl mx-auto">
@@ -508,7 +509,7 @@ function Donation() {
                   {/* Payment Method Selection */}
                   <div className="mb-6">
                     <label className="block text-white font-semibold mb-3">결제 방법 선택</label>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <button
                         onClick={() => {
                           setPaymentMethod('crypto')
@@ -523,7 +524,7 @@ function Donation() {
                         }`}
                       >
                         <FaWallet className="text-2xl text-blue-400 mx-auto mb-2" />
-                        <div className="text-white font-semibold">암호화폐</div>
+                        <div className="text-white font-semibold text-sm">지갑</div>
                       </button>
                       <button
                         onClick={() => setPaymentMethod('card')}
@@ -534,7 +535,18 @@ function Donation() {
                         }`}
                       >
                         <FaCreditCard className="text-2xl text-green-400 mx-auto mb-2" />
-                        <div className="text-white font-semibold">카드 결제</div>
+                        <div className="text-white font-semibold text-sm">카드</div>
+                      </button>
+                      <button
+                        onClick={() => setPaymentMethod('coinbase')}
+                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                          paymentMethod === 'coinbase'
+                            ? 'border-blue-400 bg-blue-500/20'
+                            : 'border-white/20 hover:border-white/40'
+                        }`}
+                      >
+                        <FaBitcoin className="text-2xl text-orange-400 mx-auto mb-2" />
+                        <div className="text-white font-semibold text-sm">Coinbase</div>
                       </button>
                     </div>
                   </div>
@@ -628,6 +640,53 @@ function Donation() {
                         currency="usd"
                         onSuccess={handleStripeSuccess}
                         onError={handleStripeError}
+                        metadata={{
+                          name: user?.name || 'Anonymous',
+                          email: user?.email || '',
+                          type: 'donation',
+                          project: 'global-busan'
+                        }}
+                      />
+                    ) : (
+                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
+                        결제 금액을 입력해주세요 (최소 $0.50)
+                      </div>
+                    )
+                  ) : paymentMethod === 'coinbase' ? (
+                    donationAmount && parseFloat(donationAmount) >= 0.50 ? (
+                      <CoinbasePayment
+                        amount={parseFloat(donationAmount)}
+                        currency="usd"
+                        onSuccess={async (result) => {
+                          // Coinbase 결제 성공 처리
+                          if (user && user.email) {
+                            try {
+                              await investmentService.createInvestment({
+                                project_id: null, // 글로벌 기부
+                                investor_name: user.name || 'Anonymous',
+                                investor_email: user.email,
+                                amount: parseFloat(donationAmount),
+                                currency: 'USD',
+                                payment_method: 'coinbase',
+                                payment_id: result.chargeId,
+                                transaction_hash: result.charge?.code,
+                                investment_date: new Date().toISOString().split('T')[0],
+                                status: 'completed'
+                              })
+                              alert(t('donation.success') || '기부가 완료되었습니다!')
+                              setDonationAmount('')
+                              // 기부 내역 새로고침
+                              loadDonationHistory()
+                            } catch (error) {
+                              console.error('기부 저장 실패:', error)
+                              alert(t('donation.saveError') || '기부는 완료되었으나 저장 중 오류가 발생했습니다.')
+                            }
+                          }
+                        }}
+                        onError={(error) => {
+                          console.error('Coinbase payment error:', error)
+                          alert(error.message || t('donation.error') || '결제 중 오류가 발생했습니다.')
+                        }}
                         metadata={{
                           name: user?.name || 'Anonymous',
                           email: user?.email || '',
