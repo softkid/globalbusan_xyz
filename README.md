@@ -1,125 +1,218 @@
 # Global BUSAN
 
-A transparent, blockchain-powered donation platform that connects international entrepreneurs with Korea's business ecosystem to transform Busan into a global business hub.
+투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다. 함께 부산에 글로벌 비즈니스 허브를 만들어갑시다.
 
-## Features
+## 🌟 주요 기능
 
-- **Equity Structure**: Real-time donation tracking and stakeholder visualization
-- **Project Reports**: Quarterly fund usage reports and project progress
-- **Roadmap**: 5-stage project timeline with milestones
-- **Transparency**: Blockchain-verified donation tracking
-- **Mobile-First**: Responsive design optimized for all devices
+- **투명한 기부 시스템**: 블록체인 기반 기부 추적 및 검증
+- **실시간 지분 구조**: 실시간 기부금 집계 및 기부자 시각화
+- **분기별 보고서**: 투명한 재무 보고서 및 프로젝트 진행 상황
+- **다국어 지원**: 한국어, 영어, 일본어, 중국어, 아랍어 지원
+- **다중 결제 수단**: 암호화폐 (ETH, BTC, SOL, MATIC) 및 카드 결제 (Stripe)
+- **PWA 지원**: 오프라인 지원 및 모바일 앱 경험
 
-## Technology Stack
+## 🚀 빠른 시작
 
-- **Frontend**: React 18 + Vite
-- **Styling**: Tailwind CSS
-- **Animations**: GSAP
-- **Icons**: React Icons
+### 필수 요구사항
 
-## Getting Started
+- Node.js 18+
+- npm 또는 yarn
+- Supabase 계정
+- Google OAuth 클라이언트 ID (선택사항)
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Supabase account
+### 설치
 
-### Installation
-1. Clone the repository:
 ```bash
+# 저장소 클론
 git clone https://github.com/softkid/globalbusan_xyz.git
 cd globalbusan_xyz
-```
 
-2. Install dependencies:
-```bash
+# 의존성 설치
 npm install
+
+# 환경 변수 설정
+cp .env.example .env
+# .env 파일을 편집하여 필요한 환경 변수 설정
 ```
 
-3. Set up environment variables:
-   - Create a `.env` file in the root directory:
-   ```bash
-   cp .env.example .env
-   ```
-   - Update `.env` with your credentials:
-   ```
-   VITE_SUPABASE_URL=your-supabase-url
-   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-   VITE_GOOGLE_CLIENT_ID=your-google-client-id
-   ```
+### 환경 변수 설정
 
-4. Set up Google OAuth:
-   - See [GOOGLE_OAUTH_SETUP.md](./GOOGLE_OAUTH_SETUP.md) for detailed instructions
-   - **Important**: Add `http://localhost:5173` to Authorized JavaScript origins in Google Cloud Console
-   - Add `http://localhost:5173` to Authorized redirect URIs
+`.env` 파일에 다음 변수들을 설정하세요:
 
-5. Set up Supabase:
-   - Create a new project at [supabase.com](https://supabase.com)
-   - Copy the project URL and anon key
-   - Update `.env` with your Supabase credentials
+```env
+# Supabase
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-6. Set up the database:
-   - Run the SQL schema in your Supabase SQL editor:
-   ```bash
-   cat supabase-schema.sql
-   ```
-   - Copy and paste the contents into your Supabase SQL editor
+# Google OAuth
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
 
-7. Start development server:
+# Blockchain RPC
+VITE_ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/YOUR_PROJECT_ID
+VITE_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+VITE_POLYGON_RPC_URL=https://polygon-rpc.com
+
+# Payment
+VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+VITE_COINBASE_COMMERCE_API_KEY=your_coinbase_api_key
+```
+
+### 개발 서버 실행
+
 ```bash
 npm run dev
 ```
 
-8. Open [http://localhost:5173](http://localhost:5173) in your browser
+브라우저에서 `http://localhost:5173` 접속
 
-## Google OAuth Setup
+### 프로덕션 빌드
 
-**Important**: Before using Google login, you must configure Google Cloud Console:
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Navigate to **APIs & Services** > **Credentials**
-3. Select your OAuth 2.0 Client ID
-4. Add to **Authorized JavaScript origins**:
-   - `http://localhost:5173` (for development)
-   - `https://your-production-domain.com` (for production)
-5. Add to **Authorized redirect URIs**:
-   - `http://localhost:5173` (for development)
-   - `https://your-production-domain.com` (for production)
-6. Save and wait 5-10 minutes for changes to propagate
-
-See [GOOGLE_OAUTH_SETUP.md](./GOOGLE_OAUTH_SETUP.md) for detailed step-by-step instructions.
-
-## Deployment
-
-### Build for Production
 ```bash
 npm run build
+npm run preview
 ```
 
-### Deploy to Cloudflare Workers
-1. Install Wrangler CLI:
+## 📁 프로젝트 구조
+
+```
+globalbusan_xyz/
+├── public/                 # 정적 파일
+│   ├── sitemap.xml        # 사이트맵
+│   ├── robots.txt         # 검색 엔진 설정
+│   ├── manifest.json      # PWA 매니페스트
+│   └── sw.js             # Service Worker
+├── src/
+│   ├── components/        # React 컴포넌트
+│   │   ├── __tests__/    # 컴포넌트 테스트
+│   │   ├── Navbar.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Hero.jsx
+│   │   └── ...
+│   ├── pages/            # 페이지 컴포넌트
+│   │   ├── Home.jsx
+│   │   ├── Invest.jsx
+│   │   ├── Projects.jsx
+│   │   └── ...
+│   ├── lib/              # 유틸리티 및 서비스
+│   │   ├── supabase.js  # Supabase 클라이언트
+│   │   ├── blockchain.js # 블록체인 유틸리티
+│   │   ├── payment.js   # 결제 유틸리티
+│   │   └── ...
+│   ├── hooks/           # 커스텀 훅
+│   │   ├── useLazyLoad.js
+│   │   └── useKeyboardNavigation.js
+│   ├── utils/           # 유틸리티 함수
+│   │   ├── errorHandler.js
+│   │   ├── serviceWorker.js
+│   │   └── webVitals.js
+│   ├── i18n/            # 다국어 설정
+│   └── App.jsx          # 메인 앱 컴포넌트
+├── supabase/
+│   └── functions/       # Supabase Edge Functions
+│       ├── create-payment-intent/
+│       ├── verify-payment/
+│       └── process-refund/
+├── doc/                 # 문서
+│   ├── Implementation_Checklist.md
+│   ├── PRD_GlobalBusan_XYZ.md
+│   ├── GOOGLE_SEARCH_CONSOLE_SETUP.md
+│   ├── SMART_CONTRACT_DEPLOYMENT.md
+│   └── UAT_CHECKLIST.md
+└── package.json
+```
+
+## 🧪 테스트
+
 ```bash
-npm install -g wrangler
+# 모든 테스트 실행
+npm test
+
+# 커버리지 포함 테스트
+npm run test:coverage
+
+# 감시 모드
+npm run test:watch
 ```
 
-2. Login to Cloudflare:
-```bash
-wrangler login
-```
+## 📚 문서
 
-3. Deploy:
-```bash
-wrangler deploy
-```
+- [구현 체크리스트](./doc/Implementation_Checklist.md)
+- [Google Search Console 설정 가이드](./doc/GOOGLE_SEARCH_CONSOLE_SETUP.md)
+- [스마트 컨트랙트 배포 가이드](./doc/SMART_CONTRACT_DEPLOYMENT.md)
+- [사용자 수용 테스트 체크리스트](./doc/UAT_CHECKLIST.md)
 
-The `wrangler.jsonc` file is already configured for deployment.
+## 🛠 기술 스택
 
-## Project Structure
+### 프론트엔드
+- **React 18** - UI 라이브러리
+- **Vite** - 빌드 도구
+- **Tailwind CSS** - 스타일링
+- **GSAP** - 애니메이션
+- **React Router** - 라우팅
+- **i18next** - 다국어 지원
 
-- `src/components/` - React components
-- `src/index.css` - Global styles and utilities
-- `doc/` - Project documentation and PRD
+### 백엔드
+- **Supabase** - BaaS (Database, Auth, Storage)
+- **Supabase Edge Functions** - 서버리스 함수
 
-## License
+### 블록체인
+- **Ethers.js** - Ethereum/Polygon
+- **@solana/web3.js** - Solana
+- **MetaMask** - Ethereum 지갑
+- **Phantom** - Solana 지갑
 
-© 2025 Global BUSAN. All rights reserved.
+### 결제
+- **Stripe** - 카드 결제
+- **Coinbase Commerce** - 암호화폐 결제
+
+### 테스트
+- **Jest** - 테스트 프레임워크
+- **React Testing Library** - 컴포넌트 테스트
+
+## 🚢 배포
+
+### Cloudflare Pages
+
+1. GitHub 저장소 연결
+2. 빌드 설정:
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+3. 환경 변수 설정
+4. 배포
+
+### 환경 변수 (프로덕션)
+
+Cloudflare Pages 대시보드에서 다음 환경 변수 설정:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_GOOGLE_CLIENT_ID`
+- `VITE_ETHEREUM_RPC_URL`
+- `VITE_SOLANA_RPC_URL`
+- `VITE_POLYGON_RPC_URL`
+- `VITE_STRIPE_PUBLISHABLE_KEY`
+
+## 📊 현재 상태
+
+- **버전**: 0.1.0-beta
+- **진행률**: 약 84%
+- **완료된 항목**: 122개
+- **미완료 항목**: 23개
+
+자세한 내용은 [구현 체크리스트](./doc/Implementation_Checklist.md)를 참조하세요.
+
+## 🤝 기여
+
+기여를 환영합니다! 이슈를 열거나 Pull Request를 제출해주세요.
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스를 따릅니다.
+
+## 📞 연락처
+
+- **이메일**: contact@globalbusan.xyz
+- **웹사이트**: https://globalbusan.xyz
+
+---
+
+**Made with ❤️ for Busan**
