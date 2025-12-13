@@ -193,6 +193,9 @@ const EXTENSION_ERROR_PATTERNS = [
   /Cannot use 'in' operator to search for 'animation' in undefined/i,
   /createLucideIcon/i,
   /web-helper\.ts-loader/i,
+  /solana/i,
+  /wallet/i,
+  /\.js:\d+:\d+$/i, // 번들된 파일의 라인 번호 패턴 (확장 프로그램에서 자주 사용)
 ]
 
 /**
@@ -201,14 +204,45 @@ const EXTENSION_ERROR_PATTERNS = [
 const isExtensionError = (error) => {
   if (!error) return false
   
-  const errorString = JSON.stringify(error)
-  const message = error?.message || error?.toString() || ''
-  const filename = error?.filename || error?.source || ''
-  const stack = error?.stack || ''
-  
-  const fullErrorText = `${errorString} ${message} ${filename} ${stack}`
-  
-  return EXTENSION_ERROR_PATTERNS.some(pattern => pattern.test(fullErrorText))
+  try {
+    const errorString = JSON.stringify(error)
+    const message = error?.message || error?.toString() || ''
+    const filename = error?.filename || error?.source || ''
+    const stack = error?.stack || ''
+    const name = error?.name || ''
+    
+    const fullErrorText = `${errorString} ${message} ${filename} ${stack} ${name}`
+    
+    // 확장 프로그램 오류 패턴 확인
+    if (EXTENSION_ERROR_PATTERNS.some(pattern => pattern.test(fullErrorText))) {
+      return true
+    }
+    
+    // 스택 트레이스에서 확장 프로그램 경로 확인
+    if (stack && (
+      stack.includes('chrome-extension://') ||
+      stack.includes('moz-extension://') ||
+      stack.includes('extension://') ||
+      stack.includes('solanaActionsContentScript') ||
+      stack.includes('content.js')
+    )) {
+      return true
+    }
+    
+    // 파일명에서 확장 프로그램 확인
+    if (filename && (
+      filename.includes('chrome-extension://') ||
+      filename.includes('moz-extension://') ||
+      filename.includes('extension://')
+    )) {
+      return true
+    }
+    
+    return false
+  } catch (e) {
+    // JSON.stringify 실패 시 안전하게 처리
+    return false
+  }
 }
 
 /**
@@ -255,11 +289,58 @@ export const setupGlobalErrorHandlers = () => {
   // Console Error Override (확장 프로그램 오류 필터링)
   const originalConsoleError = console.error
   console.error = (...args) => {
-    const errorText = args.join(' ')
-    if (EXTENSION_ERROR_PATTERNS.some(pattern => pattern.test(errorText))) {
-      return // 확장 프로그램 오류는 무시
+    try {
+      const errorText = args.map(arg => {
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg)
+          } catch {
+            return String(arg)
+          }
+        }
+        return String(arg)
+      }).join(' ')
+      
+      if (EXTENSION_ERROR_PATTERNS.some(pattern => pattern.test(errorText))) {
+        return // 확장 프로그램 오류는 무시
+      }
+      
+      // 에러 객체인 경우 추가 확인
+      const errorArg = args.find(arg => arg instanceof Error)
+      if (errorArg && isExtensionError(errorArg)) {
+        return // 확장 프로그램 오류는 무시
+      }
+      
+      originalConsoleError.apply(console, args)
+    } catch (e) {
+      // 필터링 중 오류 발생 시 원본 함수 호출
+      originalConsoleError.apply(console, args)
     }
-    originalConsoleError.apply(console, args)
+  }
+
+  // Console Warn Override (확장 프로그램 경고 필터링)
+  const originalConsoleWarn = console.warn
+  console.warn = (...args) => {
+    try {
+      const errorText = args.map(arg => {
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg)
+          } catch {
+            return String(arg)
+          }
+        }
+        return String(arg)
+      }).join(' ')
+      
+      if (EXTENSION_ERROR_PATTERNS.some(pattern => pattern.test(errorText))) {
+        return // 확장 프로그램 경고는 무시
+      }
+      
+      originalConsoleWarn.apply(console, args)
+    } catch (e) {
+      originalConsoleWarn.apply(console, args)
+    }
   }
 }
 
