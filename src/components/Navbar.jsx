@@ -50,6 +50,7 @@ const Navbar = ({ isAdmin = false }) => {
     { name: t('nav.home'), path: "/", icon: FaHome, key: 'home' },
     { name: t('nav.projects'), path: "/projects", icon: FaProjectDiagram, key: 'projects' },
     { name: t('nav.statistics'), path: "/statistics", icon: FaChartLine, key: 'statistics' },
+    { name: t('nav.status'), path: "/status", icon: FaChartLine, key: 'status' },
     { name: t('nav.invest'), path: "/invest", icon: FaBuilding, key: 'invest' }
   ];
 
