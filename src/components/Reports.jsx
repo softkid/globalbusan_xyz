@@ -207,16 +207,32 @@ const Reports = () => {
         }
     };
 
-    const handleShare = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: `Global Busan XYZ - ${currentReport.title}`,
-                text: `Check out our ${selectedQuarter} progress report!`,
-                url: window.location.href
-            });
-        } else {
-            navigator.clipboard.writeText(window.location.href);
-            alert('Link copied to clipboard!');
+    const handleShare = async () => {
+        const shareData = {
+            title: `Global Busan XYZ - ${currentReport.title}`,
+            text: `Check out our ${selectedQuarter} progress report! Total raised: $${currentReport.fundsReceived?.toLocaleString() || 0}`,
+            url: window.location.href
+        };
+
+        try {
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+            } else {
+                // Fallback: 클립보드에 복사
+                await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+                alert('링크가 클립보드에 복사되었습니다!');
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                // 사용자가 공유를 취소한 경우가 아닐 때만 에러 처리
+                try {
+                    await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+                    alert('링크가 클립보드에 복사되었습니다!');
+                } catch (clipboardError) {
+                    console.error('공유 실패:', error);
+                    alert('공유 기능을 사용할 수 없습니다.');
+                }
+            }
         }
     };
 
