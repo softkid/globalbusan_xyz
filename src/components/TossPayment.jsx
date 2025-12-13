@@ -63,8 +63,9 @@ function TossPayment({ amount, currency = 'KRW', onSuccess, onError, metadata = 
       // 주문번호 생성 (고유한 값)
       const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       
-      // 결제창 인스턴스 생성 및 결제 요청
-      const payment = tossPayments.payment()
+      // 결제창 인스턴스 생성 (customerKey는 UUID 형태로 생성)
+      const customerKey = `customer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      const payment = tossPayments.payment({ customerKey })
       
       // 결제창 열기 (통합결제창 - 카드/간편결제 선택 가능)
       await payment.requestPayment('CARD', {

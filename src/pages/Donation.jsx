@@ -712,7 +712,53 @@ function Donation() {
                       />
                     ) : (
                       <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
-                        결제 금액을 입력해주세요 (최소 $0.50)
+                        {t('donation.enterAmountMinimum', { amount: '$0.50' }) || '결제 금액을 입력해주세요 (최소 $0.50)'}
+                      </div>
+                    )
+                  ) : paymentMethod === 'toss' ? (
+                    donationAmount && parseFloat(donationAmount) >= 1000 ? (
+                      <TossPayment
+                        amount={parseFloat(donationAmount)}
+                        currency="KRW"
+                        onSuccess={async (result) => {
+                          // 토스페이먼츠 결제 성공 처리
+                          if (user && user.email) {
+                            try {
+                              await investmentService.createInvestment({
+                                project_id: null, // 글로벌 기부
+                                investor_name: user.name || 'Anonymous',
+                                investor_email: user.email,
+                                amount: parseFloat(donationAmount),
+                                currency: 'KRW',
+                                payment_method: 'toss',
+                                payment_id: result.id,
+                                transaction_hash: result.orderId,
+                                investment_date: new Date().toISOString().split('T')[0],
+                                status: 'completed'
+                              })
+                              alert(t('donation.success') || '기부가 완료되었습니다!')
+                              setDonationAmount('')
+                            } catch (error) {
+                              console.error('기부 저장 실패:', error)
+                              alert(t('donation.saveError') || '기부는 완료되었으나 저장 중 오류가 발생했습니다.')
+                            }
+                          }
+                        }}
+                        onError={(error) => {
+                          console.error('Toss payment error:', error)
+                          alert(error.message || t('donation.error') || '결제 중 오류가 발생했습니다.')
+                        }}
+                        metadata={{
+                          name: user?.name || 'Anonymous',
+                          email: user?.email || '',
+                          type: 'donation',
+                          project: 'global-busan',
+                          orderName: 'Global BUSAN 기부'
+                        }}
+                      />
+                    ) : (
+                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
+                        {t('donation.enterAmountMinimum', { amount: '1,000원' }) || '결제 금액을 입력해주세요 (최소 1,000원)'}
                       </div>
                     )
                   ) : (
