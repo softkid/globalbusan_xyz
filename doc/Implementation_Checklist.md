@@ -88,7 +88,7 @@
 - [x] Solana 지갑 연결 UI
 - [x] 지갑 주소 표시
 - [x] 실제 블록체인 트랜잭션 전송 (Ethereum, Solana)
-- [ ] 스마트 컨트랙트 연동
+- [x] 스마트 컨트랙트 연동 (구조 완료, 실제 컨트랙트 배포 필요)
 - [x] 이더리움 메인넷 연동 (MetaMask 지원)
 - [ ] Polygon 네트워크 연동
 - [x] 트랜잭션 검증 로직 (Ethereum, Solana 지원)
@@ -305,18 +305,20 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 85개
-### 미완료 항목: 60개
-### 전체 진행률: 약 59%
+### 완료된 항목: 89개
+### 미완료 항목: 56개
+### 전체 진행률: 약 61%
 
 ### 우선순위 높은 미완료 항목
-1. ~~**결제 시스템 통합**~~ ✅ UI 완료 (백엔드 API 구현 필요)
+1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
 2. ~~**블록체인 실제 트랜잭션 전송**~~ ✅ 완료 (Ethereum, Solana)
 3. ~~**PDF 다운로드 기능**~~ ✅ 완료
-4. **테스트 코드 작성** (Jest, React Testing Library)
-5. **프로덕션 배포** (Cloudflare Workers, 도메인)
-6. **백엔드 API 구현** (Stripe Payment Intent, Coinbase Commerce)
-7. **스마트 컨트랙트 연동** (자동화된 기부 처리)
+4. ~~**테스트 코드 작성**~~ ✅ 기본 테스트 완료
+5. ~~**프로덕션 배포**~~ ✅ 완료
+6. ~~**백엔드 API 구현**~~ ✅ Supabase Edge Functions 완료
+7. ~~**스마트 컨트랙트 연동**~~ ✅ 구조 완료 (실제 컨트랙트 배포 필요)
+8. **추가 테스트 커버리지 확대** (80% 목표)
+9. **스마트 컨트랙트 실제 배포 및 테스트**
 
 ---
 
@@ -343,4 +345,6 @@
 - ✅ 트랜잭션 확인 및 검증 자동화
 - ✅ Jest 및 React Testing Library 설정
 - ✅ 기본 테스트 코드 작성 (payment, blockchain, SEO)
+- ✅ Supabase Edge Functions 구현 (Stripe, Coinbase Commerce)
+- ✅ 스마트 컨트랙트 연동 구조 추가 (Ethereum, Solana)
 

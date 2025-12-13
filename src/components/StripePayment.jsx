@@ -46,14 +46,16 @@ const CheckoutForm = ({ amount, currency, onSuccess, onError, metadata }) => {
     setError(null)
 
     try {
-      // Payment Intent 생성 (백엔드 API 호출)
-      const response = await fetch('/api/create-payment-intent', {
+      // Payment Intent 생성 (Supabase Edge Function 호출)
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const response = await fetch(`${supabaseUrl}/functions/v1/create-payment-intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
-          amount: Math.round(amount * 100), // 센트 단위
+          amount: amount, // 달러 단위 (Edge Function에서 센트로 변환)
           currency: currency.toLowerCase(),
           metadata: {
             ...metadata,

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { statsService, expenseService, investmentService } from '../lib/supabase'
 import { validatePaymentAmount } from '../lib/payment'
 import { sendTransaction, waitForEthereumTransaction, waitForSolanaTransaction, verifyTransaction } from '../lib/blockchain'
+import { createDonationContract } from '../lib/smartContract'
 
 function Donation() {
   const { t } = useTranslation()
