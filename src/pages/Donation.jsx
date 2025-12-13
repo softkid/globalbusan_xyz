@@ -10,6 +10,7 @@ import Footer from '../components/Footer'
 import SEO from '../components/SEO'
 import StripePayment from '../components/StripePayment'
 import CoinbasePayment from '../components/CoinbasePayment'
+import TossPayment from '../components/TossPayment'
 import { useTranslation } from 'react-i18next'
 import { statsService, expenseService, investmentService } from '../lib/supabase'
 import { validatePaymentAmount } from '../lib/payment'
@@ -44,7 +45,7 @@ function Donation() {
   // 기부 정보
   const [donationAmount, setDonationAmount] = useState('')
   const [selectedCrypto, setSelectedCrypto] = useState('ETH')
-  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto', 'card', or 'coinbase'
+  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto', 'card', 'coinbase', or 'toss'
   const [donationHistory, setDonationHistory] = useState([])
   const [isDonating, setIsDonating] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
@@ -499,7 +500,7 @@ function Donation() {
         )}
 
         {/* Donation Form */}
-        {isLoggedIn && (isWalletConnected || paymentMethod === 'card' || paymentMethod === 'coinbase') && (
+        {isLoggedIn && (isWalletConnected || paymentMethod === 'card' || paymentMethod === 'coinbase' || paymentMethod === 'toss') && (
           <section className="py-16">
             <div className="container mx-auto px-5 sm:px-10">
               <div className="max-w-2xl mx-auto">
@@ -508,8 +509,8 @@ function Donation() {
 
                   {/* Payment Method Selection */}
                   <div className="mb-6">
-                    <label className="block text-white font-semibold mb-3">결제 방법 선택</label>
-                    <div className="grid grid-cols-3 gap-4">
+                    <label className="block text-white font-semibold mb-3">{t('donation.selectPaymentMethod') || '결제 방법 선택'}</label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <button
                         onClick={() => {
                           setPaymentMethod('crypto')
@@ -547,6 +548,18 @@ function Donation() {
                       >
                         <FaBitcoin className="text-2xl text-orange-400 mx-auto mb-2" />
                         <div className="text-white font-semibold text-sm">Coinbase</div>
+                      </button>
+                      <button
+                        onClick={() => setPaymentMethod('toss')}
+                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                          paymentMethod === 'toss'
+                            ? 'border-blue-400 bg-blue-500/20'
+                            : 'border-white/20 hover:border-white/40'
+                        }`}
+                        title={t('tossPayment.title') || '토스페이먼츠 (한국 전용)'}
+                      >
+                        <FaCreditCard className="text-2xl text-purple-400 mx-auto mb-2" />
+                        <div className="text-white font-semibold text-sm">토스페이</div>
                       </button>
                     </div>
                   </div>
@@ -616,19 +629,22 @@ function Donation() {
                   {/* Amount Input */}
                   <div className="mb-6">
                     <label className="block text-white font-semibold mb-3">
-                      {t('donation.amount')} ({paymentMethod === 'card' ? 'USD' : selectedCrypto})
+                      {t('donation.amount')} ({paymentMethod === 'card' ? 'USD' : (paymentMethod === 'toss' ? 'KRW' : selectedCrypto)})
                     </label>
                     <input
                       type="number"
                       value={donationAmount}
                       onChange={(e) => setDonationAmount(e.target.value)}
                       placeholder="0.0"
-                      min={paymentMethod === 'card' ? 0.50 : 0}
-                      step={paymentMethod === 'card' ? 0.01 : 0.0001}
+                      min={paymentMethod === 'card' ? 0.50 : (paymentMethod === 'toss' ? 1000 : 0)}
+                      step={paymentMethod === 'card' ? 0.01 : (paymentMethod === 'toss' ? 100 : 0.0001)}
                       className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400"
                     />
                     {paymentMethod === 'card' && (
-                      <p className="text-blue-200 text-sm mt-2">최소 결제 금액: $0.50</p>
+                      <p className="text-blue-200 text-sm mt-2">{t('donation.minimumAmount', { amount: '$0.50' }) || '최소 결제 금액: $0.50'}</p>
+                    )}
+                    {paymentMethod === 'toss' && (
+                      <p className="text-blue-200 text-sm mt-2">{t('donation.minimumAmount', { amount: '1,000원' }) || '최소 결제 금액: 1,000원'}</p>
                     )}
                   </div>
 
