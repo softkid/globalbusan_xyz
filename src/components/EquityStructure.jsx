@@ -101,25 +101,31 @@ const EquityStructure = () => {
             return;
         }
 
-        // 요소가 존재하는지 확인 후 애니메이션 실행
-        const equityCards = document.querySelectorAll('.equity-card');
-        if (equityCards.length > 0) {
-            gsap.fromTo('.equity-card', 
-                { opacity: 0, y: 50 },
-                { 
-                    opacity: 1, 
-                    y: 0, 
-                    duration: 0.8,
-                    stagger: 0.2,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: '.equity-section',
-                        start: "top 80%",
-                        end: "bottom 20%",
-                        toggleActions: "play none none reverse"
+        try {
+            // 요소가 존재하는지 확인 후 애니메이션 실행
+            const equityCards = document.querySelectorAll('.equity-card');
+            const equitySection = document.querySelector('.equity-section');
+            
+            if (equityCards.length > 0 && equitySection) {
+                gsap.fromTo('.equity-card', 
+                    { opacity: 0, y: 50 },
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        duration: 0.8,
+                        stagger: 0.2,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: equitySection,
+                            start: "top 80%",
+                            end: "bottom 20%",
+                            toggleActions: "play none none reverse"
+                        }
                     }
-                }
-            );
+                );
+            }
+        } catch (error) {
+            console.warn('EquityStructure animation error:', error);
         }
     }, [loading, donationData]);
 

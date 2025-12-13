@@ -46,38 +46,49 @@ const Hero = () => {
     };
 
     useGSAP(() => {
-        if (heroRef.current) {
-            gsap.fromTo(heroRef.current,
-                {
-                    opacity: 0,
-                    y: 50
-                },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 1.5,
-                    ease: "power2.out"
-                }
-            );
+        try {
+            if (heroRef.current) {
+                gsap.fromTo(heroRef.current,
+                    {
+                        opacity: 0,
+                        y: 50
+                    },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1.5,
+                        ease: "power2.out"
+                    }
+                );
+            }
+        } catch (error) {
+            console.warn('Hero animation error:', error);
         }
     }, []);
 
     useGSAP(() => {
-        gsap.fromTo(".floating-element",
-            {
-                y: 0,
-                rotation: 0
-            },
-            {
-                y: -20,
-                rotation: 5,
-                duration: 3,
-                ease: "power1.inOut",
-                yoyo: true,
-                repeat: -1,
-                stagger: 0.5
+        try {
+            const floatingElements = document.querySelectorAll(".floating-element");
+            if (floatingElements.length > 0) {
+                gsap.fromTo(".floating-element",
+                    {
+                        y: 0,
+                        rotation: 0
+                    },
+                    {
+                        y: -20,
+                        rotation: 5,
+                        duration: 3,
+                        ease: "power1.inOut",
+                        yoyo: true,
+                        repeat: -1,
+                        stagger: 0.5
+                    }
+                );
             }
-        );
+        } catch (error) {
+            console.warn('Floating element animation error:', error);
+        }
     }, []);
 
     return (

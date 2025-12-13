@@ -8,22 +8,31 @@ gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
   useGSAP(() => {
-    const clipAnimation = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#clip",
-        start: "center center",
-        end: "+=800 center",
-        scrub: 0.5,
-        pin: true,
-        pinSpacing: true,
-      },
-    });
+    try {
+      const clipElement = document.querySelector("#clip");
+      const maskElement = document.querySelector(".mask-clip-path");
+      
+      if (!clipElement || !maskElement) return;
 
-    clipAnimation.to(".mask-clip-path", {
-      width: "100vw",
-      height: "100vh",
-      borderRadius: 0,
-    });
+      const clipAnimation = gsap.timeline({
+        scrollTrigger: {
+          trigger: clipElement,
+          start: "center center",
+          end: "+=800 center",
+          scrub: 0.5,
+          pin: true,
+          pinSpacing: true,
+        },
+      });
+
+      clipAnimation.to(maskElement, {
+        width: "100vw",
+        height: "100vh",
+        borderRadius: 0,
+      });
+    } catch (error) {
+      console.warn('About animation error:', error);
+    }
   });
 
   return (

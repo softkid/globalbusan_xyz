@@ -9,29 +9,38 @@ const AnimatedTitle = ({ title, containerClass }) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const titleAnimation = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "100 bottom",
-          end: "center bottom",
-          toggleActions: "play none none reverse",
-        },
-      });
+    if (!containerRef.current) return;
 
-      titleAnimation.to(
-        ".animated-word",
-        {
-          opacity: 1,
-          transform: "translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg)",
-          ease: "power2.inOut",
-          stagger: 0.02,
-        },
-        0
-      );
-    }, containerRef);
+    try {
+      const ctx = gsap.context(() => {
+        const animatedWords = containerRef.current?.querySelectorAll(".animated-word");
+        if (!animatedWords || animatedWords.length === 0) return;
 
-    return () => ctx.revert(); // Clean up on unmount
+        const titleAnimation = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "100 bottom",
+            end: "center bottom",
+            toggleActions: "play none none reverse",
+          },
+        });
+
+        titleAnimation.to(
+          ".animated-word",
+          {
+            opacity: 1,
+            transform: "translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg)",
+            ease: "power2.inOut",
+            stagger: 0.02,
+          },
+          0
+        );
+      }, containerRef);
+
+      return () => ctx.revert(); // Clean up on unmount
+    } catch (error) {
+      console.warn('AnimatedTitle animation error:', error);
+    }
   }, []);
 
   return (

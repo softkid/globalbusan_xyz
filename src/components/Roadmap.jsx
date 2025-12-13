@@ -61,22 +61,31 @@ const Roadmap = () => {
     ];
 
     useGSAP(() => {
-        gsap.fromTo('.roadmap-stage', 
-            { opacity: 0, x: -50 },
-            { 
-                opacity: 1, 
-                x: 0, 
-                duration: 0.8,
-                stagger: 0.2,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: '.roadmap-section',
-                    start: "top 80%",
-                    end: "bottom 20%",
-                    toggleActions: "play none none reverse"
-                }
+        try {
+            const roadmapStages = document.querySelectorAll('.roadmap-stage');
+            const roadmapSection = document.querySelector('.roadmap-section');
+            
+            if (roadmapStages.length > 0 && roadmapSection) {
+                gsap.fromTo('.roadmap-stage', 
+                    { opacity: 0, x: -50 },
+                    { 
+                        opacity: 1, 
+                        x: 0, 
+                        duration: 0.8,
+                        stagger: 0.2,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: roadmapSection,
+                            start: "top 80%",
+                            end: "bottom 20%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
             }
-        );
+        } catch (error) {
+            console.warn('Roadmap component animation error:', error);
+        }
     }, []);
 
     return (

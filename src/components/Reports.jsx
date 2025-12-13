@@ -175,25 +175,31 @@ const Reports = () => {
             return;
         }
 
-        // 요소가 존재하는지 확인 후 애니메이션 실행
-        const reportCards = document.querySelectorAll('.report-card');
-        if (reportCards.length > 0) {
-            gsap.fromTo('.report-card', 
-                { opacity: 0, y: 50 },
-                { 
-                    opacity: 1, 
-                    y: 0, 
-                    duration: 0.8,
-                    stagger: 0.1,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: '.reports-section',
-                        start: "top 80%",
-                        end: "bottom 20%",
-                        toggleActions: "play none none reverse"
+        try {
+            // 요소가 존재하는지 확인 후 애니메이션 실행
+            const reportCards = document.querySelectorAll('.report-card');
+            const reportsSection = document.querySelector('.reports-section');
+            
+            if (reportCards.length > 0 && reportsSection) {
+                gsap.fromTo('.report-card', 
+                    { opacity: 0, y: 50 },
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        duration: 0.8,
+                        stagger: 0.1,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: reportsSection,
+                            start: "top 80%",
+                            end: "bottom 20%",
+                            toggleActions: "play none none reverse"
+                        }
                     }
-                }
-            );
+                );
+            }
+        } catch (error) {
+            console.warn('Reports animation error:', error);
         }
     }, [loading, currentReport]);
 
