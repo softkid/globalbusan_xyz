@@ -87,9 +87,9 @@
 - [x] MetaMask 지갑 연결 UI
 - [x] Solana 지갑 연결 UI
 - [x] 지갑 주소 표시
-- [ ] 실제 블록체인 트랜잭션 전송
+- [x] 실제 블록체인 트랜잭션 전송 (Ethereum, Solana)
 - [ ] 스마트 컨트랙트 연동
-- [ ] 이더리움 메인넷 연동
+- [x] 이더리움 메인넷 연동 (MetaMask 지원)
 - [ ] Polygon 네트워크 연동
 - [x] 트랜잭션 검증 로직 (Ethereum, Solana 지원)
 
