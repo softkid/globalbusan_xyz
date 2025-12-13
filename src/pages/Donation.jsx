@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaGoogle, FaWallet, FaEthereum, FaBitcoin, FaCheckCircle, FaCopy, FaQrcode, FaHandHoldingHeart, FaHistory, FaChartLine, FaCreditCard } from 'react-icons/fa'
+import { FaGoogle, FaWallet, FaEthereum, FaBitcoin, FaCheckCircle, FaCopy, FaQrcode, FaHandHoldingHeart, FaHistory, FaChartLine, FaCreditCard, FaPaypal } from 'react-icons/fa'
 import { TiLocationArrow } from 'react-icons/ti'
 import { SiSolana } from 'react-icons/si'
 import { useGoogleLogin } from '@react-oauth/google'
@@ -11,6 +11,7 @@ import SEO from '../components/SEO'
 import StripePayment from '../components/StripePayment'
 import CoinbasePayment from '../components/CoinbasePayment'
 import TossPayment from '../components/TossPayment'
+import PayPalPayment from '../components/PayPalPayment'
 import { useTranslation } from 'react-i18next'
 import { statsService, expenseService, investmentService } from '../lib/supabase'
 import { validatePaymentAmount } from '../lib/payment'
@@ -32,7 +33,7 @@ function Donation() {
       "name": "Global BUSAN",
       "url": "https://globalbusan.xyz"
     },
-    "paymentMethod": ["Cryptocurrency", "CreditCard"],
+    "paymentMethod": ["Cryptocurrency", "CreditCard", "PayPal", "TossPayments"],
     "url": "https://globalbusan.xyz/donation"
   }
   
@@ -45,7 +46,7 @@ function Donation() {
   // 기부 정보
   const [donationAmount, setDonationAmount] = useState('')
   const [selectedCrypto, setSelectedCrypto] = useState('ETH')
-  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto', 'card', 'coinbase', or 'toss'
+  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto', 'card', 'coinbase', 'toss', or 'paypal'
   const [donationHistory, setDonationHistory] = useState([])
   const [isDonating, setIsDonating] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
@@ -500,7 +501,7 @@ function Donation() {
         )}
 
         {/* Donation Form */}
-        {isLoggedIn && (isWalletConnected || paymentMethod === 'card' || paymentMethod === 'coinbase' || paymentMethod === 'toss') && (
+        {isLoggedIn && (isWalletConnected || paymentMethod === 'card' || paymentMethod === 'coinbase' || paymentMethod === 'toss' || paymentMethod === 'paypal') && (
           <section className="py-16">
             <div className="container mx-auto px-5 sm:px-10">
               <div className="max-w-2xl mx-auto">
@@ -510,7 +511,7 @@ function Donation() {
                   {/* Payment Method Selection */}
                   <div className="mb-6">
                     <label className="block text-white font-semibold mb-3">{t('donation.selectPaymentMethod') || '결제 방법 선택'}</label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                       <button
                         onClick={() => {
                           setPaymentMethod('crypto')
@@ -560,6 +561,18 @@ function Donation() {
                       >
                         <FaCreditCard className="text-2xl text-purple-400 mx-auto mb-2" />
                         <div className="text-white font-semibold text-sm">토스페이</div>
+                      </button>
+                      <button
+                        onClick={() => setPaymentMethod('paypal')}
+                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                          paymentMethod === 'paypal'
+                            ? 'border-blue-400 bg-blue-500/20'
+                            : 'border-white/20 hover:border-white/40'
+                        }`}
+                        title={t('paypalPayment.title') || 'PayPal (전 세계)'}
+                      >
+                        <FaPaypal className="text-2xl text-blue-400 mx-auto mb-2" />
+                        <div className="text-white font-semibold text-sm">PayPal</div>
                       </button>
                     </div>
                   </div>
@@ -629,18 +642,18 @@ function Donation() {
                   {/* Amount Input */}
                   <div className="mb-6">
                     <label className="block text-white font-semibold mb-3">
-                      {t('donation.amount')} ({paymentMethod === 'card' ? 'USD' : (paymentMethod === 'toss' ? 'KRW' : selectedCrypto)})
+                      {t('donation.amount')} ({paymentMethod === 'card' || paymentMethod === 'paypal' ? 'USD' : (paymentMethod === 'toss' ? 'KRW' : selectedCrypto)})
                     </label>
                     <input
                       type="number"
                       value={donationAmount}
                       onChange={(e) => setDonationAmount(e.target.value)}
                       placeholder="0.0"
-                      min={paymentMethod === 'card' ? 0.50 : (paymentMethod === 'toss' ? 1000 : 0)}
-                      step={paymentMethod === 'card' ? 0.01 : (paymentMethod === 'toss' ? 100 : 0.0001)}
+                      min={paymentMethod === 'card' || paymentMethod === 'paypal' ? 0.50 : (paymentMethod === 'toss' ? 1000 : 0)}
+                      step={paymentMethod === 'card' || paymentMethod === 'paypal' ? 0.01 : (paymentMethod === 'toss' ? 100 : 0.0001)}
                       className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400"
                     />
-                    {paymentMethod === 'card' && (
+                    {(paymentMethod === 'card' || paymentMethod === 'paypal') && (
                       <p className="text-blue-200 text-sm mt-2">{t('donation.minimumAmount', { amount: '$0.50' }) || '최소 결제 금액: $0.50'}</p>
                     )}
                     {paymentMethod === 'toss' && (
@@ -759,6 +772,52 @@ function Donation() {
                     ) : (
                       <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
                         {t('donation.enterAmountMinimum', { amount: '1,000원' }) || '결제 금액을 입력해주세요 (최소 1,000원)'}
+                      </div>
+                    )
+                  ) : paymentMethod === 'paypal' ? (
+                    donationAmount && parseFloat(donationAmount) >= 0.50 ? (
+                      <PayPalPayment
+                        amount={parseFloat(donationAmount)}
+                        currency="USD"
+                        onSuccess={async (result) => {
+                          // PayPal 결제 성공 처리
+                          if (user && user.email) {
+                            try {
+                              await investmentService.createInvestment({
+                                project_id: null, // 글로벌 기부
+                                investor_name: user.name || 'Anonymous',
+                                investor_email: user.email,
+                                amount: parseFloat(donationAmount),
+                                currency: 'USD',
+                                payment_method: 'paypal',
+                                payment_id: result.id,
+                                transaction_hash: result.transaction_id || result.id,
+                                investment_date: new Date().toISOString().split('T')[0],
+                                status: 'completed'
+                              })
+                              alert(t('donation.success') || '기부가 완료되었습니다!')
+                              setDonationAmount('')
+                            } catch (error) {
+                              console.error('기부 저장 실패:', error)
+                              alert(t('donation.saveError') || '기부는 완료되었으나 저장 중 오류가 발생했습니다.')
+                            }
+                          }
+                        }}
+                        onError={(error) => {
+                          console.error('PayPal payment error:', error)
+                          alert(error.message || t('donation.error') || '결제 중 오류가 발생했습니다.')
+                        }}
+                        metadata={{
+                          name: user?.name || 'Anonymous',
+                          email: user?.email || '',
+                          type: 'donation',
+                          project: 'global-busan',
+                          orderName: 'Global BUSAN Donation'
+                        }}
+                      />
+                    ) : (
+                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
+                        {t('donation.enterAmountMinimum', { amount: '$0.50' }) || '결제 금액을 입력해주세요 (최소 $0.50)'}
                       </div>
                     )
                   ) : (

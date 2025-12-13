@@ -367,6 +367,15 @@
         "paymentFailed": "결제에 실패했습니다.",
         "processing": "결제 처리 중..."
     },
+    "paypalPayment": {
+        "title": "PayPal로 결제하기",
+        "description": "PayPal 계정 또는 카드로 안전하게 결제하세요.",
+        "securityNote": "안전한 결제를 위해 PayPal이 결제를 처리합니다.",
+        "notConfigured": "PayPal이 설정되지 않았습니다.",
+        "paymentSuccess": "결제가 완료되었습니다.",
+        "paymentFailed": "결제에 실패했습니다.",
+        "processing": "결제 처리 중..."
+    },
     "fileUpload": {
         "clickToUpload": "클릭하여 파일 업로드",
         "dragAndDrop": "또는 드래그 앤 드롭",

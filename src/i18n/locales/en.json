@@ -367,6 +367,15 @@
         "paymentFailed": "Payment failed.",
         "processing": "Processing payment..."
     },
+    "paypalPayment": {
+        "title": "Pay with PayPal",
+        "description": "Pay securely with your PayPal account or card.",
+        "securityNote": "PayPal processes your payment securely.",
+        "notConfigured": "PayPal is not configured.",
+        "paymentSuccess": "Payment completed successfully.",
+        "paymentFailed": "Payment failed.",
+        "processing": "Processing payment..."
+    },
     "fileUpload": {
         "clickToUpload": "Click to upload file",
         "dragAndDrop": "or drag and drop",
