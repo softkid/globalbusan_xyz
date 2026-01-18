@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="manifest" href="/manifest.json" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <!-- Primary Meta Tags -->
@@ -21,7 +22,7 @@
   <meta property="og:url" content="https://globalbusan.xyz/" />
   <meta property="og:title" content="Global BUSAN - 부산을 글로벌 비즈니스 허브로" />
   <meta property="og:description" content="투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다. 함께 부산에 글로벌 비즈니스 허브를 만들어갑시다." />
-  <meta property="og:image" content="https://globalbusan.xyz/og-image.jpg" />
+  <meta property="og:image" content="https://globalbusan.xyz/og-image-placeholder.svg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="ko_KR" />
@@ -35,11 +36,23 @@
   <meta name="twitter:url" content="https://globalbusan.xyz/" />
   <meta name="twitter:title" content="Global BUSAN - 부산을 글로벌 비즈니스 허브로" />
   <meta name="twitter:description" content="투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다." />
-  <meta name="twitter:image" content="https://globalbusan.xyz/og-image.jpg" />
+  <meta name="twitter:image" content="https://globalbusan.xyz/og-image-placeholder.svg" />
   
   <!-- Additional SEO -->
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#1e40af" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Global BUSAN" />
   <link rel="canonical" href="https://globalbusan.xyz/" />
+  
+  <!-- Preconnect for Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="https://www.google-analytics.com" />
   
   <!-- Alternate Languages -->
   <link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/?lang=ko" />
@@ -49,19 +62,79 @@
   <link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/?lang=ar" />
   <link rel="alternate" hreflang="x-default" href="https://globalbusan.xyz/" />
   
-  <!-- Google Analytics -->
+  <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YS88F77Q1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-4YS88F77Q1');
+    gtag('config', 'G-4YS88F77Q1', {
+      'page_path': window.location.pathname,
+      'send_page_view': true
+    });
+    
+    // Enhanced ecommerce tracking for donations
+    gtag('config', 'G-4YS88F77Q1', {
+      'custom_map': {
+        'dimension1': 'donation_method',
+        'dimension2': 'crypto_type'
+      }
+    });
   </script>
   
-  <!-- Google Search Console Verification (실제 verification code로 교체 필요) -->
+  <!-- Google Search Console Verification -->
+  <!-- Verification code는 Google Search Console에서 발급받아 환경 변수로 설정하세요 -->
   <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" /> -->
-  <script type="module" crossorigin src="/assets/index-Dip4uTRa.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CPnsD1Rq.css">
+  
+  <!-- Structured Data: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Global BUSAN",
+    "alternateName": "글로벌 부산",
+    "url": "https://globalbusan.xyz",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://globalbusan.xyz/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Global BUSAN",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://globalbusan.xyz/logo.png"
+      }
+    }
+  }
+  </script>
+  
+  <!-- Structured Data: BreadcrumbList (for navigation) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://globalbusan.xyz/"
+      }
+    ]
+  }
+  </script>
+  <script type="module" crossorigin src="/assets/js/index-bnNBvxVM.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-aHGh9XkW.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/vendor-y-vg2Y8Z.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/i18n-vendor-C7bx-486.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/animation-vendor-aLfjG8Xb.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-Bgm5_dsH.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-CprbbglO.css">
 </head>
 
 <body>

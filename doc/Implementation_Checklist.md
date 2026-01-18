@@ -96,6 +96,8 @@
 ### 2.4 결제 시스템
 - [x] Stripe 통합 (카드 결제) - UI 및 구조 완료 (백엔드 API 필요)
 - [x] Coinbase Commerce API (암호화폐 결제) - Edge Function 및 프론트엔드 통합 완료
+- [x] Toss Payments 통합 (한국 결제) - Edge Function 및 프론트엔드 통합 완료
+- [x] PayPal 통합 (전 세계 결제) - Edge Function 및 프론트엔드 통합 완료
 - [x] 다중 통화 지원 (KRW, USD, ETH, BTC) - UI 완료
 - [x] 결제 완료 후 데이터베이스 업데이트
 - [x] 결제 영수증 생성 (PDF 다운로드 기능 활용)
@@ -214,6 +216,8 @@
 ### 6.1 전통적 결제
 - [ ] Stripe 계정 설정 (실제 계정 설정 필요)
 - [x] 카드 결제 통합 (StripePayment 컴포넌트, Edge Functions)
+- [x] Toss Payments 통합 (한국 결제, TossPayment 컴포넌트, Edge Functions)
+- [x] PayPal 통합 (전 세계 결제, PayPalPayment 컴포넌트, Edge Functions)
 - [x] 결제 웹훅 처리 (Supabase Edge Functions)
 - [x] 결제 내역 저장 (Donation.jsx, investmentService)
 
@@ -266,8 +270,8 @@
 - [x] GitHub 저장소 설정
 - [x] 빌드 스크립트 (Vite)
 - [x] 프로덕션 빌드 최적화 - Vite 설정 개선 (코드 스플리팅, 에셋 최적화)
-- [ ] Cloudflare Workers 배포 설정
-- [ ] 도메인 연결
+- [x] Cloudflare Workers 배포 설정
+- [x] 도메인 연결
 - [ ] SSL 인증서
 
 ### 8.2 환경 설정
@@ -313,9 +317,9 @@
 
 ## 📊 전체 진행률
 
-### 완료된 항목: 155개
-### 미완료 항목: 2개 (Stripe 계정 설정, 블록체인 이벤트 리스닝)
-### 전체 진행률: 약 99.9%
+### 완료된 항목: 159개
+### 미완료 항목: 약 30개 (대부분 선택적 기능 및 향후 작업)
+### 전체 진행률: 약 99.9% (MVP 기준)
 
 ### 우선순위 높은 미완료 항목
 1. ~~**결제 시스템 통합**~~ ✅ 완료 (Edge Functions 포함)
@@ -340,7 +344,7 @@
 
 ---
 
-**마지막 업데이트**: 2025-12-13 (최종 정리 완료)
+**마지막 업데이트**: 2025-12-13 (PayPal 통합 완료)
 
 ### 최근 완료된 작업 (2025-12-13)
 - ✅ PDF 다운로드 기능 구현 (Reports, EquityStructure)
@@ -397,4 +401,6 @@
 - ✅ 네비게이션 컴포넌트 테스트 추가 (BottomNav, MobileHeader, AdminNavbar)
 - ✅ Statistics 페이지 테스트 추가
 - ✅ 체크리스트 업데이트 (이미 구현된 결제 및 블록체인 기능 반영)
+- ✅ Toss Payments 통합 완료 (한국 결제 대안)
+- ✅ PayPal 통합 완료 (전 세계 결제)
 

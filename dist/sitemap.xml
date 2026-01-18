@@ -53,6 +53,19 @@
     <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/statistics?lang=ar"/>
   </url>
   
+  <!-- 상태 페이지 (실시간 통계 대시보드) -->
+  <url>
+    <loc>https://globalbusan.xyz/status</loc>
+    <lastmod>2025-12-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/status?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/status?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/status?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/status?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/status?lang=ar"/>
+  </url>
+  
   <!-- 기부 페이지 -->
   <url>
     <loc>https://globalbusan.xyz/donation</loc>
