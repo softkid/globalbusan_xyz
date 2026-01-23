@@ -8,14 +8,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <!-- Primary Meta Tags -->
-  <title>Global BUSAN - 부산을 글로벌 비즈니스 허브로</title>
-  <meta name="title" content="Global BUSAN - 부산을 글로벌 비즈니스 허브로" />
+  <title>Global BUSAN - 부산을 글로벌 비즈니스 허브로 | GOLDSAJU</title>
+  <meta name="title" content="Global BUSAN - 부산을 글로벌 비즈니스 허브로 | GOLDSAJU" />
   <meta name="description" content="투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다. 함께 부산에 글로벌 비즈니스 허브를 만들어갑시다." />
-  <meta name="keywords" content="부산, 글로벌 비즈니스, 블록체인, 투자, 기부, 스타트업, 국제 협력, 벤처 투자, 부산 투자, 글로벌 허브" />
-  <meta name="author" content="Global BUSAN" />
-  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="부산, 글로벌 비즈니스, 블록체인, 투자, 기부, 스타트업, 국제 협력, 벤처 투자, 부산 투자, 글로벌 허브, GOLDSAJU" />
+  <meta name="author" content="GOLDSAJU" />
+  <meta name="publisher" content="GOLDSAJU" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
   <meta name="language" content="Korean" />
-  <meta name="revisit-after" content="7 days" />
+  <meta name="revisit-after" content="3 days" />
+  <meta name="geo.region" content="KR-26" />
+  <meta name="geo.placename" content="Busan" />
+  <meta name="geo.position" content="35.1796;129.0756" />
+  <meta name="ICBM" content="35.1796, 129.0756" />
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -92,8 +98,9 @@
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Global BUSAN",
-    "alternateName": "글로벌 부산",
+    "alternateName": ["글로벌 부산", "GOLDSAJU"],
     "url": "https://globalbusan.xyz",
+    "description": "투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다",
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
@@ -104,12 +111,49 @@
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Global BUSAN",
+      "name": "GOLDSAJU",
+      "legalName": "GOLDSAJU",
+      "url": "https://globalbusan.xyz",
       "logo": {
         "@type": "ImageObject",
         "url": "https://globalbusan.xyz/logo.png"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "",
+        "contactType": "customer service",
+        "email": "contact@goldsaju.com",
+        "areaServed": "KR",
+        "availableLanguage": ["Korean", "English", "Japanese", "Chinese"]
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Busan",
+        "addressCountry": "KR"
       }
     }
+  }
+  </script>
+  
+  <!-- Structured Data: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "GOLDSAJU",
+    "url": "https://globalbusan.xyz",
+    "logo": "https://globalbusan.xyz/logo.png",
+    "description": "투명한 블록체인 기반 글로벌 비즈니스 플랫폼",
+    "email": "contact@goldsaju.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Busan",
+      "addressCountry": "KR"
+    },
+    "sameAs": [
+      "https://twitter.com/globalbusan",
+      "https://linkedin.com/company/globalbusan"
+    ]
   }
   </script>
   
@@ -130,35 +174,48 @@
   </script>
   
   <script>
-    // Buffer polyfill - must run before any module scripts
+    // Setup global and process before Buffer
     (function() {
-      // Set up global object
       if (typeof global === 'undefined') {
-        if (typeof globalThis !== 'undefined') {
-          globalThis.global = globalThis;
-        } else if (typeof window !== 'undefined') {
-          window.global = window;
-        }
+        window.global = window;
+        globalThis.global = globalThis;
       }
-      // Set up process object
       if (typeof process === 'undefined') {
-        const processObj = { env: {}, browser: true, version: '', versions: {} };
-        if (typeof globalThis !== 'undefined') {
-          globalThis.process = processObj;
-        }
-        if (typeof window !== 'undefined') {
-          window.process = processObj;
+        var processObj = { 
+          env: {}, 
+          browser: true, 
+          version: '', 
+          versions: {},
+          nextTick: function(fn) { setTimeout(fn, 0); }
+        };
+        window.process = processObj;
+        globalThis.process = processObj;
+        if (typeof global !== 'undefined') {
+          global.process = processObj;
         }
       }
     })();
   </script>
-  <script type="module" crossorigin src="/assets/js/index-zmVYgGE6.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-nBH5ijuq.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/vendor-5sj8Uj2_.js">
+  <script src="https://unpkg.com/buffer@6.0.3/index.js"></script>
+  <script>
+    // Set Buffer globally after CDN loads
+    (function() {
+      if (typeof window.buffer !== 'undefined' && window.buffer.Buffer) {
+        window.Buffer = window.buffer.Buffer;
+        globalThis.Buffer = window.buffer.Buffer;
+        if (typeof global !== 'undefined') {
+          global.Buffer = window.buffer.Buffer;
+        }
+      }
+    })();
+  </script>
+  <script type="module" crossorigin src="/assets/js/index-CH_SfZE8.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-4M6Rg_xk.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/vendor-BfxCwdhX.js">
   <link rel="modulepreload" crossorigin href="/assets/js/i18n-vendor-C7bx-486.js">
   <link rel="modulepreload" crossorigin href="/assets/js/animation-vendor-BYOuoV-H.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-B0W0jozs.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-CprbbglO.css">
+  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-CcMKb5ji.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-XOll5MdT.css">
 </head>
 
 <body>

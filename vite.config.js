@@ -8,27 +8,40 @@ const bufferPolyfillPlugin = () => {
   return {
     name: 'buffer-polyfill-html',
     transformIndexHtml(html) {
-      // Inject polyfill script that loads synchronously before any module scripts
+      // Inject polyfill script that loads Buffer from CDN before any module scripts
       const polyfillScript = `
   <script>
-    // Buffer polyfill - must run before any module scripts
+    // Setup global and process before Buffer
     (function() {
-      // Set up global object
       if (typeof global === 'undefined') {
-        if (typeof globalThis !== 'undefined') {
-          globalThis.global = globalThis;
-        } else if (typeof window !== 'undefined') {
-          window.global = window;
+        window.global = window;
+        globalThis.global = globalThis;
+      }
+      if (typeof process === 'undefined') {
+        var processObj = { 
+          env: {}, 
+          browser: true, 
+          version: '', 
+          versions: {},
+          nextTick: function(fn) { setTimeout(fn, 0); }
+        };
+        window.process = processObj;
+        globalThis.process = processObj;
+        if (typeof global !== 'undefined') {
+          global.process = processObj;
         }
       }
-      // Set up process object
-      if (typeof process === 'undefined') {
-        const processObj = { env: {}, browser: true, version: '', versions: {} };
-        if (typeof globalThis !== 'undefined') {
-          globalThis.process = processObj;
-        }
-        if (typeof window !== 'undefined') {
-          window.process = processObj;
+    })();
+  </script>
+  <script src="https://unpkg.com/buffer@6.0.3/index.js"></script>
+  <script>
+    // Set Buffer globally after CDN loads
+    (function() {
+      if (typeof window.buffer !== 'undefined' && window.buffer.Buffer) {
+        window.Buffer = window.buffer.Buffer;
+        globalThis.Buffer = window.buffer.Buffer;
+        if (typeof global !== 'undefined') {
+          global.Buffer = window.buffer.Buffer;
         }
       }
     })();
@@ -54,6 +67,9 @@ export default defineConfig({
   resolve: {
     alias: {
       buffer: 'buffer',
+      process: 'process/browser',
+      stream: 'stream-browserify',
+      util: 'util',
     },
   },
   build: {
