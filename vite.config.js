@@ -8,7 +8,7 @@ const bufferPolyfillPlugin = () => {
   return {
     name: 'buffer-polyfill-html',
     transformIndexHtml(html) {
-      // Inject polyfill script that loads Buffer from CDN before any module scripts
+      // Use standalone Buffer UMD build from jsDelivr
       const polyfillScript = `
   <script>
     // Setup global and process before Buffer
@@ -31,27 +31,43 @@ const bufferPolyfillPlugin = () => {
           global.process = processObj;
         }
       }
+      // Define require for buffer module
+      if (typeof require === 'undefined') {
+        window.require = function(module) {
+          if (module === 'base64-js') {
+            return window.base64js || {};
+          }
+          if (module === 'ieee754') {
+            return window.ieee754 || {};
+          }
+          return {};
+        };
+      }
     })();
   </script>
-  <script src="https://unpkg.com/buffer@6.0.3/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/base64-js@1.5.1/base64js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ieee754@1.2.1/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
   <script>
-    // Set Buffer globally after CDN loads
+    // Set Buffer globally after all dependencies load
     (function() {
-      if (typeof window.buffer !== 'undefined' && window.buffer.Buffer) {
-        window.Buffer = window.buffer.Buffer;
-        globalThis.Buffer = window.buffer.Buffer;
+      var BufferModule = window.buffer || (typeof exports !== 'undefined' ? exports : null);
+      if (BufferModule && BufferModule.Buffer) {
+        window.Buffer = BufferModule.Buffer;
+        globalThis.Buffer = BufferModule.Buffer;
         if (typeof global !== 'undefined') {
-          global.Buffer = window.buffer.Buffer;
+          global.Buffer = BufferModule.Buffer;
         }
+        console.log('Buffer polyfill loaded successfully');
+      } else {
+        console.error('Failed to load Buffer polyfill');
       }
     })();
   </script>`
       // Insert before the first <script type="module"> or before </head>
-      // Try to insert before module scripts first
       if (html.includes('<script type="module"')) {
         return html.replace(/(<script type="module"[^>]*>)/, polyfillScript + '\n  $1')
       }
-      // Fallback to before </head>
       return html.replace('</head>', polyfillScript + '\n  </head>')
     },
   }
