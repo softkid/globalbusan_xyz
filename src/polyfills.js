@@ -6,13 +6,18 @@
 import { Buffer } from 'buffer'
 
 // Ensure global is defined (for Node.js compatibility)
-if (typeof global === 'undefined') {
-  var global = globalThis
+if (typeof window !== 'undefined') {
+  if (typeof window.global === 'undefined') {
+    window.global = window
+  }
+  if (typeof globalThis !== 'undefined' && typeof globalThis.global === 'undefined') {
+    globalThis.global = globalThis
+  }
 }
 
 // Ensure process is defined (minimal polyfill for libraries that check process.env)
-if (typeof process === 'undefined') {
-  var process = {
+if (typeof window !== 'undefined' && typeof window.process === 'undefined') {
+  window.process = {
     env: {},
     version: '',
     versions: {},
@@ -21,23 +26,24 @@ if (typeof process === 'undefined') {
   }
 }
 
-// Make Buffer available globally
+if (typeof globalThis !== 'undefined' && typeof globalThis.process === 'undefined') {
+  globalThis.process = window.process
+}
+
+// Make Buffer available globally on all possible global objects
 if (typeof window !== 'undefined') {
   window.Buffer = Buffer
-  window.global = global
-  window.process = process
 }
 
-// Make Buffer available on globalThis
 if (typeof globalThis !== 'undefined') {
   globalThis.Buffer = Buffer
-  globalThis.global = global
-  globalThis.process = process
 }
 
-// Make Buffer available on global (for Node.js-style code)
-global.Buffer = Buffer
-global.global = global
-global.process = process
+if (typeof window !== 'undefined' && window.global) {
+  window.global.Buffer = Buffer
+  window.global.process = window.process
+}
+
+console.log('✅ Polyfills loaded: Buffer available globally')
 
 export { Buffer }

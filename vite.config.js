@@ -3,20 +3,24 @@ import react from '@vitejs/plugin-react'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 
-// Vite plugin to inject Buffer polyfill in HTML before any scripts
+// Vite plugin to inject minimal global setup in HTML before any scripts
 const bufferPolyfillPlugin = () => {
   return {
     name: 'buffer-polyfill-html',
     transformIndexHtml(html) {
-      // Use standalone Buffer UMD build from jsDelivr
+      // Only inject minimal global/process setup - Buffer comes from bundled polyfills.js
       const polyfillScript = `
   <script>
-    // Setup global and process before Buffer
+    // Minimal setup before modules load
     (function() {
-      if (typeof global === 'undefined') {
+      // Setup global
+      if (typeof window !== 'undefined' && typeof global === 'undefined') {
         window.global = window;
-        globalThis.global = globalThis;
+        if (typeof globalThis !== 'undefined') {
+          globalThis.global = globalThis;
+        }
       }
+      // Setup minimal process
       if (typeof process === 'undefined') {
         var processObj = { 
           env: {}, 
@@ -26,45 +30,13 @@ const bufferPolyfillPlugin = () => {
           nextTick: function(fn) { setTimeout(fn, 0); }
         };
         window.process = processObj;
-        globalThis.process = processObj;
-        if (typeof global !== 'undefined') {
-          global.process = processObj;
+        if (typeof globalThis !== 'undefined') {
+          globalThis.process = processObj;
         }
-      }
-      // Define require for buffer module
-      if (typeof require === 'undefined') {
-        window.require = function(module) {
-          if (module === 'base64-js') {
-            return window.base64js || {};
-          }
-          if (module === 'ieee754') {
-            return window.ieee754 || {};
-          }
-          return {};
-        };
-      }
-    })();
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/base64-js@1.5.1/base64js.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ieee754@1.2.1/index.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js"></script>
-  <script>
-    // Set Buffer globally after all dependencies load
-    (function() {
-      var BufferModule = window.buffer || (typeof exports !== 'undefined' ? exports : null);
-      if (BufferModule && BufferModule.Buffer) {
-        window.Buffer = BufferModule.Buffer;
-        globalThis.Buffer = BufferModule.Buffer;
-        if (typeof global !== 'undefined') {
-          global.Buffer = BufferModule.Buffer;
-        }
-        console.log('Buffer polyfill loaded successfully');
-      } else {
-        console.error('Failed to load Buffer polyfill');
       }
     })();
   </script>`
-      // Insert before the first <script type="module"> or before </head>
+      // Insert before the first <script type="module">
       if (html.includes('<script type="module"')) {
         return html.replace(/(<script type="module"[^>]*>)/, polyfillScript + '\n  $1')
       }
