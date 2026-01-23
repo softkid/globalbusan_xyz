@@ -49,7 +49,15 @@ export const getCurrentUser = async () => {
     const user = await userService.getUserBySession(sessionToken)
     return user
   } catch (error) {
-    console.error('Errasync () => {
+    console.error('Error getting current user:', error)
+    return null
+  }
+}
+
+/**
+ * Logs out the current user
+ */
+export const logout = async () => {
   try {
     const sessionToken = localStorage.getItem('sessionToken')
     if (sessionToken) {
@@ -60,23 +68,15 @@ export const getCurrentUser = async () => {
   }
   
   localStorage.removeItem('googleUser')
-  localStorage.removeItem('sessionToken
-  }
-}
-
-/**
- * Logs out the current user
- */async () => {
-  const user = await getCurrentUser()
-  return user=> {
-  localStorage.removeItem('googleUser')
+  localStorage.removeItem('sessionToken')
   sessionStorage.removeItem('authReturnTo')
 }
 
 /**
  * Checks if user is currently logged in
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
-export const isLoggedIn = () => {
-  return getCurrentUser() !== null
+export const isLoggedIn = async () => {
+  const user = await getCurrentUser()
+  return user !== null
 }
