@@ -54,8 +54,7 @@ const Footer = () => {
           <div>
             <h4 className="text-xl font-bold text-white mb-4">Contact</h4>
             <div className="space-y-2 text-blue-200">
-              <p>info@globalbusan.com</p>
-              <p>+82 51 123 4567</p>
+              <p>contact@goldsaju.com</p>
               <p>Busan, South Korea</p>
             </div>
           </div>
@@ -64,16 +63,21 @@ const Footer = () => {
         <div className="border-t border-white/20 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <p className="text-blue-200 mb-4 md:mb-0">
-              © 2025 Global BUSAN. All rights reserved. <span className="text-orange-400 font-semibold">Beta Version</span>
+              © 2026 GOLDSAJU. All rights reserved. <span className="text-orange-400 font-semibold">Beta Version</span>
             </p>
             <div className="flex space-x-6">
-              <a href="#privacy-policy" className="text-blue-200 hover:text-white transition-colors">
-                Privacy Policy
+              <a href="/privacy" className="text-blue-200 hover:text-white transition-colors">
+                개인정보처리방침
               </a>
-              <a href="#terms" className="text-blue-200 hover:text-white transition-colors">
-                Terms of Service
+              <a href="/service" className="text-blue-200 hover:text-white transition-colors">
+                서비스 이용약관
               </a>
             </div>
+          </div>
+          <div className="mt-4 text-center md:text-left">
+            <p className="text-blue-300 text-sm">
+              Contact: <a href="mailto:contact@goldsaju.com" className="hover:text-white transition-colors">contact@goldsaju.com</a>
+            </p>
           </div>
         </div>
       </div>

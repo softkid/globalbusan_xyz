@@ -17,6 +17,9 @@ const Donation = lazy(() => import('./pages/Donation'))
 const GlobalBusan = lazy(() => import('./pages/GlobalBusan'))
 const Roadmap = lazy(() => import('./pages/Roadmap'))
 const Status = lazy(() => import('./pages/Status'))
+const Privacy = lazy(() => import('./pages/Privacy'))
+const Service = lazy(() => import('./pages/Service'))
+const AuthCallback = lazy(() => import('./pages/AuthCallback'))
 
 // Loading component
 const PageLoader = () => (
@@ -48,6 +51,9 @@ function App() {
                 <Route path="/global-busan" element={<GlobalBusan />} />
                 <Route path="/roadmap" element={<Roadmap />} />
                 <Route path="/status" element={<Status />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/service" element={<Service />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/apply" element={<ProjectApplication />} />
           </Routes>

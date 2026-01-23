@@ -108,7 +108,7 @@
   <!-- 프로젝트 신청 페이지 -->
   <url>
     <loc>https://globalbusan.xyz/apply</loc>
-    <lastmod>2025-12-13</lastmod>
+    <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/apply?lang=ko"/>
@@ -116,6 +116,32 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/apply?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/apply?lang=zh"/>
     <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/apply?lang=ar"/>
+  </url>
+  
+  <!-- 개인정보처리방침 -->
+  <url>
+    <loc>https://globalbusan.xyz/privacy</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/privacy?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/privacy?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/privacy?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/privacy?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/privacy?lang=ar"/>
+  </url>
+  
+  <!-- 서비스 약관 -->
+  <url>
+    <loc>https://globalbusan.xyz/service</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://globalbusan.xyz/service?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://globalbusan.xyz/service?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://globalbusan.xyz/service?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://globalbusan.xyz/service?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://globalbusan.xyz/service?lang=ar"/>
   </url>
 </urlset>
 

@@ -60,42 +60,8 @@ export default defineConfig({
     // Code splitting optimization
     rollupOptions: {
       plugins: [
-        // Node polyfills so vendor chunks (ethers/solana) can safely access Buffer/process
+        // Node polyfills - automatically handles Buffer/process in all chunks
         rollupNodePolyFill(),
-        // Plugin to ensure Buffer polyfill is available in vendor chunks
-        {
-          name: 'buffer-polyfill-inject',
-          renderChunk(code, chunk) {
-            // Only inject into blockchain-vendor chunk
-            if (chunk.name === 'blockchain-vendor' || chunk.name?.includes('blockchain')) {
-              // Inject code that imports and sets up Buffer at the top of the chunk
-              // This uses a dynamic import that will be resolved by Vite
-              const polyfillSetup = `import { Buffer } from 'buffer';
-// Ensure globals exist - use globalThis to set the actual global object
-if (typeof global === 'undefined') { 
-  if (typeof globalThis !== 'undefined') { globalThis.global = globalThis; }
-  else if (typeof window !== 'undefined') { window.global = window; }
-}
-if (typeof process === 'undefined') { 
-  const processObj = { env: {}, browser: true };
-  if (typeof globalThis !== 'undefined') { globalThis.process = processObj; }
-  if (typeof window !== 'undefined') { window.process = processObj; }
-}
-// Set Buffer globally on all possible global objects
-const globalObj = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {});
-globalObj.Buffer = Buffer;
-if (typeof window !== 'undefined') { window.Buffer = Buffer; }
-if (typeof globalThis !== 'undefined') { globalThis.Buffer = Buffer; }
-if (typeof global !== 'undefined') { global.Buffer = Buffer; }
-`
-              return {
-                code: polyfillSetup + code,
-                map: null
-              }
-            }
-            return null
-          }
-        }
       ],
       output: {
         manualChunks: (id) => {

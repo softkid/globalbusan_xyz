@@ -128,12 +128,36 @@
     ]
   }
   </script>
-  <script type="module" crossorigin src="/assets/js/index-D5v3BL_D.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-Qhqa5doQ.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/vendor-CkrXnGzg.js">
+  
+  <script>
+    // Buffer polyfill - must run before any module scripts
+    (function() {
+      // Set up global object
+      if (typeof global === 'undefined') {
+        if (typeof globalThis !== 'undefined') {
+          globalThis.global = globalThis;
+        } else if (typeof window !== 'undefined') {
+          window.global = window;
+        }
+      }
+      // Set up process object
+      if (typeof process === 'undefined') {
+        const processObj = { env: {}, browser: true, version: '', versions: {} };
+        if (typeof globalThis !== 'undefined') {
+          globalThis.process = processObj;
+        }
+        if (typeof window !== 'undefined') {
+          window.process = processObj;
+        }
+      }
+    })();
+  </script>
+  <script type="module" crossorigin src="/assets/js/index-zmVYgGE6.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-nBH5ijuq.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/vendor-5sj8Uj2_.js">
   <link rel="modulepreload" crossorigin href="/assets/js/i18n-vendor-C7bx-486.js">
   <link rel="modulepreload" crossorigin href="/assets/js/animation-vendor-BYOuoV-H.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-Bv61Ypnw.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-B0W0jozs.js">
   <link rel="stylesheet" crossorigin href="/assets/index-CprbbglO.css">
 </head>
 
