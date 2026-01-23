@@ -1,6 +1,8 @@
+// Import polyfills FIRST - must be before any other imports
+import './polyfills.js'
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Buffer } from 'buffer'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { setupGlobalErrorHandlers } from './utils/errorHandler.js'
@@ -9,10 +11,6 @@ import { initPerformanceMonitoring } from './utils/webVitals.js'
 import { initMonitoring } from './utils/monitoring.js'
 import './index.css'
 import './i18n/config'
-
-// Buffer polyfill for browser environment (required by @solana/web3.js)
-window.Buffer = Buffer
-globalThis.Buffer = Buffer
 
 // 전역 에러 핸들러를 가장 먼저 설정 (다른 스크립트보다 우선)
 // 이렇게 하면 확장 프로그램 오류를 최대한 빨리 필터링할 수 있음

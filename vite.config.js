@@ -1,11 +1,55 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
+
+// Vite plugin to inject Buffer polyfill in HTML before any scripts
+const bufferPolyfillPlugin = () => {
+  return {
+    name: 'buffer-polyfill-html',
+    transformIndexHtml(html) {
+      // Inject polyfill script that loads synchronously before any module scripts
+      const polyfillScript = `
+  <script>
+    // Buffer polyfill - must run before any module scripts
+    (function() {
+      // Set up global object
+      if (typeof global === 'undefined') {
+        if (typeof globalThis !== 'undefined') {
+          globalThis.global = globalThis;
+        } else if (typeof window !== 'undefined') {
+          window.global = window;
+        }
+      }
+      // Set up process object
+      if (typeof process === 'undefined') {
+        const processObj = { env: {}, browser: true, version: '', versions: {} };
+        if (typeof globalThis !== 'undefined') {
+          globalThis.process = processObj;
+        }
+        if (typeof window !== 'undefined') {
+          window.process = processObj;
+        }
+      }
+    })();
+  </script>`
+      // Insert before the first <script type="module"> or before </head>
+      // Try to insert before module scripts first
+      if (html.includes('<script type="module"')) {
+        return html.replace(/(<script type="module"[^>]*>)/, polyfillScript + '\n  $1')
+      }
+      // Fallback to before </head>
+      return html.replace('</head>', polyfillScript + '\n  </head>')
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), bufferPolyfillPlugin()],
   define: {
     'global': 'globalThis',
+    'process.env': '{}',
   },
   resolve: {
     alias: {
@@ -15,6 +59,44 @@ export default defineConfig({
   build: {
     // Code splitting optimization
     rollupOptions: {
+      plugins: [
+        // Node polyfills so vendor chunks (ethers/solana) can safely access Buffer/process
+        rollupNodePolyFill(),
+        // Plugin to ensure Buffer polyfill is available in vendor chunks
+        {
+          name: 'buffer-polyfill-inject',
+          renderChunk(code, chunk) {
+            // Only inject into blockchain-vendor chunk
+            if (chunk.name === 'blockchain-vendor' || chunk.name?.includes('blockchain')) {
+              // Inject code that imports and sets up Buffer at the top of the chunk
+              // This uses a dynamic import that will be resolved by Vite
+              const polyfillSetup = `import { Buffer } from 'buffer';
+// Ensure globals exist - use globalThis to set the actual global object
+if (typeof global === 'undefined') { 
+  if (typeof globalThis !== 'undefined') { globalThis.global = globalThis; }
+  else if (typeof window !== 'undefined') { window.global = window; }
+}
+if (typeof process === 'undefined') { 
+  const processObj = { env: {}, browser: true };
+  if (typeof globalThis !== 'undefined') { globalThis.process = processObj; }
+  if (typeof window !== 'undefined') { window.process = processObj; }
+}
+// Set Buffer globally on all possible global objects
+const globalObj = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {});
+globalObj.Buffer = Buffer;
+if (typeof window !== 'undefined') { window.Buffer = Buffer; }
+if (typeof globalThis !== 'undefined') { globalThis.Buffer = Buffer; }
+if (typeof global !== 'undefined') { global.Buffer = Buffer; }
+`
+              return {
+                code: polyfillSetup + code,
+                map: null
+              }
+            }
+            return null
+          }
+        }
+      ],
       output: {
         manualChunks: (id) => {
           // Vendor chunks
@@ -84,6 +166,18 @@ export default defineConfig({
       'buffer',
     ],
     exclude: ['@walletconnect'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [
+        // Provide Buffer/process during dev optimize step
+        NodeGlobalsPolyfillPlugin({
+          buffer: true,
+          process: true,
+        }),
+      ],
+    },
   },
   // Server configuration for preview
   server: {
