@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
-import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 
 // Vite plugin to inject minimal global setup in HTML before any scripts
 const bufferPolyfillPlugin = () => {
@@ -60,13 +59,90 @@ const bufferPolyfillPlugin = () => {
       // 3. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
       // This prevents "Cannot read properties of undefined" errors
       if (typeof Buffer === 'undefined') {
-        var BufferPlaceholder = function() {
-          console.warn('Buffer called before polyfill loaded. Ensure polyfills.js is imported first.');
+        // Create a more complete Buffer placeholder that mimics real Buffer API
+        var BufferPlaceholder = function(arg, encodingOrOffset, length) {
+          // Basic constructor
+          if (arg instanceof Uint8Array) {
+            return arg;
+          }
+          if (typeof arg === 'number') {
+            return new Uint8Array(arg);
+          }
+          if (typeof arg === 'string') {
+            var encoder = new TextEncoder();
+            return encoder.encode(arg);
+          }
+          if (Array.isArray(arg)) {
+            return new Uint8Array(arg);
+          }
+          return new Uint8Array(0);
         };
-        BufferPlaceholder.from = function() { return new Uint8Array(); };
-        BufferPlaceholder.alloc = function() { return new Uint8Array(); };
-        BufferPlaceholder.isBuffer = function() { return false; };
         
+        // Static methods
+        BufferPlaceholder.from = function(value, encodingOrOffset, length) {
+          if (value instanceof Uint8Array) {
+            return value;
+          }
+          if (typeof value === 'string') {
+            var encoder = new TextEncoder();
+            return encoder.encode(value);
+          }
+          if (Array.isArray(value)) {
+            return new Uint8Array(value);
+          }
+          return new Uint8Array(0);
+        };
+        
+        BufferPlaceholder.alloc = function(size, fill, encoding) {
+          var buf = new Uint8Array(size);
+          if (fill !== undefined) {
+            buf.fill(fill);
+          }
+          return buf;
+        };
+        
+        BufferPlaceholder.allocUnsafe = function(size) {
+          return new Uint8Array(size);
+        };
+        
+        BufferPlaceholder.isBuffer = function(obj) {
+          return obj instanceof Uint8Array;
+        };
+        
+        BufferPlaceholder.byteLength = function(string, encoding) {
+          if (typeof string === 'string') {
+            var encoder = new TextEncoder();
+            return encoder.encode(string).length;
+          }
+          return string ? string.length || string.byteLength || 0 : 0;
+        };
+        
+        BufferPlaceholder.concat = function(list, totalLength) {
+          if (!Array.isArray(list)) {
+            return new Uint8Array(0);
+          }
+          
+          if (list.length === 0) {
+            return new Uint8Array(0);
+          }
+          
+          var length = totalLength !== undefined ? totalLength : list.reduce(function(acc, buf) {
+            return acc + (buf.length || buf.byteLength || 0);
+          }, 0);
+          
+          var result = new Uint8Array(length);
+          var offset = 0;
+          
+          for (var i = 0; i < list.length; i++) {
+            var buf = list[i];
+            result.set(buf, offset);
+            offset += buf.length || buf.byteLength || 0;
+          }
+          
+          return result;
+        };
+        
+        // Set globally
         if (typeof window !== 'undefined') {
           window.Buffer = BufferPlaceholder;
         }
@@ -112,25 +188,42 @@ export default defineConfig({
   build: {
     // Code splitting optimization
     rollupOptions: {
+      // Treat buffer as external - use HTML placeholder instead of bundling
+      external: ['buffer'],
       plugins: [
-        // Node polyfills - automatically handles Buffer/process in all chunks
-        rollupNodePolyFill(),
+        // Custom plugin to detect if buffer leaks into vendor chunk
+        {
+          name: 'buffer-chunk-enforcer',
+          renderChunk(code, chunk) {
+            if (chunk.name === 'vendor' && (code.includes('buffer') || code.includes('Buffer'))) {
+              console.warn('⚠️  WARNING: Buffer detected in vendor chunk, should be in blockchain-vendor');
+            }
+            return null;
+          }
+        }
       ],
       output: {
         manualChunks: (id) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
-            // Don't separate buffer - let it be included where needed
-            // This prevents "Cannot read Buffer" errors in blockchain-vendor
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+            // CRITICAL: Buffer and its dependencies MUST be in blockchain-vendor
+            // Handle buffer before ANY other vendor checks to prevent vendor leakage
+            if (id.includes('/buffer/') || id.includes('\\buffer\\') ||
+                id.includes('/base64-js/') || id.includes('\\base64-js\\') ||
+                id.includes('/ieee754/') || id.includes('\\ieee754\\')) {
+              return 'blockchain-vendor'
+            }
+            
+            // Blockchain libraries and buffer go together
+            if (id.includes('ethers') || id.includes('@solana') || id.includes('web3')) {
+              return 'blockchain-vendor'
+            }
+            
+            if (id.includes('react') && !id.includes('react-i18next')) {
               return 'react-vendor'
             }
             if (id.includes('@stripe')) {
               return 'stripe-vendor'
-            }
-            // Include buffer WITH blockchain libraries to ensure it's available
-            if (id.includes('ethers') || id.includes('@solana') || id.includes('web3') || id.includes('/buffer/')) {
-              return 'blockchain-vendor'
             }
             if (id.includes('gsap')) {
               return 'animation-vendor'
@@ -141,7 +234,8 @@ export default defineConfig({
             if (id.includes('recharts')) {
               return 'charts-vendor'
             }
-            // Other large vendor libraries
+            // EXCLUDE: Do NOT put buffer, base64-js, ieee754 in vendor chunk
+            // They must stay in blockchain-vendor for proper initialization
             return 'vendor'
           }
         },
