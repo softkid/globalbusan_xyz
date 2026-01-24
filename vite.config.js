@@ -179,7 +179,6 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      buffer: 'buffer',
       process: 'process/browser',
       stream: 'stream-browserify',
       util: 'util',
@@ -273,8 +272,6 @@ export default defineConfig({
   // Optimize dependencies
   optimizeDeps: {
     include: [
-      // Buffer MUST be first to ensure it's available for blockchain libraries
-      'buffer',
       'react',
       'react-dom',
       'react-router-dom',
