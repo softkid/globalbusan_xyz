@@ -178,17 +178,18 @@ export default defineConfig({
     'window.Buffer': 'globalThis.Buffer',
   },
   resolve: {
-    alias: {
-      process: 'process/browser',
-      stream: 'stream-browserify',
-      util: 'util',
-    },
+    alias: [
+      // Ensure any import 'buffer' resolves to our shim (prevents bare specifier in output)
+      { find: 'buffer', replacement: '/src/shims/buffer-shim.js' },
+      { find: 'buffer/', replacement: '/src/shims/buffer-shim.js' },
+      { find: 'process', replacement: 'process/browser' },
+      { find: 'stream', replacement: 'stream-browserify' },
+      { find: 'util', replacement: 'util' },
+    ],
   },
   build: {
     // Code splitting optimization
     rollupOptions: {
-      // Treat buffer as external - use HTML placeholder instead of bundling
-      external: ['buffer'],
       plugins: [
         // Custom plugin to detect if buffer leaks into vendor chunk
         {
