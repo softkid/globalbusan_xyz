@@ -8,32 +8,77 @@ const bufferPolyfillPlugin = () => {
   return {
     name: 'buffer-polyfill-html',
     transformIndexHtml(html) {
-      // Only inject minimal global/process setup - Buffer comes from bundled polyfills.js
+      // Inject comprehensive setup before any modules
       const polyfillScript = `
   <script>
-    // Minimal setup before modules load
+    // Comprehensive polyfill setup before any modules load
     (function() {
-      // Setup global
-      if (typeof window !== 'undefined' && typeof global === 'undefined') {
-        window.global = window;
+      // 1. Setup global object
+      if (typeof window !== 'undefined') {
+        if (typeof window.global === 'undefined') {
+          window.global = window;
+        }
         if (typeof globalThis !== 'undefined') {
           globalThis.global = globalThis;
         }
       }
-      // Setup minimal process
+      
+      // 2. Setup process object with all required properties
       if (typeof process === 'undefined') {
         var processObj = { 
-          env: {}, 
+          env: {
+            NODE_ENV: 'production'
+          }, 
           browser: true, 
-          version: '', 
-          versions: {},
-          nextTick: function(fn) { setTimeout(fn, 0); }
+          version: 'v18.0.0', 
+          versions: {
+            node: '18.0.0'
+          },
+          platform: 'browser',
+          nextTick: function(fn) { 
+            Promise.resolve().then(fn);
+          },
+          cwd: function() { return '/'; },
+          argv: [],
+          pid: 1,
+          stdout: {},
+          stderr: {},
+          stdin: {}
         };
-        window.process = processObj;
+        
+        if (typeof window !== 'undefined') {
+          window.process = processObj;
+        }
         if (typeof globalThis !== 'undefined') {
           globalThis.process = processObj;
         }
+        if (typeof window !== 'undefined' && window.global) {
+          window.global.process = processObj;
+        }
       }
+      
+      // 3. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
+      // This prevents "Cannot read properties of undefined" errors
+      if (typeof Buffer === 'undefined') {
+        var BufferPlaceholder = function() {
+          console.warn('Buffer called before polyfill loaded. Ensure polyfills.js is imported first.');
+        };
+        BufferPlaceholder.from = function() { return new Uint8Array(); };
+        BufferPlaceholder.alloc = function() { return new Uint8Array(); };
+        BufferPlaceholder.isBuffer = function() { return false; };
+        
+        if (typeof window !== 'undefined') {
+          window.Buffer = BufferPlaceholder;
+        }
+        if (typeof globalThis !== 'undefined') {
+          globalThis.Buffer = BufferPlaceholder;
+        }
+        if (typeof window !== 'undefined' && window.global) {
+          window.global.Buffer = BufferPlaceholder;
+        }
+      }
+      
+      console.log('🔧 Pre-polyfills setup complete (global, process, Buffer placeholder)');
     })();
   </script>`
       // Insert before the first <script type="module">
@@ -71,6 +116,10 @@ export default defineConfig({
         manualChunks: (id) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
+            // Buffer must be in a separate chunk that loads first
+            if (id.includes('/buffer/')) {
+              return 'buffer-polyfill'
+            }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'
             }
