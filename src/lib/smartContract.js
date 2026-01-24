@@ -3,6 +3,9 @@
  * 이더리움 및 Solana 스마트 컨트랙트와의 상호작용을 관리합니다.
  */
 
+// Import polyfills FIRST before blockchain libraries
+import '../polyfills.js'
+
 import { ethers } from 'ethers'
 import { Connection, PublicKey, Transaction, SystemProgram } from '@solana/web3.js'
 

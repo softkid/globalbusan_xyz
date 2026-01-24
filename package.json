@@ -20,16 +20,16 @@
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-react": "^0.15.39",
     "@solana/wallet-adapter-react-ui": "^0.9.39",
-    "@solana/wallet-adapter-wallets": "^0.19.37",
+    "@solana/wallet-adapter-wallets": "^0.19.33",
     "@solana/web3.js": "^1.98.4",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.5.3",
     "@supabase/supabase-js": "^2.58.0",
     "@walletconnect/modal": "^2.7.0",
     "@walletconnect/web3-provider": "^1.8.0",
-    "@web3-react/core": "^8.2.3",
+    "@web3-react/core": "^6.1.9",
     "@web3-react/injected-connector": "^6.0.7",
-    "@web3-react/walletconnect-connector": "^6.2.13",
+    "@web3-react/walletconnect-connector": "^6.2.4",
     "axios": "^1.13.1",
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",
@@ -39,7 +39,7 @@
     "html2canvas": "^1.4.1",
     "i18next": "^25.7.1",
     "i18next-browser-languagedetector": "^8.2.0",
-    "jspdf": "^3.0.4",
+    "jspdf": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^16.3.5",
@@ -71,6 +71,6 @@
     "postcss": "^8.4.49",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "tailwindcss": "^3.4.15",
-    "vite": "^5.4.10"
+    "vite": "^6.4.1"
   }
 }

@@ -81,12 +81,13 @@ const bufferPolyfillPlugin = () => {
       console.log('🔧 Pre-polyfills setup complete (global, process, Buffer placeholder)');
     })();
   </script>`
-      // Insert before the first <script type="module">
+        
+      // Insert polyfill script before the first <script type="module">
       if (html.includes('<script type="module"')) {
         return html.replace(/(<script type="module"[^>]*>)/, polyfillScript + '\n  $1')
       }
       return html.replace('</head>', polyfillScript + '\n  </head>')
-    },
+    }
   }
 }
 
@@ -96,6 +97,9 @@ export default defineConfig({
   define: {
     'global': 'globalThis',
     'process.env': '{}',
+    // Inject Buffer directly at build time
+    'global.Buffer': 'globalThis.Buffer',
+    'window.Buffer': 'globalThis.Buffer',
   },
   resolve: {
     alias: {
@@ -116,17 +120,16 @@ export default defineConfig({
         manualChunks: (id) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
-            // Buffer must be in a separate chunk that loads first
-            if (id.includes('/buffer/')) {
-              return 'buffer-polyfill'
-            }
+            // Don't separate buffer - let it be included where needed
+            // This prevents "Cannot read Buffer" errors in blockchain-vendor
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor'
             }
             if (id.includes('@stripe')) {
               return 'stripe-vendor'
             }
-            if (id.includes('ethers') || id.includes('@solana') || id.includes('web3')) {
+            // Include buffer WITH blockchain libraries to ensure it's available
+            if (id.includes('ethers') || id.includes('@solana') || id.includes('web3') || id.includes('/buffer/')) {
               return 'blockchain-vendor'
             }
             if (id.includes('gsap')) {
@@ -176,13 +179,14 @@ export default defineConfig({
   // Optimize dependencies
   optimizeDeps: {
     include: [
+      // Buffer MUST be first to ensure it's available for blockchain libraries
+      'buffer',
       'react',
       'react-dom',
       'react-router-dom',
       'ethers',
       '@solana/web3.js',
       'recharts',
-      'buffer',
     ],
     exclude: ['@walletconnect'],
     esbuildOptions: {

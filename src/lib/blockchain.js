@@ -1,3 +1,6 @@
+// Import polyfills FIRST before blockchain libraries
+import '../polyfills.js'
+
 import { ethers } from 'ethers'
 
 /**
