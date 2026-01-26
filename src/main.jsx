@@ -1,5 +1,6 @@
 // Import polyfills FIRST - must be before any other imports
 import './polyfills.js'
+import './shims/module-shim.js'
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

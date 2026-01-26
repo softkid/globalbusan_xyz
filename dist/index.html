@@ -220,7 +220,20 @@
         }
       }
       
-      // 3. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
+      // 3. Setup module object for CommonJS compat (prevents "Cannot read properties of undefined (reading 'exports')")
+      if (typeof module === 'undefined' || !module.exports) {
+        var moduleObj = {
+          exports: {}
+        };
+        if (typeof window !== 'undefined') {
+          window.module = moduleObj;
+        }
+        if (typeof globalThis !== 'undefined') {
+          globalThis.module = moduleObj;
+        }
+      }
+      
+      // 4. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
       // This prevents "Cannot read properties of undefined" errors
       if (typeof Buffer === 'undefined') {
         // Create a more complete Buffer placeholder that mimics real Buffer API
@@ -318,15 +331,15 @@
         }
       }
       
-      console.log('🔧 Pre-polyfills setup complete (global, process, Buffer placeholder)');
+      console.log('🔧 Pre-polyfills setup complete (global, process, module, Buffer placeholder)');
     })();
   </script>
-  <script type="module" crossorigin src="/assets/js/index-Cu7xR6IG.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-PSb-4OhV.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/vendor-DxPuWOVM.js">
+  <script type="module" crossorigin src="/assets/js/index-CkYdwHSL.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-CwwWXRhE.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/vendor-DLo2K1Jc.js">
   <link rel="modulepreload" crossorigin href="/assets/js/animation-vendor-RvbwsEyj.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-D-V7a9e2.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/i18n-vendor-BNDLeiNK.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-DVzJgZkF.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/i18n-vendor-BgTkXGRJ.js">
   <link rel="stylesheet" crossorigin href="/assets/index-DW2c_KfB.css">
 </head>
 

@@ -1,7 +1,6 @@
 // Import polyfills FIRST before blockchain libraries
 import '../polyfills.js'
-
-import { ethers } from 'ethers'
+import '../shims/module-shim.js'
 
 /**
  * 이더리움 트랜잭션 검증

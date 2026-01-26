@@ -56,7 +56,20 @@ const bufferPolyfillPlugin = () => {
         }
       }
       
-      // 3. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
+      // 3. Setup module object for CommonJS compat (prevents "Cannot read properties of undefined (reading 'exports')")
+      if (typeof module === 'undefined' || !module.exports) {
+        var moduleObj = {
+          exports: {}
+        };
+        if (typeof window !== 'undefined') {
+          window.module = moduleObj;
+        }
+        if (typeof globalThis !== 'undefined') {
+          globalThis.module = moduleObj;
+        }
+      }
+      
+      // 4. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
       // This prevents "Cannot read properties of undefined" errors
       if (typeof Buffer === 'undefined') {
         // Create a more complete Buffer placeholder that mimics real Buffer API
@@ -154,7 +167,7 @@ const bufferPolyfillPlugin = () => {
         }
       }
       
-      console.log('🔧 Pre-polyfills setup complete (global, process, Buffer placeholder)');
+      console.log('🔧 Pre-polyfills setup complete (global, process, module, Buffer placeholder)');
     })();
   </script>`
         
@@ -173,12 +186,16 @@ export default defineConfig({
   define: {
     'global': 'globalThis',
     'process.env': '{}',
+    'process': 'globalThis.process',
+    'module': 'globalThis.module',
     // Inject Buffer directly at build time
     'global.Buffer': 'globalThis.Buffer',
     'window.Buffer': 'globalThis.Buffer',
   },
   resolve: {
     alias: [
+      // Ensure module shim is available to prevent CommonJS access errors
+      { find: 'module', replacement: '/src/shims/module-shim.js' },
       // Ensure any import 'buffer' resolves to our shim (prevents bare specifier in output)
       { find: 'buffer', replacement: '/src/shims/buffer-shim.js' },
       { find: 'buffer/', replacement: '/src/shims/buffer-shim.js' },

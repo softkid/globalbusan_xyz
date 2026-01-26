@@ -3,6 +3,16 @@
 
 const GlobalBuffer = (typeof globalThis !== 'undefined' && globalThis.Buffer) ? globalThis.Buffer : undefined;
 
+// Ensure Buffer exists globally (critical for ethers and blockchain libraries)
+if (typeof globalThis !== 'undefined' && !globalThis.Buffer && GlobalBuffer) {
+  globalThis.Buffer = GlobalBuffer;
+}
+
+// Also ensure window has Buffer for browser access
+if (typeof window !== 'undefined' && GlobalBuffer) {
+  window.Buffer = GlobalBuffer;
+}
+
 export const Buffer = GlobalBuffer;
 export default GlobalBuffer;
 

@@ -10,6 +10,17 @@ if (typeof window !== 'undefined') {
   window.process = window.process || { env: {}, browser: true, nextTick: (fn) => setTimeout(fn, 0) }
 }
 
+// Ensure module object exists (prevents "Cannot read properties of undefined (reading 'exports')")
+if (typeof module === 'undefined' || !module.exports) {
+  const moduleObj = { exports: {} }
+  if (typeof window !== 'undefined') {
+    window.module = moduleObj
+  }
+  if (typeof globalThis !== 'undefined') {
+    globalThis.module = moduleObj
+  }
+}
+
 // Ensure Buffer exists globally (prefer HTML-injected placeholder)
 if (typeof globalThis !== 'undefined' && typeof globalThis.Buffer !== 'undefined') {
   if (typeof window !== 'undefined') {
