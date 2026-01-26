@@ -231,44 +231,58 @@ export default defineConfig({
         // Prevent circular dependencies
         format: 'es',
         manualChunks: (id, context) => {
-          // Vendor chunks
+          // Vendor chunks - prioritize EARLY to prevent leakage
           if (id.includes('node_modules')) {
-            // CRITICAL: Buffer and its dependencies MUST be in blockchain-vendor
-            // Handle buffer before ANY other vendor checks to prevent vendor leakage
+            // CRITICAL: Buffer and its dependencies MUST be in blockchain-vendor FIRST
             if (id.includes('/buffer/') || id.includes('\\buffer\\') ||
                 id.includes('/base64-js/') || id.includes('\\base64-js\\') ||
                 id.includes('/ieee754/') || id.includes('\\ieee754\\')) {
               return 'blockchain-vendor'
             }
             
-            // Blockchain libraries and buffer go together
-            if (id.includes('ethers') || id.includes('@solana') || id.includes('web3')) {
+            // Blockchain and crypto libraries - isolated chunk to prevent circular deps
+            if (id.includes('ethers') || id.includes('@solana') || id.includes('web3') ||
+                id.includes('crypto') || id.includes('bn.js')) {
               return 'blockchain-vendor'
             }
             
-            if (id.includes('react') && !id.includes('react-i18next')) {
-              return 'react-vendor'
-            }
-            if (id.includes('@stripe')) {
-              return 'stripe-vendor'
-            }
-            if (id.includes('gsap')) {
-              return 'animation-vendor'
-            }
-            if (id.includes('i18next') || id.includes('react-i18next')) {
-              return 'i18n-vendor'
-            }
-            if (id.includes('recharts')) {
-              return 'charts-vendor'
-            }
+            // Firebase - separate to avoid circular dependencies
             if (id.includes('firebase')) {
               return 'firebase-vendor'
             }
+            
+            // HTTP clients
             if (id.includes('axios')) {
               return 'http-vendor'
             }
-            // EXCLUDE: Do NOT put buffer, base64-js, ieee754 in vendor chunk
-            // They must stay in blockchain-vendor for proper initialization
+            
+            // React ecosystem (but carefully to avoid circular deps)
+            if (id.includes('react') && !id.includes('react-i18next') && !id.includes('react-icons')) {
+              return 'react-vendor'
+            }
+            
+            // Stripe
+            if (id.includes('@stripe')) {
+              return 'stripe-vendor'
+            }
+            
+            // Animation
+            if (id.includes('gsap')) {
+              return 'animation-vendor'
+            }
+            
+            // i18n
+            if (id.includes('i18next') || id.includes('react-i18next')) {
+              return 'i18n-vendor'
+            }
+            
+            // Charts
+            if (id.includes('recharts')) {
+              return 'charts-vendor'
+            }
+            
+            // Everything else goes to vendor, but this should be avoided
+            // by better separation above
             return 'vendor'
           }
         },

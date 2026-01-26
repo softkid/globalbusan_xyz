@@ -2,6 +2,8 @@
 import '../polyfills.js'
 import '../shims/module-shim.js'
 
+import { ethers } from 'ethers'
+
 /**
  * 이더리움 트랜잭션 검증
  */
