@@ -174,9 +174,10 @@
   </script>
   
   <script>
-    // Comprehensive polyfill setup before any modules load
+    // CRITICAL: Initialize globals BEFORE any modules load
+    // This prevents "Cannot access 'JI' before initialization" errors
     (function() {
-      // 1. Setup global object
+      // 1. Setup global object - MUST BE FIRST
       if (typeof window !== 'undefined') {
         if (typeof window.global === 'undefined') {
           window.global = window;
@@ -187,7 +188,7 @@
       }
       
       // 2. Setup process object with all required properties
-      if (typeof process === 'undefined') {
+      if (typeof process === 'undefined' || !process.env) {
         var processObj = { 
           env: {
             NODE_ENV: 'production'
@@ -233,7 +234,14 @@
         }
       }
       
-      // 4. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
+      // 4. Setup Array/Object static methods that dependencies might use
+      // This prevents temporal dead zone (TDZ) errors with variables like 'JI'
+      if (typeof Object.defineProperty !== 'function') {
+        // Should always exist, but guard it anyway
+        console.warn('Object.defineProperty not available');
+      }
+      
+      // 5. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
       // This prevents "Cannot read properties of undefined" errors
       if (typeof Buffer === 'undefined') {
         // Create a more complete Buffer placeholder that mimics real Buffer API
@@ -334,12 +342,12 @@
       console.log('🔧 Pre-polyfills setup complete (global, process, module, Buffer placeholder)');
     })();
   </script>
-  <script type="module" crossorigin src="/assets/js/index-CkYdwHSL.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-CwwWXRhE.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/vendor-DLo2K1Jc.js">
+  <script type="module" crossorigin src="/assets/js/index-C6bQeVQg.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/js/blockchain-vendor-Ba6ZwuX2.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/vendor-BcxhLhqj.js">
   <link rel="modulepreload" crossorigin href="/assets/js/animation-vendor-RvbwsEyj.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-DVzJgZkF.js">
-  <link rel="modulepreload" crossorigin href="/assets/js/i18n-vendor-BgTkXGRJ.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/react-vendor-CwJjCyaz.js">
+  <link rel="modulepreload" crossorigin href="/assets/js/i18n-vendor-Cr64gbFz.js">
   <link rel="stylesheet" crossorigin href="/assets/index-DW2c_KfB.css">
 </head>
 

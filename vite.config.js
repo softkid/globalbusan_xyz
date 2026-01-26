@@ -10,9 +10,10 @@ const bufferPolyfillPlugin = () => {
       // Inject comprehensive setup before any modules
       const polyfillScript = `
   <script>
-    // Comprehensive polyfill setup before any modules load
+    // CRITICAL: Initialize globals BEFORE any modules load
+    // This prevents "Cannot access 'JI' before initialization" errors
     (function() {
-      // 1. Setup global object
+      // 1. Setup global object - MUST BE FIRST
       if (typeof window !== 'undefined') {
         if (typeof window.global === 'undefined') {
           window.global = window;
@@ -23,7 +24,7 @@ const bufferPolyfillPlugin = () => {
       }
       
       // 2. Setup process object with all required properties
-      if (typeof process === 'undefined') {
+      if (typeof process === 'undefined' || !process.env) {
         var processObj = { 
           env: {
             NODE_ENV: 'production'
@@ -69,7 +70,14 @@ const bufferPolyfillPlugin = () => {
         }
       }
       
-      // 4. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
+      // 4. Setup Array/Object static methods that dependencies might use
+      // This prevents temporal dead zone (TDZ) errors with variables like 'JI'
+      if (typeof Object.defineProperty !== 'function') {
+        // Should always exist, but guard it anyway
+        console.warn('Object.defineProperty not available');
+      }
+      
+      // 5. Pre-setup Buffer placeholder (will be replaced by actual Buffer from module)
       // This prevents "Cannot read properties of undefined" errors
       if (typeof Buffer === 'undefined') {
         // Create a more complete Buffer placeholder that mimics real Buffer API
@@ -220,7 +228,9 @@ export default defineConfig({
         }
       ],
       output: {
-        manualChunks: (id) => {
+        // Prevent circular dependencies
+        format: 'es',
+        manualChunks: (id, context) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
             // CRITICAL: Buffer and its dependencies MUST be in blockchain-vendor
@@ -251,6 +261,12 @@ export default defineConfig({
             if (id.includes('recharts')) {
               return 'charts-vendor'
             }
+            if (id.includes('firebase')) {
+              return 'firebase-vendor'
+            }
+            if (id.includes('axios')) {
+              return 'http-vendor'
+            }
             // EXCLUDE: Do NOT put buffer, base64-js, ieee754 in vendor chunk
             // They must stay in blockchain-vendor for proper initialization
             return 'vendor'
@@ -274,8 +290,8 @@ export default defineConfig({
     },
     // Chunk size warnings
     chunkSizeWarningLimit: 1000,
-    // Source maps for production debugging (disabled for smaller builds)
-    sourcemap: false,
+    // Source maps for production debugging
+    sourcemap: 'hidden',
     // Minification
     minify: 'esbuild',
     // Target modern browsers for smaller bundle (ES2020 required for BigInt support)

@@ -4,10 +4,21 @@
  * Do NOT import 'buffer' here; rely on the HTML placeholder or global Buffer.
  */
 
-// Ensure global and process exist in browser
+// Ensure global and process exist in browser FIRST (top priority)
 if (typeof window !== 'undefined') {
   window.global = window
   window.process = window.process || { env: {}, browser: true, nextTick: (fn) => setTimeout(fn, 0) }
+  // Also ensure globalThis has process
+  if (typeof globalThis !== 'undefined') {
+    globalThis.process = window.process
+    globalThis.global = window
+  }
+}
+
+// Ensure globalThis has process/global if window doesn't exist (rare, but for completeness)
+if (typeof globalThis !== 'undefined' && typeof globalThis.process === 'undefined') {
+  globalThis.process = { env: {}, browser: true, nextTick: (fn) => setTimeout(fn, 0) }
+  globalThis.global = typeof globalThis !== 'undefined' ? globalThis : {}
 }
 
 // Ensure module object exists (prevents "Cannot read properties of undefined (reading 'exports')")
