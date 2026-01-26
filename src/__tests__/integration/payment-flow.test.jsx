@@ -22,19 +22,10 @@ jest.mock('../../lib/supabase', () => ({
 }))
 
 jest.mock('../../lib/blockchain', () => ({
-  sendTransaction: jest.fn().mockResolvedValue({
-    success: true,
-    transactionHash: '0x1234567890abcdef',
-    network: 'ethereum'
-  }),
-  waitForEthereumTransaction: jest.fn().mockResolvedValue({
-    success: true,
-    receipt: { status: 1 }
-  }),
-  verifyTransaction: jest.fn().mockResolvedValue({
-    verified: true,
-    transaction: { hash: '0x1234567890abcdef' }
-  })
+  connectSuiWallet: jest.fn().mockResolvedValue('0xsuiwallet'),
+  sendSuiTransaction: jest.fn().mockResolvedValue('0xsuidigest'),
+  waitForSuiTransaction: jest.fn().mockResolvedValue({}),
+  verifySuiTransaction: jest.fn().mockResolvedValue(true)
 }))
 
 jest.mock('../../lib/payment', () => ({

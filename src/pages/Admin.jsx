@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaChartLine, FaUsers, FaDollarSign, FaHandHoldingHeart, FaBuilding } from 'react-icons/fa'
-import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaChartLine, FaUsers, FaDollarSign, FaHandHoldingHeart, FaBuilding, FaWallet } from 'react-icons/fa'
 import AdminNavbar from '../components/AdminNavbar'
 import Footer from '../components/Footer'
 import { t } from '../lib/i18n'
@@ -49,7 +48,7 @@ function Admin() {
     raised: '',
     expected_return: '',
     timeline: '',
-    crypto_type: 'ETH',
+    crypto_type: 'SUI',
     progress: 0,
     team_size: '',
     technologies: []
@@ -87,14 +86,11 @@ function Admin() {
   ]
 
   const cryptoTypes = [
-    { id: 'ETH', name: 'Ethereum', icon: SiEthereum },
-    { id: 'SOL', name: 'Solana', icon: SiSolana },
-    { id: 'BTC', name: 'Bitcoin', icon: SiBitcoin }
+    { id: 'SUI', name: 'Sui', icon: FaWallet }
   ]
 
   const techOptions = [
-    'React', 'Next.js', 'Node.js', 'Solidity', 'Web3.js', 'Ethereum', 'Solana', 'IPFS', 
-    'Unity', 'Unreal Engine', 'Hardhat', 'Truffle', 'Metaplex', 'OpenZeppelin'
+    'React', 'Next.js', 'Node.js', 'Move', 'Sui', 'TypeScript', 'Tailwind CSS', 'Vite'
   ]
 
   // 데이터 로드
@@ -152,7 +148,7 @@ function Admin() {
       raised: '',
       expected_return: '',
       timeline: '',
-      crypto_type: 'ETH',
+      crypto_type: 'SUI',
       progress: 0,
       team_size: '',
       technologies: []

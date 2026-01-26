@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding, FaCode, FaGlobe, FaFileAlt, FaGoogle, FaWallet } from 'react-icons/fa'
-import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
 import { Link, useNavigate } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
@@ -9,6 +8,7 @@ import Footer from '../components/Footer'
 import SEO from '../components/SEO'
 import { useTranslation } from 'react-i18next'
 import { projectService, statsService } from '../lib/supabase'
+import { connectSuiWallet } from '../lib/blockchain'
 
 function Projects() {
   const navigate = useNavigate()
@@ -66,15 +66,8 @@ function Projects() {
     return t(`projects.status.${status}`) || status
   }
 
-  // 암호화폐 아이콘
-  const getCryptoIcon = (crypto) => {
-    switch (crypto) {
-      case 'SOL': return SiSolana
-      case 'ETH': return SiEthereum
-      case 'BTC': return SiBitcoin
-      default: return FaDollarSign
-    }
-  }
+  // 암호화폐 아이콘 (Sui 전용 표시)
+  const getCryptoIcon = () => FaWallet
 
   // Google 로그인
   const handleGoogleLogin = useGoogleLogin({
@@ -172,32 +165,16 @@ function Projects() {
       return
     }
 
-    // 지갑 연결 체크
-    let walletAddress = ''
-    let isWalletConnected = false
-
+    // 지갑 연결 체크 (Sui)
     try {
-      // MetaMask 우선 시도
-      if (window.ethereum) {
-        const accounts = await window.ethereum.request({
-          method: 'eth_requestAccounts'
-        })
-        walletAddress = accounts[0]
-        isWalletConnected = true
-      } else if (window.solana && window.solana.isPhantom) {
-        // Solana 지갑 시도
-        const response = await window.solana.connect()
-        walletAddress = response.publicKey.toString()
-        isWalletConnected = true
+      const walletAddress = await connectSuiWallet()
+      if (!walletAddress) {
+        alert('Sui 지갑 연결이 필요합니다.')
+        return
       }
     } catch (error) {
       console.error('지갑 연결 실패:', error)
-      alert('지갑 연결이 필요합니다. 지갑을 연결한 후 다시 시도해주세요.')
-      return
-    }
-
-    if (!isWalletConnected || !walletAddress) {
-      alert('지갑 연결이 필요합니다. 지갑을 연결한 후 다시 시도해주세요.')
+      alert(error.message || 'Sui 지갑을 연결한 후 다시 시도해주세요.')
       return
     }
 
@@ -357,7 +334,7 @@ function Projects() {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {filteredProjects.map((project) => {
-                  const CryptoIcon = getCryptoIcon(project.crypto_type)
+                  const CryptoIcon = getCryptoIcon()
                   const progressPercentage = (project.raised / project.budget) * 100
 
                   return (

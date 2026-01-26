@@ -18,22 +18,24 @@ describe('Roadmap Component', () => {
   test('renders roadmap section', () => {
     renderWithProviders(<Roadmap />)
     
-    expect(screen.getByText(/로드맵/i)).toBeInTheDocument()
+    // Component displays Roadmap section
+    const roadmapElements = screen.getAllByText(/Roadmap/i)
+    expect(roadmapElements.length).toBeGreaterThan(0)
   })
 
   test('displays roadmap stages', () => {
     renderWithProviders(<Roadmap />)
     
-    // Check for stage indicators
-    expect(screen.getByText(/1단계/i) || screen.getByText(/Stage 1/i)).toBeDefined()
+    // Check for stage indicators - displayed as phase titles
+    expect(screen.getByText(/Foundation Phase/i)).toBeInTheDocument()
   })
 
   test('shows progress indicators', () => {
     renderWithProviders(<Roadmap />)
     
-    // Roadmap should have progress visualization
-    const roadmap = screen.getByText(/로드맵/i).closest('section')
-    expect(roadmap).toBeInTheDocument()
+    // Roadmap should have progress visualization with percentage indicators
+    const progressElements = screen.getAllByText(/Progress/i)
+    expect(progressElements.length).toBeGreaterThan(0)
   })
 })
 

@@ -18,7 +18,7 @@ const bufferPolyfillPlugin = () => {
         if (typeof window.global === 'undefined') {
           window.global = window;
         }
-        if (typeof globalThis !== 'undefined') {
+        if (typeof globalThis !== 'undefined' && globalThis) {
           globalThis.global = globalThis;
         }
       }
@@ -46,14 +46,29 @@ const bufferPolyfillPlugin = () => {
           stdin: {}
         };
         
-        if (typeof window !== 'undefined') {
-          window.process = processObj;
+        // Set process on window first (primary target)
+        if (typeof window !== 'undefined' && window) {
+          try {
+            window.process = processObj;
+          } catch (e) {
+            console.warn('Could not set window.process:', e);
+          }
         }
-        if (typeof globalThis !== 'undefined') {
-          globalThis.process = processObj;
+        // Then on globalThis (secondary target)
+        if (typeof globalThis !== 'undefined' && globalThis) {
+          try {
+            globalThis.process = processObj;
+          } catch (e) {
+            console.warn('Could not set globalThis.process:', e);
+          }
         }
-        if (typeof window !== 'undefined' && window.global) {
-          window.global.process = processObj;
+        // Then on window.global if it exists
+        if (typeof window !== 'undefined' && window && window.global) {
+          try {
+            window.global.process = processObj;
+          } catch (e) {
+            console.warn('Could not set window.global.process:', e);
+          }
         }
       }
       
@@ -62,11 +77,19 @@ const bufferPolyfillPlugin = () => {
         var moduleObj = {
           exports: {}
         };
-        if (typeof window !== 'undefined') {
-          window.module = moduleObj;
+        if (typeof window !== 'undefined' && window) {
+          try {
+            window.module = moduleObj;
+          } catch (e) {
+            console.warn('Could not set window.module:', e);
+          }
         }
-        if (typeof globalThis !== 'undefined') {
-          globalThis.module = moduleObj;
+        if (typeof globalThis !== 'undefined' && globalThis) {
+          try {
+            globalThis.module = moduleObj;
+          } catch (e) {
+            console.warn('Could not set globalThis.module:', e);
+          }
         }
       }
       
@@ -163,15 +186,27 @@ const bufferPolyfillPlugin = () => {
           return result;
         };
         
-        // Set globally
-        if (typeof window !== 'undefined') {
-          window.Buffer = BufferPlaceholder;
+        // Set globally - with PROPER guards to prevent "Cannot set properties of undefined"
+        if (typeof window !== 'undefined' && window) {
+          try {
+            window.Buffer = BufferPlaceholder;
+          } catch (e) {
+            console.warn('Could not set window.Buffer:', e);
+          }
         }
-        if (typeof globalThis !== 'undefined') {
-          globalThis.Buffer = BufferPlaceholder;
+        if (typeof globalThis !== 'undefined' && globalThis) {
+          try {
+            globalThis.Buffer = BufferPlaceholder;
+          } catch (e) {
+            console.warn('Could not set globalThis.Buffer:', e);
+          }
         }
-        if (typeof window !== 'undefined' && window.global) {
-          window.global.Buffer = BufferPlaceholder;
+        if (typeof window !== 'undefined' && window && window.global) {
+          try {
+            window.global.Buffer = BufferPlaceholder;
+          } catch (e) {
+            console.warn('Could not set window.global.Buffer:', e);
+          }
         }
       }
       
@@ -323,11 +358,17 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      'ethers',
-      '@solana/web3.js',
       'recharts',
     ],
-    exclude: ['@walletconnect'],
+    // IMPORTANT: Exclude blockchain libraries to prevent circular dependencies and Buffer conflicts
+    exclude: [
+      '@walletconnect',
+      'ethers',
+      '@solana/web3.js',
+      'web3',
+      'buffer',
+      'safe-buffer'
+    ],
     esbuildOptions: {
       define: {
         global: 'globalThis',

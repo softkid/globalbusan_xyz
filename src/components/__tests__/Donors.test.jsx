@@ -41,16 +41,18 @@ describe('Donors Component', () => {
     renderWithProviders(<Donors />)
     
     await waitFor(() => {
-      expect(screen.getByText(/기부자/i) || screen.getByText(/Donors/i)).toBeDefined()
+      // Component displays with empty state in Sui-only build
+      expect(screen.getByText('기부자 현황')).toBeInTheDocument()
     })
   })
 
-  test('displays donor list', async () => {
+  test('displays empty state message', async () => {
     renderWithProviders(<Donors />)
     
     await waitFor(() => {
-      // Should display donor information
-      expect(screen.getByText(/\$5,000/i) || screen.getByText(/ETH/i)).toBeDefined()
+      // Should display empty state for Sui-only build pending data (appears in 2 sections)
+      const emptyStates = screen.getAllByText('데이터가 없습니다')
+      expect(emptyStates.length).toBeGreaterThan(0)
     })
   })
 })

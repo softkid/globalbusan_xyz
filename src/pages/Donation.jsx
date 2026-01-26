@@ -1,23 +1,16 @@
 import { useState, useEffect } from 'react'
-import { FaGoogle, FaWallet, FaEthereum, FaBitcoin, FaCheckCircle, FaCopy, FaQrcode, FaHandHoldingHeart, FaHistory, FaChartLine, FaCreditCard, FaPaypal } from 'react-icons/fa'
+import { FaGoogle, FaWallet, FaCheckCircle, FaCopy, FaQrcode, FaHandHoldingHeart, FaHistory, FaChartLine } from 'react-icons/fa'
 import { TiLocationArrow } from 'react-icons/ti'
-import { SiSolana } from 'react-icons/si'
 import { useGoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
-import StripePayment from '../components/StripePayment'
-import CoinbasePayment from '../components/CoinbasePayment'
-import TossPayment from '../components/TossPayment'
-import PayPalPayment from '../components/PayPalPayment'
 import { useTranslation } from 'react-i18next'
 import { statsService, expenseService, investmentService } from '../lib/supabase'
 import { validatePaymentAmount } from '../lib/payment'
-import { sendTransaction, waitForEthereumTransaction, waitForSolanaTransaction, waitForPolygonTransaction, verifyTransaction } from '../lib/blockchain'
-import { createDonationContract } from '../lib/smartContract'
-import { processStripeRefund, processCoinbaseRefund, canRefund } from '../lib/refund'
+import { sendSuiTransaction, waitForSuiTransaction, verifySuiTransaction, connectSuiWallet } from '../lib/blockchain'
 
 function Donation() {
   const { t } = useTranslation()
@@ -33,7 +26,7 @@ function Donation() {
       "name": "Global BUSAN",
       "url": "https://globalbusan.xyz"
     },
-    "paymentMethod": ["Cryptocurrency", "CreditCard", "PayPal", "TossPayments"],
+    "paymentMethod": ["Sui"],
     "url": "https://globalbusan.xyz/donation"
   }
   
@@ -45,8 +38,6 @@ function Donation() {
 
   // 기부 정보
   const [donationAmount, setDonationAmount] = useState('')
-  const [selectedCrypto, setSelectedCrypto] = useState('ETH')
-  const [paymentMethod, setPaymentMethod] = useState('crypto') // 'crypto', 'card', 'coinbase', 'toss', or 'paypal'
   const [donationHistory, setDonationHistory] = useState([])
   const [isDonating, setIsDonating] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
@@ -54,13 +45,8 @@ function Donation() {
   const [donationUsage, setDonationUsage] = useState([])
   const [loadingUsage, setLoadingUsage] = useState(true)
 
-  // 실제 기부 주소들
-  const donationAddresses = {
-    SOL: '2pHWvLfFqnnfAndTdeNkg9Q9C8mbpiuRsFmLanmcjWG3',
-    ETH: '0x6EF87606F3AeF06Ee128416595734baDc5B0cA9e',
-    MATIC: '0x6EF87606F3AeF06Ee128416595734baDc5B0cA9e', // Polygon 주소 (예시)
-    BTC: 'bc1qrrzjv6ksqg2n0fwjuuf27695mgkfejm2ag48ed'
-  }
+  // Sui 테스트넷 기부 주소 (Move 컨트랙트 혹은 수령 계정)
+  const donationAddress = '0x6ef87606f3aef06ee128416595734badc5b0ca9e000000000000000000000000'
 
   useEffect(() => {
     loadDonationUsage()
@@ -135,56 +121,31 @@ function Donation() {
     localStorage.removeItem('googleUser')
   }
 
-  // 지갑 연결
-  const handleWalletConnect = async (walletType = 'metamask') => {
+  // 지갑 연결 (Sui 전용)
+  const handleWalletConnect = async () => {
     if (!isLoggedIn) {
       alert(t('invest.loginRequired'))
       return
     }
 
     try {
-      if (walletType === 'metamask' && window.ethereum) {
-        const accounts = await window.ethereum.request({
-          method: 'eth_requestAccounts'
-        })
-        setWalletAddress(accounts[0])
-        setIsWalletConnected(true)
-      } else if (walletType === 'coinbase') {
-        if (window.coinbaseWalletExtension) {
-          const accounts = await window.coinbaseWalletExtension.request({
-            method: 'eth_requestAccounts'
-          })
-          setWalletAddress(accounts[0])
-          setIsWalletConnected(true)
-        } else {
-          alert(t('donation.installWallet'))
-        }
-      } else if (walletType === 'solana') {
-        if (window.solana && window.solana.isPhantom) {
-          const response = await window.solana.connect()
-          setWalletAddress(response.publicKey.toString())
-          setIsWalletConnected(true)
-        } else {
-          alert(t('donation.installWallet'))
-        }
-      } else {
-        alert(t('donation.installWallet'))
-      }
+      const address = await connectSuiWallet()
+      setWalletAddress(address)
+      setIsWalletConnected(true)
     } catch (error) {
       console.error('Wallet connection failed:', error)
-      alert(t('common.error'))
+      alert(error.message || t('donation.installWallet'))
     }
   }
 
-  // 기부 처리 (암호화폐)
+  // 기부 처리 (Sui)
   const handleDonation = async () => {
     if (!donationAmount || !walletAddress) {
       alert(t('donation.checkAmountAndAddress'))
       return
     }
 
-    // 금액 유효성 검사
-    const validation = validatePaymentAmount(parseFloat(donationAmount), selectedCrypto, 'coinbase')
+    const validation = validatePaymentAmount(parseFloat(donationAmount), 'SUI')
     if (!validation.valid) {
       alert(validation.error)
       return
@@ -193,75 +154,46 @@ function Donation() {
     setIsDonating(true)
 
     try {
-      // 기부 주소 가져오기
-      const toAddress = donationAddresses[selectedCrypto]
-      if (!toAddress) {
-        throw new Error('Invalid crypto selection')
-      }
+      const txDigest = await sendSuiTransaction({
+        sender: walletAddress,
+        recipient: donationAddress,
+        amount: parseFloat(donationAmount)
+      })
 
-      // 네트워크 결정
-      const network = selectedCrypto === 'SOL' ? 'solana' : 'ethereum'
+      // 상태 확인 (검증을 위해 RPC 조회)
+      await waitForSuiTransaction(txDigest)
+      const verified = await verifySuiTransaction({
+        digest: txDigest,
+        expectedAmount: parseFloat(donationAmount),
+        expectedRecipient: donationAddress
+      })
 
-      // 실제 블록체인 트랜잭션 전송
-      const result = await sendTransaction(
-        toAddress,
-        parseFloat(donationAmount),
-        walletAddress,
-        network
-      )
-
-      if (!result.success) {
-        throw new Error(result.error || 'Transaction failed')
-      }
-
-      // 트랜잭션 확인 대기
-      let confirmationResult
-      if (network === 'solana') {
-        confirmationResult = await waitForSolanaTransaction(result.transactionHash)
-      } else {
-        confirmationResult = await waitForEthereumTransaction(result.transactionHash, 1)
-      }
-
-      if (!confirmationResult.success) {
-        // 트랜잭션은 전송되었지만 확인 실패 - 나중에 확인 가능하도록 저장
-        console.warn('Transaction sent but confirmation failed:', confirmationResult.error)
-      }
-
-      // 트랜잭션 검증
-      const verification = await verifyTransaction(
-        result.transactionHash,
-        network,
-        parseFloat(donationAmount),
-        toAddress
-      )
-
-      // 데이터베이스에 저장
       if (user && user.email) {
         await investmentService.createInvestment({
           investor_email: user.email,
           amount: parseFloat(donationAmount),
-          crypto_type: selectedCrypto,
-          transaction_hash: result.transactionHash,
-          status: verification.verified ? 'confirmed' : 'pending',
+          crypto_type: 'SUI',
+          transaction_hash: txDigest,
+          status: verified ? 'confirmed' : 'pending',
           investment_date: new Date().toISOString()
         })
       }
 
       const transaction = {
-        id: result.transactionHash,
+        id: txDigest,
         amount: parseFloat(donationAmount),
-        crypto: selectedCrypto,
+        crypto: 'SUI',
         address: walletAddress,
-        transactionHash: result.transactionHash,
+        transactionHash: txDigest,
         timestamp: new Date().toISOString(),
-        status: verification.verified ? 'completed' : 'pending',
-        verified: verification.verified
+        status: verified ? 'completed' : 'pending',
+        verified
       }
 
       setDonationHistory(prev => [transaction, ...prev])
       setDonationAmount('')
       
-      if (verification.verified) {
+      if (verified) {
         alert(t('donation.donationSuccess'))
       } else {
         alert('트랜잭션이 전송되었습니다. 확인 중입니다...')
@@ -274,74 +206,11 @@ function Donation() {
     }
   }
 
-  // Stripe 결제 성공 처리
-  const handleStripeSuccess = async (paymentIntent) => {
-    try {
-      // Supabase Edge Function을 통해 결제 검증 및 저장
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-      const verifyResponse = await fetch(`${supabaseUrl}/functions/v1/verify-payment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
-          paymentIntentId: paymentIntent.id,
-          amount: paymentIntent.amount,
-          investorEmail: user?.email || '',
-          cryptoType: 'USD',
-        })
-      })
-
-      if (!verifyResponse.ok) {
-        throw new Error('Failed to verify payment')
-      }
-
-      const verifyData = await verifyResponse.json()
-
-      // 데이터베이스에 저장 (백업)
-      if (user && user.email) {
-        await investmentService.createInvestment({
-          investor_email: user.email,
-          amount: paymentIntent.amount,
-          crypto_type: 'USD',
-          transaction_hash: paymentIntent.id,
-          status: 'confirmed',
-          investment_date: new Date(paymentIntent.created * 1000).toISOString()
-        })
-      }
-
-      const transaction = {
-        id: paymentIntent.id,
-        amount: paymentIntent.amount,
-        currency: paymentIntent.currency,
-        method: 'card',
-        timestamp: new Date(paymentIntent.created * 1000).toISOString(),
-        status: 'completed',
-        investmentId: verifyData?.investment?.id || null
-      }
-
-      setDonationHistory(prev => [transaction, ...prev])
-      setDonationAmount('')
-      alert(t('donation.donationSuccess'))
-    } catch (error) {
-      console.error('Failed to save payment:', error)
-      alert('Payment succeeded but failed to save record. Please contact support.')
-    }
-  }
-
-  // Stripe 결제 에러 처리
-  const handleStripeError = (error) => {
-    console.error('Stripe payment error:', error)
-    alert(error.message || t('donation.donationError'))
-  }
-
   // 주소 복사
-  const copyAddress = async (crypto) => {
-    const address = donationAddresses[crypto]
+  const copyAddress = async () => {
     try {
-      await navigator.clipboard.writeText(address)
-      setCopiedAddress(crypto)
+      await navigator.clipboard.writeText(donationAddress)
+      setCopiedAddress('SUI')
       setTimeout(() => setCopiedAddress(''), 2000)
     } catch (error) {
       console.error('Failed to copy address:', error)
@@ -388,17 +257,7 @@ function Donation() {
             )}
             {isLoggedIn && !isWalletConnected && (
               <button
-                onClick={() => {
-                  // 지갑 연결 로직은 이미 handleWalletConnect에서 처리됨
-                  // 첫 번째 지갑 시도
-                  if (window.ethereum) {
-                    handleWalletConnect('metamask')
-                  } else if (window.solana && window.solana.isPhantom) {
-                    handleWalletConnect('solana')
-                  } else {
-                    alert(t('donation.installWallet'))
-                  }
-                }}
+                onClick={handleWalletConnect}
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-300"
               >
                 <FaWallet className="text-xl" />
@@ -466,32 +325,14 @@ function Donation() {
                     <FaWallet className="text-white text-2xl" />
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-4 text-center">{t('common.connectWallet')}</h3>
-                  <p className="text-blue-200 mb-6 text-center">{t('donation.supportedWallets')}</p>
+                  <p className="text-blue-200 mb-6 text-center">Sui 호환 지갑(예: Ethos, Sui Wallet)을 연결해주세요.</p>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     <button
-                      onClick={() => handleWalletConnect('metamask')}
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
+                      onClick={handleWalletConnect}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
                     >
-                      MetaMask
-                    </button>
-                    <button
-                      onClick={() => handleWalletConnect('coinbase')}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
-                    >
-                      Coinbase
-                    </button>
-                    <button
-                      onClick={() => handleWalletConnect('solana')}
-                      className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
-                    >
-                      Phantom
-                    </button>
-                    <button
-                      onClick={() => handleWalletConnect('walletconnect')}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl font-semibold text-sm transition-colors duration-300"
-                    >
-                      WalletConnect
+                      Connect Sui Wallet
                     </button>
                   </div>
                 </div>
@@ -500,123 +341,41 @@ function Donation() {
           </section>
         )}
 
-        {/* Donation Form */}
-        {isLoggedIn && (isWalletConnected || paymentMethod === 'card' || paymentMethod === 'coinbase' || paymentMethod === 'toss' || paymentMethod === 'paypal') && (
+        {/* Donation Form (Sui 전용) */}
+        {isLoggedIn && isWalletConnected && (
           <section className="py-16">
             <div className="container mx-auto px-5 sm:px-10">
               <div className="max-w-2xl mx-auto">
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
                   <h3 className="text-3xl font-bold text-white text-center mb-8">{t('donation.donateNow')}</h3>
 
-                  {/* Payment Method Selection */}
+                  {/* Sui 전용 정보 */}
                   <div className="mb-6">
-                    <label className="block text-white font-semibold mb-3">{t('donation.selectPaymentMethod') || '결제 방법 선택'}</label>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <button
-                        onClick={() => {
-                          setPaymentMethod('crypto')
-                          if (!isWalletConnected) {
-                            alert('암호화폐 결제를 위해 지갑을 연결해주세요.')
-                          }
-                        }}
-                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                          paymentMethod === 'crypto'
-                            ? 'border-blue-400 bg-blue-500/20'
-                            : 'border-white/20 hover:border-white/40'
-                        }`}
-                      >
-                        <FaWallet className="text-2xl text-blue-400 mx-auto mb-2" />
-                        <div className="text-white font-semibold text-sm">지갑</div>
-                      </button>
-                      <button
-                        onClick={() => setPaymentMethod('card')}
-                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                          paymentMethod === 'card'
-                            ? 'border-blue-400 bg-blue-500/20'
-                            : 'border-white/20 hover:border-white/40'
-                        }`}
-                      >
-                        <FaCreditCard className="text-2xl text-green-400 mx-auto mb-2" />
-                        <div className="text-white font-semibold text-sm">카드</div>
-                      </button>
-                      <button
-                        onClick={() => setPaymentMethod('coinbase')}
-                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                          paymentMethod === 'coinbase'
-                            ? 'border-blue-400 bg-blue-500/20'
-                            : 'border-white/20 hover:border-white/40'
-                        }`}
-                      >
-                        <FaBitcoin className="text-2xl text-orange-400 mx-auto mb-2" />
-                        <div className="text-white font-semibold text-sm">Coinbase</div>
-                      </button>
-                      <button
-                        onClick={() => setPaymentMethod('toss')}
-                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                          paymentMethod === 'toss'
-                            ? 'border-blue-400 bg-blue-500/20'
-                            : 'border-white/20 hover:border-white/40'
-                        }`}
-                        title={t('tossPayment.title') || '토스페이먼츠 (한국 전용)'}
-                      >
-                        <FaCreditCard className="text-2xl text-purple-400 mx-auto mb-2" />
-                        <div className="text-white font-semibold text-sm">토스페이</div>
-                      </button>
-                      <button
-                        onClick={() => setPaymentMethod('paypal')}
-                        className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                          paymentMethod === 'paypal'
-                            ? 'border-blue-400 bg-blue-500/20'
-                            : 'border-white/20 hover:border-white/40'
-                        }`}
-                        title={t('paypalPayment.title') || 'PayPal (전 세계)'}
-                      >
-                        <FaPaypal className="text-2xl text-blue-400 mx-auto mb-2" />
-                        <div className="text-white font-semibold text-sm">PayPal</div>
-                      </button>
+                    <label className="block text-white font-semibold mb-3">Sui Testnet</label>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="p-4 rounded-xl border-2 border-blue-400 bg-blue-500/20 flex items-center justify-between">
+                        <div>
+                          <div className="text-white font-semibold">SUI</div>
+                          <div className="text-blue-200 text-sm">Sui Testnet · Move 기반 기부</div>
+                        </div>
+                        <FaWallet className="text-2xl text-blue-300" />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Crypto Selection - Only show for crypto payment */}
-                  {paymentMethod === 'crypto' && (
-                    <>
-                      <div className="mb-6">
-                        <label className="block text-white font-semibold mb-3">{t('donation.selectCrypto')}</label>
-                        <div className="grid grid-cols-3 gap-4">
-                          {[
-                            { symbol: 'ETH', name: 'Ethereum', icon: FaEthereum, color: 'bg-blue-500' },
-                            { symbol: 'MATIC', name: 'Polygon', icon: FaEthereum, color: 'bg-purple-600' },
-                            { symbol: 'BTC', name: 'Bitcoin', icon: FaBitcoin, color: 'bg-orange-500' },
-                            { symbol: 'SOL', name: 'Solana', icon: SiSolana, color: 'bg-purple-500' }
-                          ].map((crypto) => (
-                            <button
-                              key={crypto.symbol}
-                              onClick={() => setSelectedCrypto(crypto.symbol)}
-                              className={`p-4 rounded-xl border-2 transition-all duration-300 ${selectedCrypto === crypto.symbol
-                                  ? 'border-blue-400 bg-blue-500/20'
-                                  : 'border-white/20 hover:border-white/40'
-                                }`}
-                            >
-                              <crypto.icon className={`text-2xl ${crypto.color.replace('bg-', 'text-')} mx-auto mb-2`} />
-                              <div className="text-white font-semibold">{crypto.symbol}</div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Donation Address */}
-                      <div className="mb-6">
-                        <label className="block text-white font-semibold mb-3">{t('donation.donationAddress')}</label>
+                  {/* Donation Address */}
+                  <div className="mb-6">
+                    <label className="block text-white font-semibold mb-3">{t('donation.donationAddress')}</label>
                     <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <p className="text-white font-mono text-sm break-all">
-                            {donationAddresses[selectedCrypto]}
+                            {donationAddress}
                           </p>
                         </div>
                         <div className="flex gap-2 ml-4">
                           <button
-                            onClick={() => copyAddress(selectedCrypto)}
+                            onClick={copyAddress}
                             className="p-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors duration-300"
                             title={t('donation.copyAddress')}
                           >
@@ -631,215 +390,46 @@ function Donation() {
                           </button>
                         </div>
                       </div>
-                      {copiedAddress === selectedCrypto && (
+                      {copiedAddress === 'SUI' && (
                         <p className="text-green-400 text-sm mt-2">{t('donation.addressCopied')}</p>
                       )}
                     </div>
                   </div>
-                    </>
-                  )}
 
                   {/* Amount Input */}
                   <div className="mb-6">
                     <label className="block text-white font-semibold mb-3">
-                      {t('donation.amount')} ({paymentMethod === 'card' || paymentMethod === 'paypal' ? 'USD' : (paymentMethod === 'toss' ? 'KRW' : selectedCrypto)})
+                      {t('donation.amount')} (SUI)
                     </label>
                     <input
                       type="number"
                       value={donationAmount}
                       onChange={(e) => setDonationAmount(e.target.value)}
                       placeholder="0.0"
-                      min={paymentMethod === 'card' || paymentMethod === 'paypal' ? 0.50 : (paymentMethod === 'toss' ? 1000 : 0)}
-                      step={paymentMethod === 'card' || paymentMethod === 'paypal' ? 0.01 : (paymentMethod === 'toss' ? 100 : 0.0001)}
+                      min={0}
+                      step={0.0001}
                       className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400"
                     />
-                    {(paymentMethod === 'card' || paymentMethod === 'paypal') && (
-                      <p className="text-blue-200 text-sm mt-2">{t('donation.minimumAmount', { amount: '$0.50' }) || '최소 결제 금액: $0.50'}</p>
-                    )}
-                    {paymentMethod === 'toss' && (
-                      <p className="text-blue-200 text-sm mt-2">{t('donation.minimumAmount', { amount: '1,000원' }) || '최소 결제 금액: 1,000원'}</p>
-                    )}
                   </div>
 
-                  {/* Payment Form */}
-                  {paymentMethod === 'card' ? (
-                    donationAmount && parseFloat(donationAmount) >= 0.50 ? (
-                      <StripePayment
-                        amount={parseFloat(donationAmount)}
-                        currency="usd"
-                        onSuccess={handleStripeSuccess}
-                        onError={handleStripeError}
-                        metadata={{
-                          name: user?.name || 'Anonymous',
-                          email: user?.email || '',
-                          type: 'donation',
-                          project: 'global-busan'
-                        }}
-                      />
+                  {/* Donate Button for Sui */}
+                  <button
+                    onClick={handleDonation}
+                    disabled={!donationAmount || isDonating}
+                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    {isDonating ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        {t('donation.processing')}
+                      </>
                     ) : (
-                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
-                        결제 금액을 입력해주세요 (최소 $0.50)
-                      </div>
-                    )
-                  ) : paymentMethod === 'coinbase' ? (
-                    donationAmount && parseFloat(donationAmount) >= 0.50 ? (
-                      <CoinbasePayment
-                        amount={parseFloat(donationAmount)}
-                        currency="usd"
-                        onSuccess={async (result) => {
-                          // Coinbase 결제 성공 처리
-                          if (user && user.email) {
-                            try {
-                              await investmentService.createInvestment({
-                                project_id: null, // 글로벌 기부
-                                investor_name: user.name || 'Anonymous',
-                                investor_email: user.email,
-                                amount: parseFloat(donationAmount),
-                                currency: 'USD',
-                                payment_method: 'coinbase',
-                                payment_id: result.chargeId,
-                                transaction_hash: result.charge?.code,
-                                investment_date: new Date().toISOString().split('T')[0],
-                                status: 'completed'
-                              })
-                              alert(t('donation.success') || '기부가 완료되었습니다!')
-                              setDonationAmount('')
-                              // 기부 내역 새로고침
-                              loadDonationHistory()
-                            } catch (error) {
-                              console.error('기부 저장 실패:', error)
-                              alert(t('donation.saveError') || '기부는 완료되었으나 저장 중 오류가 발생했습니다.')
-                            }
-                          }
-                        }}
-                        onError={(error) => {
-                          console.error('Coinbase payment error:', error)
-                          alert(error.message || t('donation.error') || '결제 중 오류가 발생했습니다.')
-                        }}
-                        metadata={{
-                          name: user?.name || 'Anonymous',
-                          email: user?.email || '',
-                          type: 'donation',
-                          project: 'global-busan'
-                        }}
-                      />
-                    ) : (
-                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
-                        {t('donation.enterAmountMinimum', { amount: '$0.50' }) || '결제 금액을 입력해주세요 (최소 $0.50)'}
-                      </div>
-                    )
-                  ) : paymentMethod === 'toss' ? (
-                    donationAmount && parseFloat(donationAmount) >= 1000 ? (
-                      <TossPayment
-                        amount={parseFloat(donationAmount)}
-                        currency="KRW"
-                        onSuccess={async (result) => {
-                          // 토스페이먼츠 결제 성공 처리
-                          if (user && user.email) {
-                            try {
-                              await investmentService.createInvestment({
-                                project_id: null, // 글로벌 기부
-                                investor_name: user.name || 'Anonymous',
-                                investor_email: user.email,
-                                amount: parseFloat(donationAmount),
-                                currency: 'KRW',
-                                payment_method: 'toss',
-                                payment_id: result.id,
-                                transaction_hash: result.orderId,
-                                investment_date: new Date().toISOString().split('T')[0],
-                                status: 'completed'
-                              })
-                              alert(t('donation.success') || '기부가 완료되었습니다!')
-                              setDonationAmount('')
-                            } catch (error) {
-                              console.error('기부 저장 실패:', error)
-                              alert(t('donation.saveError') || '기부는 완료되었으나 저장 중 오류가 발생했습니다.')
-                            }
-                          }
-                        }}
-                        onError={(error) => {
-                          console.error('Toss payment error:', error)
-                          alert(error.message || t('donation.error') || '결제 중 오류가 발생했습니다.')
-                        }}
-                        metadata={{
-                          name: user?.name || 'Anonymous',
-                          email: user?.email || '',
-                          type: 'donation',
-                          project: 'global-busan',
-                          orderName: 'Global BUSAN 기부'
-                        }}
-                      />
-                    ) : (
-                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
-                        {t('donation.enterAmountMinimum', { amount: '1,000원' }) || '결제 금액을 입력해주세요 (최소 1,000원)'}
-                      </div>
-                    )
-                  ) : paymentMethod === 'paypal' ? (
-                    donationAmount && parseFloat(donationAmount) >= 0.50 ? (
-                      <PayPalPayment
-                        amount={parseFloat(donationAmount)}
-                        currency="USD"
-                        onSuccess={async (result) => {
-                          // PayPal 결제 성공 처리
-                          if (user && user.email) {
-                            try {
-                              await investmentService.createInvestment({
-                                project_id: null, // 글로벌 기부
-                                investor_name: user.name || 'Anonymous',
-                                investor_email: user.email,
-                                amount: parseFloat(donationAmount),
-                                currency: 'USD',
-                                payment_method: 'paypal',
-                                payment_id: result.id,
-                                transaction_hash: result.transaction_id || result.id,
-                                investment_date: new Date().toISOString().split('T')[0],
-                                status: 'completed'
-                              })
-                              alert(t('donation.success') || '기부가 완료되었습니다!')
-                              setDonationAmount('')
-                            } catch (error) {
-                              console.error('기부 저장 실패:', error)
-                              alert(t('donation.saveError') || '기부는 완료되었으나 저장 중 오류가 발생했습니다.')
-                            }
-                          }
-                        }}
-                        onError={(error) => {
-                          console.error('PayPal payment error:', error)
-                          alert(error.message || t('donation.error') || '결제 중 오류가 발생했습니다.')
-                        }}
-                        metadata={{
-                          name: user?.name || 'Anonymous',
-                          email: user?.email || '',
-                          type: 'donation',
-                          project: 'global-busan',
-                          orderName: 'Global BUSAN Donation'
-                        }}
-                      />
-                    ) : (
-                      <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-yellow-200 text-center">
-                        {t('donation.enterAmountMinimum', { amount: '$0.50' }) || '결제 금액을 입력해주세요 (최소 $0.50)'}
-                      </div>
-                    )
-                  ) : (
-                    /* Donate Button for Crypto */
-                    <button
-                      onClick={handleDonation}
-                      disabled={!donationAmount || isDonating}
-                      className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                      {isDonating ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                          {t('donation.processing')}
-                        </>
-                      ) : (
-                        <>
-                          <TiLocationArrow className="text-xl" />
-                          {t('donation.donateNow')}
-                        </>
-                      )}
-                    </button>
-                  )}
+                      <>
+                        <TiLocationArrow className="text-xl" />
+                        {t('donation.donateNow')}
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
@@ -907,56 +497,40 @@ function Donation() {
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
                   <h4 className="text-2xl font-bold text-white mb-6">{t('donation.donationHistory')}</h4>
                   <div className="space-y-4">
-                    {donationHistory.map((transaction) => {
-                      const refundCheck = canRefund(transaction)
-                      const showRefundButton = 
-                        transaction.status === 'completed' && 
-                        refundCheck.canRefund &&
-                        (transaction.method === 'card' || transaction.currency === 'usd')
-
-                      return (
-                        <div key={transaction.id} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                          <div className="flex justify-between items-center">
-                            <div className="flex-1">
-                              <div className="text-white font-semibold">
-                                {transaction.amount} {transaction.crypto || transaction.currency?.toUpperCase() || 'USD'}
-                              </div>
-                              <div className="text-blue-200 text-sm">
-                                {new Date(transaction.timestamp).toLocaleString()}
-                              </div>
-                              {transaction.transactionHash && (
-                                <div className="text-gray-400 text-xs mt-1 font-mono">
-                                  {transaction.transactionHash.substring(0, 20)}...
-                                </div>
-                              )}
+                    {donationHistory.map((transaction) => (
+                      <div key={transaction.id} className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <div className="flex justify-between items-center">
+                          <div className="flex-1">
+                            <div className="text-white font-semibold">
+                              {transaction.amount} {transaction.crypto || 'SUI'}
                             </div>
-                            <div className="flex items-center gap-3">
-                              <div className={`font-semibold ${
-                                transaction.status === 'completed' 
-                                  ? 'text-green-400' 
-                                  : transaction.status === 'refunded'
-                                  ? 'text-red-400'
-                                  : 'text-yellow-400'
-                              }`}>
-                                {transaction.status === 'completed' 
-                                  ? t('common.status.completed') 
-                                  : transaction.status === 'refunded'
-                                  ? '환불됨'
-                                  : t('common.status.pending')}
+                            <div className="text-blue-200 text-sm">
+                              {new Date(transaction.timestamp).toLocaleString()}
+                            </div>
+                            {transaction.transactionHash && (
+                              <div className="text-gray-400 text-xs mt-1 font-mono">
+                                {transaction.transactionHash.substring(0, 20)}...
                               </div>
-                              {showRefundButton && (
-                                <button
-                                  onClick={() => handleRefund(transaction)}
-                                  className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-semibold transition-colors duration-200"
-                                >
-                                  환불
-                                </button>
-                              )}
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className={`font-semibold ${
+                              transaction.status === 'completed' 
+                                ? 'text-green-400' 
+                                : transaction.status === 'refunded'
+                                ? 'text-red-400'
+                                : 'text-yellow-400'
+                            }`}>
+                              {transaction.status === 'completed' 
+                                ? t('common.status.completed') 
+                                : transaction.status === 'refunded'
+                                ? '환불됨'
+                                : t('common.status.pending')}
                             </div>
                           </div>
                         </div>
-                      )
-                    })}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -978,7 +552,7 @@ function Donation() {
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-600 mb-4">{selectedCrypto} {t('donation.scanAddress')}</p>
+                <p className="text-gray-600 mb-4">SUI {t('donation.scanAddress')}</p>
                 <button
                   onClick={() => setShowQRCode(false)}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors duration-300"

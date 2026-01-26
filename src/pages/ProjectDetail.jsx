@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding, FaArrowLeft, FaHandHoldingHeart } from 'react-icons/fa'
-import { SiSolana, SiEthereum, SiBitcoin } from 'react-icons/si'
+import { FaRocket, FaDollarSign, FaUsers, FaCalendarAlt, FaChartLine, FaBuilding, FaArrowLeft, FaHandHoldingHeart, FaWallet } from 'react-icons/fa'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
@@ -77,14 +76,7 @@ function ProjectDetail() {
     return t(`projects.status.${status}`) || status
   }
 
-  const getCryptoIcon = (crypto) => {
-    switch (crypto) {
-      case 'SOL': return SiSolana
-      case 'ETH': return SiEthereum
-      case 'BTC': return SiBitcoin
-      default: return FaDollarSign
-    }
-  }
+  const getCryptoIcon = () => FaWallet
 
   if (loading) {
     return (
@@ -118,7 +110,7 @@ function ProjectDetail() {
     )
   }
 
-  const CryptoIcon = getCryptoIcon(project.crypto_type)
+  const CryptoIcon = getCryptoIcon()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">

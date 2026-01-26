@@ -12,32 +12,18 @@ Object.defineProperty(global, 'import', {
       env: {
         VITE_SUPABASE_URL: 'https://test.supabase.co',
         VITE_SUPABASE_ANON_KEY: 'test-key',
-        VITE_ETHEREUM_RPC_URL: 'https://eth.llamarpc.com',
-        VITE_POLYGON_RPC_URL: 'https://polygon.llamarpc.com',
-        VITE_SOLANA_RPC_URL: 'https://api.mainnet-beta.solana.com',
+        VITE_SUI_DONATION_PACKAGE: '0x0',
         VITE_STRIPE_PUBLISHABLE_KEY: 'pk_test_test'
       }
     }
   }
 })
 
-// Mock window.ethereum for MetaMask
-global.window.ethereum = {
-  request: jest.fn(),
-  isMetaMask: true,
-  on: jest.fn(),
-  removeListener: jest.fn()
-}
-
-// Mock window.solana for Phantom
-global.window.solana = {
-  isPhantom: true,
-  isConnected: false,
-  connect: jest.fn(),
-  disconnect: jest.fn(),
-  signTransaction: jest.fn(),
-  signAllTransactions: jest.fn(),
-  publicKey: null
+// Mock Sui wallet
+global.window.suiWallet = {
+  requestPermissions: jest.fn().mockResolvedValue(true),
+  getAccounts: jest.fn().mockResolvedValue([{ address: '0xsuiwallet' }]),
+  signAndExecuteTransaction: jest.fn().mockResolvedValue({ digest: '0xsuidigest' })
 }
 
 // Mock localStorage

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { FaChartLine, FaUsers, FaDollarSign, FaBuilding, FaCalendarAlt } from 'react-icons/fa'
-import { SiEthereum, SiSolana, SiBitcoin } from 'react-icons/si'
+import { FaChartLine, FaUsers, FaDollarSign, FaBuilding } from 'react-icons/fa'
+import { SiSui } from 'react-icons/si'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
@@ -15,6 +15,8 @@ function Statistics() {
   const [investmentStats, setInvestmentStats] = useState({})
   const [monthlyInvestmentStats, setMonthlyInvestmentStats] = useState([])
   const [monthlyExpenseStats, setMonthlyExpenseStats] = useState([])
+
+  const getSuiInvestments = (stat) => stat.sui_investments ?? stat.investment_count ?? 0
 
   useEffect(() => {
     loadStatistics()
@@ -193,9 +195,7 @@ function Statistics() {
                       <th className="text-right py-4 px-2">{t('statistics.investmentCount')}</th>
                       <th className="text-right py-4 px-2">{t('statistics.investmentAmount')}</th>
                       <th className="text-right py-4 px-2">{t('statistics.uniqueInvestors')}</th>
-                      <th className="text-right py-4 px-2">ETH</th>
-                      <th className="text-right py-4 px-2">SOL</th>
-                      <th className="text-right py-4 px-2">BTC</th>
+                      <th className="text-right py-4 px-2">SUI</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -205,9 +205,7 @@ function Statistics() {
                         <td className="text-right py-4 px-2">{stat.investment_count}</td>
                         <td className="text-right py-4 px-2">{formatCurrency(stat.total_amount)}</td>
                         <td className="text-right py-4 px-2">{stat.unique_investors}</td>
-                        <td className="text-right py-4 px-2">{stat.eth_investments}</td>
-                        <td className="text-right py-4 px-2">{stat.sol_investments}</td>
-                        <td className="text-right py-4 px-2">{stat.btc_investments}</td>
+                        <td className="text-right py-4 px-2">{getSuiInvestments(stat)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -256,32 +254,16 @@ function Statistics() {
           </div>
         </section>
 
-        {/* 암호화폐별 투자 현황 */}
+        {/* Sui 투자 현황 */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">
             <h2 className="text-3xl font-bold text-white text-center mb-12">{t('statistics.cryptoInvestmentStatus')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
-                <SiEthereum className="text-6xl text-blue-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-4">Ethereum (ETH)</h3>
+              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center md:col-span-3">
+                <SiSui className="text-6xl text-blue-300 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-white mb-4">Sui (SUI)</h3>
                 <div className="text-3xl font-bold text-white mb-2">
-                  {monthlyInvestmentStats.reduce((sum, stat) => sum + stat.eth_investments, 0)}
-                </div>
-                <div className="text-blue-200">{t('statistics.totalInvestmentCount')}</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
-                <SiSolana className="text-6xl text-purple-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-4">Solana (SOL)</h3>
-                <div className="text-3xl font-bold text-white mb-2">
-                  {monthlyInvestmentStats.reduce((sum, stat) => sum + stat.sol_investments, 0)}
-                </div>
-                <div className="text-blue-200">{t('statistics.totalInvestmentCount')}</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 text-center">
-                <SiBitcoin className="text-6xl text-orange-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-4">Bitcoin (BTC)</h3>
-                <div className="text-3xl font-bold text-white mb-2">
-                  {monthlyInvestmentStats.reduce((sum, stat) => sum + stat.btc_investments, 0)}
+                  {monthlyInvestmentStats.reduce((sum, stat) => sum + getSuiInvestments(stat), 0)}
                 </div>
                 <div className="text-blue-200">{t('statistics.totalInvestmentCount')}</div>
               </div>

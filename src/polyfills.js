@@ -1,8 +1,27 @@
 /**
  * Polyfills for Node.js globals required by blockchain libraries.
  * This file must be imported before any other code.
- * Do NOT import 'buffer' here; rely on the HTML placeholder or global Buffer.
  */
+
+// CRITICAL: Import the buffer module itself to ensure it's loaded and available
+// This must happen FIRST before any other polyfills
+let BufferModule = null
+try {
+  // Try to import buffer module directly
+  import('buffer').then((mod) => {
+    BufferModule = mod.Buffer
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      globalThis.Buffer = BufferModule
+    }
+    if (typeof window !== 'undefined' && window) {
+      window.Buffer = BufferModule
+    }
+  }).catch((err) => {
+    console.warn('Failed to import buffer module:', err)
+  })
+} catch (e) {
+  console.warn('Error loading buffer:', e)
+}
 
 // Ensure global and process exist in browser FIRST (top priority)
 if (typeof window !== 'undefined') {
@@ -25,20 +44,23 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.process === 'undefine
 if (typeof module === 'undefined' || !module.exports) {
   const moduleObj = { exports: {} }
   if (typeof window !== 'undefined') {
-    window.module = moduleObj
+    try {
+      window.module = moduleObj
+    } catch (e) {
+      console.warn('Could not set window.module:', e)
+    }
   }
   if (typeof globalThis !== 'undefined') {
-    globalThis.module = moduleObj
+    try {
+      globalThis.module = moduleObj
+    } catch (e) {
+      console.warn('Could not set globalThis.module:', e)
+    }
   }
 }
 
-// Ensure Buffer exists globally (prefer HTML-injected placeholder)
-if (typeof globalThis !== 'undefined' && typeof globalThis.Buffer !== 'undefined') {
-  if (typeof window !== 'undefined') {
-    window.Buffer = globalThis.Buffer
-  }
-} else {
-  // Minimal, safe fallback (rarely used since HTML placeholder should define Buffer)
+// Ensure Buffer exists globally (prefer HTML-injected or imported Buffer)
+if (typeof Buffer === 'undefined' || !Buffer) {
   const encoder = new TextEncoder()
   const FallbackBuffer = function (arg) {
     if (arg instanceof Uint8Array) return arg

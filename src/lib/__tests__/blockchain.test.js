@@ -1,68 +1,34 @@
-// Mock import.meta.env before importing
-Object.defineProperty(global, 'import', {
-  value: {
-    meta: {
-      env: {
-        VITE_ETHEREUM_RPC_URL: 'https://eth.llamarpc.com',
-        VITE_POLYGON_RPC_URL: 'https://polygon.llamarpc.com',
-        VITE_SOLANA_RPC_URL: 'https://api.mainnet-beta.solana.com'
-      }
-    }
-  }
-})
+import { getSuiExplorerLink, verifySuiTransaction, waitForSuiTransaction } from '../blockchain'
 
-import { getBlockchainExplorerLink, verifyTransaction } from '../blockchain'
-
-// Mock ethers
-jest.mock('ethers', () => ({
-  JsonRpcProvider: jest.fn(),
-  formatEther: jest.fn((value) => value.toString()),
-  parseEther: jest.fn((value) => value),
-  BrowserProvider: jest.fn()
-}))
-
-describe('Blockchain Utilities', () => {
-  describe('getBlockchainExplorerLink', () => {
-    test('should generate Ethereum explorer link', () => {
-      const link = getBlockchainExplorerLink('0x1234...5678', 'ethereum')
-      expect(link).toBe('https://etherscan.io/tx/0x1234...5678')
-    })
-
-    test('should generate Solana explorer link', () => {
-      const link = getBlockchainExplorerLink('abc123', 'solana')
-      expect(link).toBe('https://solscan.io/tx/abc123')
-    })
-
-    test('should default to Ethereum for unknown network', () => {
-      const link = getBlockchainExplorerLink('0x1234', 'unknown')
-      expect(link).toBe('https://etherscan.io/tx/0x1234')
-    })
-
-    test('should handle Polygon network', () => {
-      const link = getBlockchainExplorerLink('0x1234', 'polygon')
-      expect(link).toBe('https://polygonscan.com/tx/0x1234')
-    })
+describe('Blockchain Utilities (Sui)', () => {
+  test('should generate Sui explorer link', () => {
+    const link = getSuiExplorerLink('0xsuidigest')
+    expect(link).toBe('https://testnet.suivision.xyz/txblock/0xsuidigest')
   })
 
-  describe('verifyTransaction', () => {
-    beforeEach(() => {
-      global.fetch = jest.fn()
+  test('should verify Sui transaction via waitForSuiTransaction', async () => {
+    const mockTx = { balanceChanges: [{ owner: { AddressOwner: '0xto' }, amount: '1000000000' }] }
+    global.fetch = jest.fn().mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ result: mockTx })
     })
 
-    afterEach(() => {
-      jest.clearAllMocks()
+    const result = await verifySuiTransaction({
+      digest: '0xsuidigest',
+      expectedAmount: 1,
+      expectedRecipient: '0xto'
     })
 
-    test('should verify Ethereum transaction', async () => {
-      // Mock implementation would go here
-      // This is a placeholder test structure
-      expect(true).toBe(true)
+    expect(global.fetch).toHaveBeenCalled()
+    expect(result).toBe(true)
+  })
+
+  test('waitForSuiTransaction returns result', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ result: { effects: {} } })
     })
 
-    test('should verify Solana transaction', async () => {
-      // Mock implementation would go here
-      expect(true).toBe(true)
-    })
+    const result = await waitForSuiTransaction('0xsuidigest')
+    expect(result).toEqual({ effects: {} })
   })
 })
 

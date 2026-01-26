@@ -18,15 +18,15 @@ describe('Contact Component', () => {
   test('renders contact section', () => {
     renderWithProviders(<Contact />)
     
-    expect(screen.getByText(/연락처/i) || screen.getByText(/Contact/i)).toBeDefined()
+    // English heading is displayed in default locale
+    expect(screen.getByText(/Contact Information/i)).toBeInTheDocument()
   })
 
-  test('displays contact information', () => {
+  test('displays contact details', () => {
     renderWithProviders(<Contact />)
     
-    // Should have contact details
-    const contactSection = screen.getByText(/연락처/i) || screen.getByText(/Contact/i)
-    expect(contactSection).toBeInTheDocument()
+    // Should have email contact details
+    expect(screen.getByText(/info@globalbusan.com/i)).toBeInTheDocument()
   })
 })
 

@@ -27,15 +27,11 @@ async function loadBlockchainModule() {
 export async function getBlockchainFunctions() {
   const module = await loadBlockchainModule();
   return {
-    verifyEthereumTransaction: module.verifyEthereumTransaction,
-    verifySolanaTransaction: module.verifySolanaTransaction,
-    verifyCoinbaseTransaction: module.verifyCoinbaseTransaction,
-    sendEthereumTransaction: module.sendEthereumTransaction,
-    connectWallet: module.connectWallet,
-    disconnectWallet: module.disconnectWallet,
-    getWalletAddress: module.getWalletAddress,
-    deploySmartContract: module.deploySmartContract,
-    callSmartContract: module.callSmartContract,
+    connectSuiWallet: module.connectSuiWallet,
+    sendSuiTransaction: module.sendSuiTransaction,
+    waitForSuiTransaction: module.waitForSuiTransaction,
+    verifySuiTransaction: module.verifySuiTransaction,
+    getSuiExplorerLink: module.getSuiExplorerLink,
   };
 }
 

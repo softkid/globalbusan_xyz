@@ -34,7 +34,7 @@ export default {
   },
   moduleFileExtensions: ['js', 'jsx', 'json'],
   transformIgnorePatterns: [
-    'node_modules/(?!(ethers|@solana)/)'
+    'node_modules/(?!(ethers|@solana|gsap)/)'
   ]
 }
 
