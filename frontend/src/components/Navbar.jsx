@@ -144,13 +144,19 @@ const Navbar = ({ isAdmin = false }) => {
               </div>
             ) : (
               <button
-                onClick={connectWallet}
+                onClick={() => {
+                  console.log('Connect wallet button clicked');
+                  console.log('Available wallet interfaces:', 
+                    Object.keys(window).filter(k => k.includes('sui') || k.includes('wallet'))
+                  );
+                  connectWallet();
+                }}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors duration-300"
               >
                 <FaWallet />
                 Connect Wallet
               </button>
-            )}
+            )}}
 
             {/* 로그인 정보 */}
             {user ? (

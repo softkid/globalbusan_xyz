@@ -130,14 +130,28 @@ function Donation() {
 
     try {
       console.log('Starting wallet connection...');
-      console.log('Window object keys:', Object.keys(window).filter(k => k.includes('sui') || k.includes('wallet')));
+      const walletKeys = Object.keys(window).filter(k => k.includes('sui') || k.includes('wallet'));
+      console.log('Available wallet window keys:', walletKeys);
+      
+      // Check specific wallet interfaces
+      console.log('Checking wallet interfaces:');
+      console.log('  __SUIX__:', typeof window.__SUIX__ !== 'undefined');
+      console.log('  suiWallet:', typeof window.suiWallet !== 'undefined');
+      console.log('  sui:', typeof window.sui !== 'undefined');
+      
       const address = await connectSuiWallet()
       console.log('Wallet connected with address:', address);
       setWalletAddress(address)
       setIsWalletConnected(true)
     } catch (error) {
       console.error('Wallet connection failed:', error)
-      alert(error.message || t('donation.installWallet'))
+      const walletLinks = `
+Sui 호환 지갑을 설치해주세요:
+- Sui Wallet: https://chrome.google.com/webstore/detail/sui-wallet
+- Ethos Wallet: https://chrome.google.com/webstore/detail/ethos-wallet
+- Welldone Wallet: https://chrome.google.com/webstore/detail/welldone-wallet
+      `;
+      alert(error.message || t('donation.installWallet') + walletLinks)
     }
   }
 

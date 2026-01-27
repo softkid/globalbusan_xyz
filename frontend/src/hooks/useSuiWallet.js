@@ -20,24 +20,42 @@ export function useSuiWallet() {
 
   const checkWalletConnection = useCallback(async () => {
     try {
-      // Check if Sui Wallet is available
-      if (window?.suiWallet) {
-        const wallet = window.suiWallet;
-        setWallet(wallet);
+      // Try multiple Sui wallet interfaces
+      let wallet = null;
+      const walletInterfaces = [
+        { name: '__SUIX__', key: '__SUIX__' },
+        { name: 'suiWallet', key: 'suiWallet' },
+        { name: 'sui', key: 'sui' }
+      ];
 
-        // Try to get connected account
-        try {
-          const accounts = await wallet.getAccounts?.();
-          if (accounts && accounts.length > 0) {
-            setAddress(accounts[0].address);
-            setConnected(true);
-          }
-        } catch (err) {
-          // Wallet not connected yet
-          setConnected(false);
+      for (const { name, key } of walletInterfaces) {
+        if (window?.[key]) {
+          wallet = window[key];
+          console.log(`Found Sui wallet at window.${name}`);
+          setWallet(wallet);
+          break;
         }
-      } else {
+      }
+
+      if (!wallet) {
+        console.warn('No Sui wallet detected. Available window keys:', Object.keys(window).filter(k => k.includes('sui') || k.includes('wallet')));
         setError('Sui Wallet extension not found');
+        return;
+      }
+
+      // Try to get connected account
+      try {
+        const accounts = await wallet.getAccounts?.();
+        if (accounts && accounts.length > 0) {
+          const accountAddr = accounts[0]?.address || accounts[0];
+          setAddress(accountAddr);
+          setConnected(true);
+          console.log('Wallet already connected:', accountAddr);
+        }
+      } catch (err) {
+        // Wallet not connected yet
+        console.log('Wallet not yet connected:', err.message);
+        setConnected(false);
       }
     } catch (err) {
       console.error('Error checking wallet connection:', err);
@@ -53,19 +71,45 @@ export function useSuiWallet() {
       setLoading(true);
       setError(null);
 
-      if (!window?.suiWallet) {
-        throw new Error('Sui Wallet extension not found. Please install it.');
+      // Try multiple Sui wallet interfaces
+      let wallet = null;
+      const walletInterfaces = [
+        { name: '__SUIX__', key: '__SUIX__' },
+        { name: 'suiWallet', key: 'suiWallet' },
+        { name: 'sui', key: 'sui' }
+      ];
+
+      for (const { name, key } of walletInterfaces) {
+        if (window?.[key]) {
+          wallet = window[key];
+          console.log(`Attempting to connect via window.${name}`);
+          setWallet(wallet);
+          break;
+        }
       }
 
-      const wallet = window.suiWallet;
-      const accounts = await wallet.requestPermissions?.();
+      if (!wallet) {
+        const availableKeys = Object.keys(window).filter(k => k.includes('sui') || k.includes('wallet')).join(', ');
+        throw new Error(`Sui Wallet extension not found. Available: ${availableKeys || 'none'}. Please install a Sui-compatible wallet.`);
+      }
+
+      // Request permissions first
+      if (typeof wallet.requestPermissions === 'function') {
+        await wallet.requestPermissions({ permissions: ['viewAccount', 'suggestTransactions'] });
+      }
+
+      const accounts = await wallet.getAccounts?.();
 
       if (accounts && accounts.length > 0) {
-        setAddress(accounts[0].address);
+        const accountAddr = accounts[0]?.address || accounts[0];
+        setAddress(accountAddr);
         setConnected(true);
-        setWallet(wallet);
+        console.log('Wallet connected successfully:', accountAddr);
+      } else {
+        throw new Error('No accounts found in wallet');
       }
     } catch (err) {
+      console.error('Wallet connection error:', err);
       setError(err.message);
       setConnected(false);
     } finally {
