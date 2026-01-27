@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaUsers, FaHandHoldingHeart, FaTrophy, FaClock, FaChain } from 'react-icons/fa'
+import { FaUsers, FaHandHoldingHeart, FaTrophy, FaClock, FaLink } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { statsService, investorService, investmentService } from '../lib/supabase'
 import { mistToSui } from '../lib/smartContract'

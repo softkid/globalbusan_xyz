@@ -1,8 +1,9 @@
-import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaHandHoldingHeart, FaUser, FaSignOutAlt, FaInfoCircle } from "react-icons/fa";
+import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaHandHoldingHeart, FaUser, FaSignOutAlt, FaInfoCircle, FaWallet } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useSuiWallet } from '../hooks/useSuiWallet';
 
 const Navbar = ({ isAdmin = false }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -11,6 +12,7 @@ const Navbar = ({ isAdmin = false }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { connected: suiConnected, address: suiAddress, connect: connectWallet, disconnect: disconnectWallet } = useSuiWallet();
 
   useEffect(() => {
     // 로그인 정보 확인
@@ -51,7 +53,9 @@ const Navbar = ({ isAdmin = false }) => {
     { name: t('nav.projects'), path: "/projects", icon: FaProjectDiagram, key: 'projects' },
     { name: t('nav.statistics'), path: "/statistics", icon: FaChartLine, key: 'statistics' },
     { name: t('nav.status'), path: "/status", icon: FaChartLine, key: 'status' },
-    { name: t('nav.invest'), path: "/invest", icon: FaBuilding, key: 'invest' }
+    { name: t('nav.invest'), path: "/invest", icon: FaBuilding, key: 'invest' },
+    { name: '기부', path: "/donation", icon: FaHandHoldingHeart, key: 'donation' },
+    { name: '투자', path: "/investment", icon: FaChartLine, key: 'investment' }
   ];
 
   // Roadmap 메뉴 아이템
@@ -104,10 +108,48 @@ const Navbar = ({ isAdmin = false }) => {
             </div>
           </div>
 
-          {/* 우측 메뉴: 언어 선택, 로그인, Roadmap */}
+          {/* 우측 메뉴: 언어 선택, Sui 지갑, 로그인, Roadmap */}
           <div className="flex items-center gap-3">
             {/* 언어 전환 컴포넌트 */}
             <LanguageSwitcher />
+
+            {/* Sui 지갑 연결 버튼 */}
+            {suiConnected ? (
+              <div className="relative user-menu-container">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 px-3 py-2 bg-green-100 hover:bg-green-200 rounded-lg transition-colors duration-300"
+                >
+                  <FaWallet className="text-green-600" />
+                  <span className="text-xs font-semibold text-green-700 hidden md:block">
+                    {suiAddress?.substring(0, 6)}...{suiAddress?.substring(-4)}
+                  </span>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <button
+                      onClick={() => {
+                        disconnectWallet();
+                        setShowUserMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-200"
+                    >
+                      <FaSignOutAlt />
+                      Disconnect Wallet
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={connectWallet}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors duration-300"
+              >
+                <FaWallet />
+                Connect Wallet
+              </button>
+            )}
 
             {/* 로그인 정보 */}
             {user ? (
