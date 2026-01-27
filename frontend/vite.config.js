@@ -17,6 +17,11 @@ const bufferPolyfillPlugin = () => {
           globalThis.global = globalThis;
         }
         
+        // Setup Promise support FIRST (critical for async/await)
+        if (typeof Promise === 'undefined') {
+          console.error('Promise is not defined!');
+        }
+        
         // Setup process BEFORE any module code runs
         if (typeof process === 'undefined' || !process.browser) {
           globalThis.process = {
@@ -64,7 +69,7 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 5000,
-    sourcemap: 'hidden',
+    sourcemap: true,
     minify: 'esbuild',
     target: 'es2020',
     cssCodeSplit: true,
