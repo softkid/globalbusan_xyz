@@ -9,6 +9,7 @@ import BottomNav from './components/BottomNav'
 const Home = lazy(() => import('./pages/Home'))
 const Invest = lazy(() => import('./pages/Invest'))
 const Investment = lazy(() => import('./pages/Investment'))
+const TransactionHistory = lazy(() => import('./pages/TransactionHistory'))
 const Projects = lazy(() => import('./pages/Projects'))
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'))
 const Statistics = lazy(() => import('./pages/Statistics'))
@@ -46,6 +47,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/invest" element={<Invest />} />
             <Route path="/investment" element={<Investment />} />
+            <Route path="/transaction-history" element={<TransactionHistory />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/statistics" element={<Statistics />} />

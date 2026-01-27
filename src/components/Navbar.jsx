@@ -1,4 +1,4 @@
-import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaHandHoldingHeart, FaUser, FaSignOutAlt, FaInfoCircle, FaWallet } from "react-icons/fa";
+import { FaGlobe, FaBuilding, FaBars, FaTimes, FaHome, FaChartLine, FaProjectDiagram, FaHandHoldingHeart, FaUser, FaSignOutAlt, FaInfoCircle, FaWallet, FaHistory } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,8 @@ const Navbar = ({ isAdmin = false }) => {
     { name: t('nav.status'), path: "/status", icon: FaChartLine, key: 'status' },
     { name: t('nav.invest'), path: "/invest", icon: FaBuilding, key: 'invest' },
     { name: '기부', path: "/donation", icon: FaHandHoldingHeart, key: 'donation' },
-    { name: '투자', path: "/investment", icon: FaChartLine, key: 'investment' }
+    { name: '투자', path: "/investment", icon: FaChartLine, key: 'investment' },
+    { name: '거래 기록', path: "/transaction-history", icon: FaHistory, key: 'history' }
   ];
 
   // Roadmap 메뉴 아이템
