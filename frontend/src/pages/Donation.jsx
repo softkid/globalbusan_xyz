@@ -129,7 +129,10 @@ function Donation() {
     }
 
     try {
+      console.log('Starting wallet connection...');
+      console.log('Window object keys:', Object.keys(window).filter(k => k.includes('sui') || k.includes('wallet')));
       const address = await connectSuiWallet()
+      console.log('Wallet connected with address:', address);
       setWalletAddress(address)
       setIsWalletConnected(true)
     } catch (error) {

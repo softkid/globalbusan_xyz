@@ -167,6 +167,8 @@ function Projects() {
 
     // 지갑 연결 체크 (Sui)
     try {
+      console.log('Starting wallet connection...');
+      console.log('Window object keys:', Object.keys(window).filter(k => k.includes('sui') || k.includes('wallet')));
       const walletAddress = await connectSuiWallet()
       if (!walletAddress) {
         alert('Sui 지갑 연결이 필요합니다.')

@@ -2,23 +2,59 @@
 export const SUI_RPC_ENDPOINT = "https://fullnode.testnet.sui.io:443";
 
 export async function connectSuiWallet() {
-  const suiWallet = typeof window !== "undefined" ? window.suiWallet : undefined;
+  // Try to find Sui wallet using standard Sui Wallet interface
+  let suiWallet = null;
+  
+  if (typeof window !== "undefined") {
+    // Check for @mysten/dapp-kit provider
+    if (window.__SUIX__) {
+      suiWallet = window.__SUIX__;
+    }
+    // Check for window.suiWallet (some wallet extensions)
+    else if (window.suiWallet) {
+      suiWallet = window.suiWallet;
+    }
+    // Check for generic window.sui
+    else if (window.sui) {
+      suiWallet = window.sui;
+    }
+  }
+  
   if (!suiWallet) {
-    throw new Error("Sui wallet not detected. Please install a Sui-compatible wallet.");
+    throw new Error("Sui wallet not detected. Please install a Sui-compatible wallet extension.");
   }
 
-  await suiWallet.requestPermissions?.({ permissions: ["viewAccount", "suggestTransactions"] });
-  const accounts = await suiWallet.getAccounts();
-  if (!accounts || accounts.length === 0) {
-    throw new Error("No Sui accounts available in the wallet.");
+  try {
+    // Request permissions
+    if (typeof suiWallet.requestPermissions === 'function') {
+      await suiWallet.requestPermissions({ permissions: ["viewAccount", "suggestTransactions"] });
+    }
+    
+    // Get accounts
+    const accounts = await suiWallet.getAccounts();
+    if (!accounts || accounts.length === 0) {
+      throw new Error("No Sui accounts available in the wallet.");
+    }
+    
+    return accounts[0]?.address || accounts[0];
+  } catch (error) {
+    console.error('Wallet connection error:', error);
+    throw error;
   }
-  return accounts[0]?.address;
 }
 
 export async function sendSuiTransaction({ sender, recipient, amount }) {
-  const suiWallet = typeof window !== "undefined" ? window.suiWallet : undefined;
+  // Get wallet using standard interface
+  let suiWallet = null;
+  
+  if (typeof window !== "undefined") {
+    if (window.__SUIX__) suiWallet = window.__SUIX__;
+    else if (window.suiWallet) suiWallet = window.suiWallet;
+    else if (window.sui) suiWallet = window.sui;
+  }
+  
   if (!suiWallet) {
-    throw new Error("Sui wallet not detected. Please install a Sui-compatible wallet.");
+    throw new Error("Sui wallet not detected. Please install a Sui-compatible wallet extension.");
   }
   if (!sender || !recipient) {
     throw new Error("Sender and recipient are required for Sui transactions.");
