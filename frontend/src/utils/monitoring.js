@@ -337,15 +337,17 @@ export const initMonitoring = () => {
   
   // 성능 메트릭 수집
   if (document.readyState === 'complete') {
-    collectPerformanceMetrics().then(metrics => {
+    const metrics = collectPerformanceMetrics()
+    if (metrics) {
       monitorPerformance(metrics)
-    })
+    }
   } else {
     window.addEventListener('load', () => {
       setTimeout(() => {
-        collectPerformanceMetrics().then(metrics => {
+        const metrics = collectPerformanceMetrics()
+        if (metrics) {
           monitorPerformance(metrics)
-        })
+        }
       }, 0)
     })
   }
