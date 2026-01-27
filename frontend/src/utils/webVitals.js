@@ -1,3 +1,4 @@
+import { onCLS, onFID, onLCP, onFCP, onTTFB } from 'web-vitals'
 /**
  * Web Vitals Performance Monitoring
  * Google Core Web Vitals 측정 및 Google Analytics 전송
@@ -7,10 +8,8 @@
  * LCP (Largest Contentful Paint) 측정
  */
 export const measureLCP = (onPerfEntry) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ onLCP }) => {
-      onLCP(onPerfEntry)
-    })
+  if (typeof onPerfEntry === 'function') {
+    try { onLCP(onPerfEntry) } catch (e) { console.warn('LCP measure failed', e) }
   }
 }
 
@@ -18,10 +17,8 @@ export const measureLCP = (onPerfEntry) => {
  * FID (First Input Delay) 측정
  */
 export const measureFID = (onPerfEntry) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ onFID }) => {
-      onFID(onPerfEntry)
-    })
+  if (typeof onPerfEntry === 'function') {
+    try { onFID(onPerfEntry) } catch (e) { console.warn('FID measure failed', e) }
   }
 }
 
@@ -29,10 +26,8 @@ export const measureFID = (onPerfEntry) => {
  * CLS (Cumulative Layout Shift) 측정
  */
 export const measureCLS = (onPerfEntry) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ onCLS }) => {
-      onCLS(onPerfEntry)
-    })
+  if (typeof onPerfEntry === 'function') {
+    try { onCLS(onPerfEntry) } catch (e) { console.warn('CLS measure failed', e) }
   }
 }
 
@@ -40,10 +35,8 @@ export const measureCLS = (onPerfEntry) => {
  * FCP (First Contentful Paint) 측정
  */
 export const measureFCP = (onPerfEntry) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ onFCP }) => {
-      onFCP(onPerfEntry)
-    })
+  if (typeof onPerfEntry === 'function') {
+    try { onFCP(onPerfEntry) } catch (e) { console.warn('FCP measure failed', e) }
   }
 }
 
@@ -51,10 +44,8 @@ export const measureFCP = (onPerfEntry) => {
  * TTFB (Time to First Byte) 측정
  */
 export const measureTTFB = (onPerfEntry) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ onTTFB }) => {
-      onTTFB(onPerfEntry)
-    })
+  if (typeof onPerfEntry === 'function') {
+    try { onTTFB(onPerfEntry) } catch (e) { console.warn('TTFB measure failed', e) }
   }
 }
 

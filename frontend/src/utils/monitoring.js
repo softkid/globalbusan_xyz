@@ -34,7 +34,7 @@ const monitoringData = {
 /**
  * 모니터링 데이터를 Supabase에 전송
  */
-const monitoringEndpoint = import.meta.env.VITE_MONITORING_ENDPOINT || '/api/monitoring'
+const monitoringEndpoint = import.meta.env.VITE_MONITORING_ENDPOINT || ''
 
 const sendToBackend = async (data) => {
   if (!monitoringEndpoint) return
