@@ -62,7 +62,7 @@ export const measureTTFB = (onPerfEntry) => {
  * 모든 Web Vitals 측정
  */
 export const measureWebVitals = (onReport) => {
-  const reportWebVitals = onReport || ((metric) => {
+  const reportWebVitals = typeof onReport === 'function' ? onReport : ((metric) => {
     // 콘솔에 출력 (개발 환경)
     if (process.env.NODE_ENV === 'development') {
       console.log(metric)
@@ -90,11 +90,15 @@ export const measureWebVitals = (onReport) => {
   })
 
   // 모든 Web Vitals 측정
-  measureLCP(reportWebVitals)
-  measureFID(reportWebVitals)
-  measureCLS(reportWebVitals)
-  measureFCP(reportWebVitals)
-  measureTTFB(reportWebVitals)
+  try {
+    measureLCP(reportWebVitals)
+    measureFID(reportWebVitals)
+    measureCLS(reportWebVitals)
+    measureFCP(reportWebVitals)
+    measureTTFB(reportWebVitals)
+  } catch (err) {
+    console.warn('Web Vitals measurement failed:', err)
+  }
 }
 
 /**

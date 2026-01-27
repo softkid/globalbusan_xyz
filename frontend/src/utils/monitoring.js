@@ -34,10 +34,13 @@ const monitoringData = {
 /**
  * 모니터링 데이터를 Supabase에 전송
  */
+const monitoringEndpoint = import.meta.env.VITE_MONITORING_ENDPOINT || '/api/monitoring'
+
 const sendToBackend = async (data) => {
+  if (!monitoringEndpoint) return
   try {
     // Supabase Edge Function 또는 직접 API 호출
-    const response = await fetch('/api/monitoring', {
+    const response = await fetch(monitoringEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +49,7 @@ const sendToBackend = async (data) => {
     })
     
     if (!response.ok) {
-      console.warn('Failed to send monitoring data to backend')
+      console.warn('Skipped monitoring send (status: ' + response.status + ')')
     }
   } catch (error) {
     console.warn('Error sending monitoring data:', error)
