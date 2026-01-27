@@ -16,18 +16,17 @@ backend/build/
 frontend-admin/dist/
 frontend-admin/build/
 
-# Environment variables
-.env
+# Environment variables (use .env.example instead)
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-frontend/.env
 frontend/.env.local
-backend/.env
+frontend/.env.development.local
 backend/.env.local
-frontend-admin/.env
+backend/.env.development.local
 frontend-admin/.env.local
+frontend-admin/.env.development.local
 
 # Logs
 logs
