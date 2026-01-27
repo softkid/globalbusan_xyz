@@ -1,6 +1,3 @@
-
-// Sui-only blockchain helpers targeting the public testnet RPC
-const SUI_RPC_ENDPOINT = "https://fullnode.testnet.sui.io:443";
 // Sui-only blockchain helpers targeting the public testnet RPC
 const SUI_RPC_ENDPOINT = "https://fullnode.testnet.sui.io:443";
 
@@ -86,27 +83,12 @@ export async function verifySuiTransaction({ digest, expectedAmount, expectedRec
 export function getSuiExplorerLink(digest) {
   return `https://testnet.suivision.xyz/txblock/${digest}`;
 }
-            success: true,
-            status: status.confirmationStatus,
-            slot: status.slot
-          }
-        }
-      }
 
-      // 1초 대기 후 재시도
-      await new Promise(resolve => setTimeout(resolve, 1000))
-    }
-
-    return {
-      success: false,
-      error: 'Transaction confirmation timeout'
-    }
-  } catch (error) {
-    console.error('Wait for Solana transaction error:', error)
-    return {
-      success: false,
-      error: error.message
-    }
-  }
-}
+export default {
+  connectSuiWallet,
+  sendSuiTransaction,
+  waitForSuiTransaction,
+  verifySuiTransaction,
+  getSuiExplorerLink,
+};
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { FaUsers, FaHandHoldingHeart, FaTrophy, FaClock } from 'react-icons/fa'
+import { FaUsers, FaHandHoldingHeart, FaTrophy, FaClock, FaChain } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { statsService, investorService, investmentService } from '../lib/supabase'
+import { mistToSui } from '../lib/smartContract'
 import { t } from '../lib/i18n'
 
 const Donors = () => {
@@ -9,10 +10,21 @@ const Donors = () => {
   const [topDonors, setTopDonors] = useState([])
   const [recentDonors, setRecentDonors] = useState([])
   const [loading, setLoading] = useState(true)
+  const [poolInfo, setPoolInfo] = useState(null)
+  const [totalOnchain, setTotalOnchain] = useState(0)
 
   useEffect(() => {
     loadDonors()
   }, [])
+
+  const loadOnchainData = async () => {
+    try {
+      // getDonationPoolInfo will be called once contract interaction is implemented
+      // For now, we'll skip on-chain data loading
+    } catch (error) {
+      console.error('스마트 계약 데이터 로드 실패:', error)
+    }
+  }
 
   const loadDonors = async () => {
     try {
@@ -113,6 +125,29 @@ const Donors = () => {
               {t('donation.donateNow')} →
             </Link>
           </div>
+
+          {/* On-chain Stats */}
+          {totalOnchain > 0 && (
+            <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-lg rounded-2xl p-6 border border-purple-400/30 mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-200 text-sm font-semibold mb-1 flex items-center gap-2">
+                    <FaChain className="text-purple-400" />
+                    Sui Testnet Smart Contract
+                  </p>
+                  <p className="text-white text-2xl font-bold">
+                    {mistToSui(totalOnchain).toFixed(2)} SUI
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-blue-200 text-xs">Total On-Chain</p>
+                  <p className="text-green-400 text-lg font-semibold">
+                    {poolInfo?.donation_count || 0}건
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {topDonors.length === 0 ? (
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-12 border border-white/20 text-center">
