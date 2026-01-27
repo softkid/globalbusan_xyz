@@ -1,4 +1,4 @@
-import { onCLS, onFID, onLCP, onFCP, onTTFB } from 'web-vitals'
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals'
 /**
  * Web Vitals Performance Monitoring
  * Google Core Web Vitals 측정 및 Google Analytics 전송
@@ -14,11 +14,11 @@ export const measureLCP = (onPerfEntry) => {
 }
 
 /**
- * FID (First Input Delay) 측정
+ * INP (Interaction to Next Paint) 측정
  */
-export const measureFID = (onPerfEntry) => {
+export const measureINP = (onPerfEntry) => {
   if (typeof onPerfEntry === 'function') {
-    try { onFID(onPerfEntry) } catch (e) { console.warn('FID measure failed', e) }
+    try { onINP(onPerfEntry) } catch (e) { console.warn('INP measure failed', e) }
   }
 }
 
@@ -83,7 +83,7 @@ export const measureWebVitals = (onReport) => {
   // 모든 Web Vitals 측정
   try {
     measureLCP(reportWebVitals)
-    measureFID(reportWebVitals)
+    measureINP(reportWebVitals)
     measureCLS(reportWebVitals)
     measureFCP(reportWebVitals)
     measureTTFB(reportWebVitals)
