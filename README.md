@@ -1,240 +1,269 @@
-# Global BUSAN
+# Global Busan XYZ Investment Platform - Monorepo
 
-투명한 블록체인 기반 플랫폼을 구축하여 국제 기업가들과 한국의 비즈니스 생태계를 연결합니다. 함께 부산에 글로벌 비즈니스 허브를 만들어갑시다.
+모노레포 구조로 관리되는 Global Busan XYZ 투자 플랫폼입니다.
 
-## 🌟 주요 기능
+## 📂 프로젝트 구조
 
-- **투명한 기부 시스템**: 블록체인 기반 기부 추적 및 검증
-- **실시간 지분 구조**: 실시간 기부금 집계 및 기부자 시각화
-- **분기별 보고서**: 투명한 재무 보고서 및 프로젝트 진행 상황
-- **다국어 지원**: 한국어, 영어, 일본어, 중국어, 아랍어 지원
-- **다중 결제 수단**: 암호화폐 (ETH, BTC, SOL, MATIC), 카드 결제 (Stripe), 한국 결제 (토스페이먼츠), PayPal
-- **PWA 지원**: 오프라인 지원 및 모바일 앱 경험
+```
+globalbusan/
+├── frontend/              # 사용자 프론트엔드 (포트: 3000)
+│   ├── src/
+│   ├── public/
+│   └── package.json
+├── backend/               # Backend API (포트: 5000)
+│   ├── src/
+│   │   ├── routes/
+│   │   └── index.js
+│   └── package.json
+├── frontend-admin/        # 관리자 대시보드 (포트: 3001)
+│   ├── src/
+│   │   ├── components/
+│   │   └── pages/
+│   └── package.json
+├── contract/              # Sui 스마트 계약
+│   └── sources/
+├── doc/                   # 문서
+├── package.json           # 루트 package.json (통합 스크립트)
+└── README.md
+```
 
 ## 🚀 빠른 시작
 
-### 필수 요구사항
-
-- Node.js 18+
-- npm 또는 yarn
-- Supabase 계정
-- Google OAuth 클라이언트 ID (선택사항)
-
-### 설치
+### 1. 의존성 설치
 
 ```bash
-# 저장소 클론
-git clone https://github.com/softkid/globalbusan_xyz.git
-cd globalbusan_xyz
-
-# 의존성 설치
-npm install
-
-# 환경 변수 설정
-cp .env.example .env
-# .env 파일을 편집하여 필요한 환경 변수 설정
+# 모든 프로젝트의 의존성 한번에 설치
+npm run install:all
 ```
 
-### 환경 변수 설정
+### 2. 개발 서버 실행
 
-`.env` 파일에 다음 변수들을 설정하세요:
-
-```env
-# Supabase
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Google OAuth
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
-
-# Blockchain RPC
-VITE_ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/YOUR_PROJECT_ID
-VITE_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
-VITE_POLYGON_RPC_URL=https://polygon-rpc.com
-
-# Payment
-VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-VITE_COINBASE_COMMERCE_API_KEY=your_coinbase_api_key
-```
-
-### 개발 서버 실행
-
+#### 모든 서비스 동시 실행
 ```bash
 npm run dev
 ```
 
-브라우저에서 `http://localhost:5173` 접속
+이 명령어는 다음 세 서비스를 동시에 실행합니다:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000
+- Admin Dashboard: http://localhost:3001
 
-### 프로덕션 빌드
+#### 개별 서비스 실행
+```bash
+# 프론트엔드만 실행
+npm run dev:frontend
+
+# 백엔드만 실행
+npm run dev:backend
+
+# 관리자 대시보드만 실행
+npm run dev:admin
+```
+
+### 3. 프로덕션 빌드
+
+**⚠️ 중요**: 배포 시에는 각 프로젝트 폴더에서 **독립적으로** 빌드하세요!
 
 ```bash
+# 로컬 테스트용 (루트에서 일괄 빌드)
 npm run build
-npm run preview
+
+# 실제 배포용 (각 프로젝트별로 독립 빌드 - 권장!)
+cd frontend && npm run build        # Frontend 빌드
+cd backend && npm run build         # Backend 빌드 (없음)
+cd frontend-admin && npm run build  # Admin 빌드
 ```
 
-## 📁 프로젝트 구조
+**배포 시 각 폴더별로 빌드하는 이유**:
+- 빌드 오류 발생 시 해당 프로젝트만 수정 가능
+- 독립적인 의존성 관리
+- CI/CD에서 각 프로젝트별 캐싱 가능
+- 한 프로젝트 오류가 다른 프로젝트에 영향 없음
 
-```
-globalbusan_xyz/
-├── public/                 # 정적 파일
-│   ├── sitemap.xml        # 사이트맵
-│   ├── robots.txt         # 검색 엔진 설정
-│   ├── manifest.json      # PWA 매니페스트
-│   └── sw.js             # Service Worker
-├── src/
-│   ├── components/        # React 컴포넌트
-│   │   ├── __tests__/    # 컴포넌트 테스트
-│   │   ├── Navbar.jsx
-│   │   ├── Footer.jsx
-│   │   ├── Hero.jsx
-│   │   └── ...
-│   ├── pages/            # 페이지 컴포넌트
-│   │   ├── Home.jsx
-│   │   ├── Invest.jsx
-│   │   ├── Projects.jsx
-│   │   └── ...
-│   ├── lib/              # 유틸리티 및 서비스
-│   │   ├── supabase.js  # Supabase 클라이언트
-│   │   ├── blockchain.js # 블록체인 유틸리티
-│   │   ├── payment.js   # 결제 유틸리티
-│   │   └── ...
-│   ├── hooks/           # 커스텀 훅
-│   │   ├── useLazyLoad.js
-│   │   └── useKeyboardNavigation.js
-│   ├── utils/           # 유틸리티 함수
-│   │   ├── errorHandler.js
-│   │   ├── serviceWorker.js
-│   │   └── webVitals.js
-│   ├── i18n/            # 다국어 설정
-│   └── App.jsx          # 메인 앱 컴포넌트
-├── supabase/
-│   └── functions/       # Supabase Edge Functions
-│       ├── create-payment-intent/
-│       ├── verify-payment/
-│       └── process-refund/
-├── doc/                 # 문서
-│   ├── Implementation_Checklist.md
-│   ├── PRD_GlobalBusan_XYZ.md
-│   ├── GOOGLE_SEARCH_CONSOLE_SETUP.md
-│   ├── SMART_CONTRACT_DEPLOYMENT.md
-│   └── UAT_CHECKLIST.md
-└── package.json
-```
+## 📦 각 프로젝트 설명
 
-## 🧪 테스트
+### Frontend (사용자 웹앱)
+- **포트**: 3000
+- **기술**: React 18.3.1 + Vite + Tailwind CSS
+- **기능**: 기부, 투자, 프로젝트 조회, 거래 기록
+- **Sui 지갑 연동**: @mysten/sui.js
+
+### Backend (API 서버)
+- **포트**: 5000
+- **기술**: Node.js + Express.js
+- **기능**: RESTful API, Supabase 연동, Sui 거래 검증
+- **엔드포인트**:
+  - `/api/donations` - 기부 관리
+  - `/api/investments` - 투자 관리
+  - `/api/projects` - 프로젝트 관리
+  - `/api/stats` - 통계 데이터
+
+### Frontend-Admin (관리자 대시보드)
+- **포트**: 3001
+- **기술**: React 18.3.1 + Vite + Tailwind CSS
+- **기능**: 대시보드, 기부/투자 관리, 프로젝트 관리, 사용자 관리
+- **로그인**: admin / admin123 (데모)
+
+## 🔧 주요 명령어
 
 ```bash
-# 모든 테스트 실행
-npm test
+# 개발
+npm run dev                 # 모든 서비스 동시 실행
+npm run dev:frontend        # 프론트엔드만
+npm run dev:backend         # 백엔드만
+npm run dev:admin           # 관리자 대시보드만
 
-# 커버리지 포함 테스트
-npm run test:coverage
+# 빌드
+npm run build               # 전체 빌드
+npm run build:frontend      # 프론트엔드 빌드
+npm run build:admin         # 관리자 빌드
 
-# 감시 모드
-npm run test:watch
+# 테스트
+npm run test                # 프론트엔드 테스트 실행
+npm run test:frontend       # 프론트엔드 테스트
+
+# 린트
+npm run lint                # 전체 린트
+npm run lint:frontend       # 프론트엔드 린트
+npm run lint:admin          # 관리자 린트
+
+# 배포
+npm run deploy              # 전체 배포
+npm run deploy:frontend     # 프론트엔드 배포
+npm run deploy:admin        # 관리자 배포
+
+# 정리
+npm run clean               # node_modules 및 dist 삭제
 ```
 
-## 📚 문서
+## 🌐 환경 변수 설정
 
-- [구현 체크리스트](./doc/Implementation_Checklist.md)
-- [배포 가이드](./doc/DEPLOYMENT_GUIDE.md) ⭐ 새로 추가
-- [프로젝트 요약](./doc/PROJECT_SUMMARY.md)
-- [Google Search Console 설정 가이드](./doc/GOOGLE_SEARCH_CONSOLE_SETUP.md)
-- [스마트 컨트랙트 배포 가이드](./doc/SMART_CONTRACT_DEPLOYMENT.md)
-- [사용자 수용 테스트 체크리스트](./doc/UAT_CHECKLIST.md)
-- [이미지 최적화 가이드](./doc/IMAGE_OPTIMIZATION_GUIDE.md)
-- [Supabase Auth 통합 가이드](./doc/SUPABASE_AUTH_GUIDE.md)
-- [환경 변수 설정 가이드](./doc/ENVIRONMENT_VARIABLES.md)
-- [토스페이먼츠 설정 가이드](./doc/TOSS_PAYMENTS_SETUP.md) ⭐ 한국 결제 대안
-- [PayPal 설정 가이드](./doc/PAYPAL_SETUP.md) ⭐ 전 세계 결제
-- [모니터링 가이드](./doc/MONITORING_GUIDE.md)
+### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_SUI_NETWORK=testnet
+VITE_SUI_RPC_URL=https://fullnode.testnet.sui.io:443
+VITE_SUI_PACKAGE_ID=0xa97fe...
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_KEY=your_supabase_key
+```
 
-## 🛠 기술 스택
+### Backend (.env)
+```env
+PORT=5000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+SUI_RPC_URL=https://fullnode.testnet.sui.io:443
+```
 
-### 프론트엔드
-- **React 18** - UI 라이브러리
-- **Vite** - 빌드 도구
-- **Tailwind CSS** - 스타일링
-- **GSAP** - 애니메이션
-- **React Router** - 라우팅
-- **i18next** - 다국어 지원
+### Frontend-Admin (기본 설정 사용)
+Vite 프록시를 통해 Backend API에 연결
 
-### 백엔드
-- **Supabase** - BaaS (Database, Auth, Storage)
-- **Supabase Edge Functions** - 서버리스 함수
+## 📱 API 흐름
 
-### 블록체인
-- **Ethers.js** - Ethereum/Polygon
-- **@solana/web3.js** - Solana
-- **MetaMask** - Ethereum 지갑
-- **Phantom** - Solana 지갑
+```
+[Frontend] ←→ [Backend API] ←→ [Supabase Database]
+                    ↓
+              [Sui Blockchain]
 
-### 결제
-- **Stripe** - 카드 결제 (해외)
-- **토스페이먼츠** - 카드/간편결제 (한국)
-- **PayPal** - PayPal 결제 (전 세계)
-- **Coinbase Commerce** - 암호화폐 결제
+[Admin Dashboard] ←→ [Backend API]
+```
 
-### 테스트
-- **Jest** - 테스트 프레임워크
-- **React Testing Library** - 컴포넌트 테스트
+## 🔐 보안
 
-## 🚢 배포
+- **Backend**: Helmet, CORS, Rate Limiting 적용
+- **Frontend**: Sui Wallet 서명 필수
+- **Admin**: 인증 토큰 기반 접근 제어
 
-### Cloudflare Pages
+## 📊 데이터 흐름
 
-1. GitHub 저장소 연결
-2. 빌드 설정:
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-3. 환경 변수 설정
-4. 배포
+1. **기부/투자 생성**:
+   - Frontend에서 Sui Wallet으로 거래 서명
+   - 거래 해시를 Backend로 전송
+   - Backend에서 Sui 블록체인 검증
+   - 검증 성공 시 Supabase에 저장
 
-### 환경 변수 (프로덕션)
+2. **데이터 조회**:
+   - Frontend에서 Backend API 호출
+   - Backend가 Supabase에서 데이터 조회
+   - Frontend에 JSON 응답 반환
 
-Cloudflare Pages 대시보드에서 다음 환경 변수 설정:
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `VITE_GOOGLE_CLIENT_ID`
-- `VITE_ETHEREUM_RPC_URL`
-- `VITE_SOLANA_RPC_URL`
-- `VITE_POLYGON_RPC_URL`
-- `VITE_STRIPE_PUBLISHABLE_KEY`
+## 🚀 배포
 
-## 📊 현재 상태
+**⚠️ 배포는 반드시 각 프로젝트 폴더에서 독립적으로 진행하세요!**
 
-- **버전**: 0.1.0-beta
-- **진행률**: 약 99.9%
-- **완료된 항목**: 155개
-- **미완료 항목**: 2개 (Stripe 계정 설정, 블록체인 이벤트 리스닝)
-- **테스트 커버리지**: 약 80% (목표 달성)
+### Vercel (Frontend + Admin)
+```bash
+# Frontend 배포
+cd frontend
+vercel --prod
 
-자세한 내용은 [구현 체크리스트](./doc/Implementation_Checklist.md)를 참조하세요.
+# Admin 배포
+cd frontend-admin
+vercel --prod
+```
 
-### 주요 완료 사항
-- ✅ SEO 최적화 (sitemap.xml, robots.txt, 구조화된 데이터)
-- ✅ 결제 시스템 통합 (Stripe, Coinbase Commerce)
-- ✅ 블록체인 통합 (Ethereum, Solana, Polygon)
-- ✅ 테스트 인프라 (단위, 통합, 컴포넌트 테스트)
-- ✅ 성능 최적화 (코드 스플리팅, lazy loading, Service Worker)
-- ✅ 에러 핸들링 (ErrorBoundary, 전역 에러 핸들러)
-- ✅ 접근성 개선 (ARIA, 키보드 네비게이션)
-- ✅ 성능 모니터링 (Web Vitals)
-- ✅ 문서화 완료
+### Heroku (Backend)
+```bash
+cd backend
+git init
+heroku create globalbusan-backend
+git push heroku main
+```
+
+### GitHub Actions (자동 배포)
+`main` 브랜치에 push하면 각 프로젝트가 **독립적으로** 빌드/배포됩니다:
+- ✅ Frontend → 독립 job → Vercel
+- ✅ Backend → 독립 job → Heroku  
+- ✅ Admin → 독립 job → Vercel
+
+**장점**:
+- 각 프로젝트의 빌드 오류가 서로 영향을 주지 않음
+- 빌드 실패 시 해당 프로젝트만 재배포 가능
+- 각 프로젝트의 캐시를 독립적으로 관리
+
+## 📝 개발 워크플로우
+
+1. **새 기능 개발**:
+   ```bash
+   git checkout -b feature/new-feature
+   npm run dev  # 개발 서버 실행
+   # 코드 작성...
+   npm run test  # 테스트
+   npm run lint  # 린트 검사
+   git commit -m "feat: Add new feature"
+   git push origin feature/new-feature
+   ```
+
+2. **프로덕션 배포**:
+   ```bash
+   git checkout main
+   npm run build  # 빌드
+   npm run deploy  # 배포
+   ```
 
 ## 🤝 기여
 
-기여를 환영합니다! 이슈를 열거나 Pull Request를 제출해주세요.
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## 📄 라이선스
 
-이 프로젝트는 MIT 라이선스를 따릅니다.
+MIT License
 
-## 📞 연락처
+## 📞 지원
 
-- **이메일**: contact@globalbusan.xyz
-- **웹사이트**: https://globalbusan.xyz
+- **Frontend 문서**: [frontend/README.md](./frontend/README.md)
+- **Backend 문서**: [backend/README.md](./backend/README.md)
+- **Admin 문서**: [frontend-admin/README.md](./frontend-admin/README.md)
+- **Sui 통합 가이드**: [doc/SUI_BLOCKCHAIN_INTEGRATION.md](./doc/SUI_BLOCKCHAIN_INTEGRATION.md)
 
 ---
 
-**Made with ❤️ for Busan**
+**버전**: 1.0.0  
+**최종 업데이트**: 2026-01-27

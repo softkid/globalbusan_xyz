@@ -224,16 +224,20 @@ npm run deploy  # (Vercel/Netlify 등)
 - [ ] 성능 모니터링
 
 ### 단기 (2-4주)
-- [ ] 백엔드 API 연동 (현재 localStorage 사용)
-- [ ] 데이터베이스 저장
-- [ ] 관리자 대시보드 구현
+- [x] ✅ 백엔드 API 연동 (Backend API 서버 구현 완료!)
+- [ ] 데이터베이스 저장 (Supabase 연동 완료, 실제 데이터 저장 테스트 필요)
+- [x] ✅ 관리자 대시보드 구현 (Admin Dashboard 완성!)
 - [ ] 더 많은 프로젝트 추가
+- [ ] Backend API와 Frontend 연동 테스트
+- [ ] Admin Dashboard 완전한 CRUD 기능
 
 ### 중기 (1-3개월)
 - [ ] Mainnet 마이그레이션
 - [ ] 결제 게이트웨이 추가 (Stripe, PayPal)
 - [ ] 투자 ROI 계산 시스템
 - [ ] 배당금 배분 기능
+- [ ] Backend API 프로덕션 배포 (Heroku/Railway)
+- [ ] Admin Dashboard 권한 관리 시스템
 
 ### 장기
 - [ ] DeFi 통합

@@ -249,7 +249,7 @@ export default defineConfig({
   },
   build: {
     // Specify output directory for Cloudflare Pages
-    outDir: 'frontend/dist',
+    outDir: 'dist',
     // Code splitting optimization
     rollupOptions: {
       plugins: [

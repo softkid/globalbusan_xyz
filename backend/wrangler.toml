@@ -1,0 +1,17 @@
+name = "globalbusan-backend"
+main = "src/index.js"
+compatibility_date = "2024-01-27"
+node_compat = true
+
+[env.production]
+name = "globalbusan-backend-prod"
+
+[env.development]
+name = "globalbusan-backend-dev"
+
+# Environment variables (set using wrangler secret)
+# SUPABASE_URL
+# SUPABASE_KEY  
+# SUI_RPC_URL
+# SUI_PACKAGE_ID
+# SUI_DONATION_POOL_ID

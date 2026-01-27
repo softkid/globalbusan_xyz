@@ -1,0 +1,29 @@
+{
+  "name": "globalbusan-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Global Busan XYZ Investment Platform - Cloudflare Workers",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:prod": "wrangler deploy --env production",
+    "tail": "wrangler tail",
+    "build": "echo 'No build step required for Cloudflare Workers'",
+    "test": "vitest"
+  },
+  "keywords": ["api", "backend", "hono", "cloudflare-workers", "sui", "blockchain"],
+  "author": "Global Busan Team",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.0.0",
+    "hono-rate-limiter": "^0.3.0",
+    "@mysten/sui.js": "^0.54.1",
+    "@supabase/supabase-js": "^2.39.0",
+    "joi": "^17.11.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.22.0",
+    "vitest": "^1.2.0"
+  }
+}
