@@ -91,7 +91,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <a 
-                  href="/manus-storage/대한민국_AI_경제_수도,_북구의_미래.pdf"
+                  href="/대한민국_AI_경제_수도,_북구의_미래.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center h-14 px-8 rounded-xl bg-[#4A72F6] hover:bg-[#3A5CE0] text-white font-bold text-lg transition-colors shadow-lg shadow-blue-500/25"
