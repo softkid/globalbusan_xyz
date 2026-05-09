@@ -1,13 +1,17 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Users, Globe, TrendingUp, Lightbulb, Heart, Facebook, Youtube, Instagram, MessageCircle, X, Share2, Truck, Store } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ArrowRight, Zap, Users, Globe, TrendingUp, Lightbulb, Heart, Facebook, Youtube, Instagram, MessageCircle, X, Share2, Truck, Store, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Streamdown } from "streamdown";
+import { motion } from "framer-motion";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function Home() {
   const { user } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedPolicy, setSelectedPolicy] = useState<any>(null);
 
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([
     { role: "assistant", content: "안녕하세요! 하정우 후보의 AI·Food-Tech 정책에 대해 궁금한 점이 있으신가요? 편하게 질문해주세요." }
@@ -103,9 +107,12 @@ export default function Home() {
             {/* Right Image */}
             <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl shadow-slate-200/50">
               <img 
-                src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80" 
+                src="/bridge.jpg" 
                 alt="AI Food-Tech Belt Bridge"
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80";
+                }}
               />
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#1E293B]/90 via-[#1E293B]/40 to-black/10"></div>
@@ -183,7 +190,13 @@ export default function Home() {
                   "김해 생산량과 부산 소비 데이터를 AI로 분석",
                   "재고 0%, 신선도 100%의 스마트 직거래 공급망 완성",
                   "덕천·구포 정체 구간에 AI 교통 관제 시스템 도입"
-                ]
+                ],
+                details: "기존의 비효율적인 유통 과정을 혁신하고, 북구를 부울경 핵심 스마트 물류 허브로 성장시킬 계획입니다. 스마트 물류 시스템 도입으로 물류비용을 획기적으로 낮추고, 신선한 식품을 더 빠르고 저렴하게 제공하여 지역 경제 활성화를 주도합니다.",
+                chartData: [
+                  { name: '기존 물류비용', value: 100, fill: '#cbd5e1' },
+                  { name: 'AI 도입 후', value: 65, fill: '#4A72F6' },
+                ],
+                chartLabel: "물류 비용 절감 효과 (상대 지수)"
               },
               {
                 num: "2",
@@ -193,7 +206,13 @@ export default function Home() {
                   "전 세계 미식 데이터를 분석한 독창적인 육가공품 개발",
                   "구포만의 소시지, 밀키트 등 글로벌 브랜드 상표화",
                   "AI 무인 상점을 통한 24시간 전국·전 세계 판매 체계"
-                ]
+                ],
+                details: "전통시장인 구포시장에 AI와 푸드테크를 접목해 지역 소상공인의 경쟁력을 극대화합니다. 지역 특산품을 글로벌 수준으로 브랜딩하고, 무인 상점 및 온라인 판로를 개척하여 매출을 폭발적으로 증대시킵니다.",
+                chartData: [
+                  { name: '도입 전 매출', value: 100, fill: '#cbd5e1' },
+                  { name: '도입 후 예상', value: 250, fill: '#4A72F6' },
+                ],
+                chartLabel: "구포 상권 매출 증대 효과 (단위: %)"
               },
               {
                 num: "3",
@@ -203,19 +222,33 @@ export default function Home() {
                   "고령화 문제를 데이터 산업 기회로 전환",
                   "만덕·덕천 고령층 주거단지를 AI 헬스케어 리빙랩으로 지정",
                   "기업 유치를 통한 청년 일자리 창출 및 고품격 돌봄 서비스 제공"
-                ]
+                ],
+                details: "어르신들을 위한 맞춤형 스마트 헬스케어 서비스를 도입하여 삶의 질을 획기적으로 높입니다. 동시에 이 과정에서 확보된 의료 빅데이터를 활용해 헬스케어 기업을 유치하고 청년 일자리를 대거 창출하는 선순환 구조를 확립합니다.",
+                chartData: [
+                  { name: '일반 노인 일자리', value: 150, fill: '#cbd5e1' },
+                  { name: '신규 AI·청년 일자리', value: 500, fill: '#4A72F6' },
+                ],
+                chartLabel: "신규 하이테크 일자리 창출 (단위: 명)"
               }
             ].map((policy, idx) => (
-              <div key={idx} className="p-8 md:p-12 rounded-2xl border border-accent/20 bg-white hover:border-accent/40 shadow-sm transition-all">
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: idx * 0.15 }}
+                className="p-8 md:p-12 rounded-2xl border border-accent/20 bg-white hover:border-accent/40 shadow-sm transition-all cursor-pointer group"
+                onClick={() => setSelectedPolicy(policy)}
+              >
                 <div className="flex items-start gap-6 md:gap-8">
                   <div className="flex flex-col items-center gap-4 flex-shrink-0">
-                    <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-[#4A72F6] text-white">
+                    <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-[#4A72F6] text-white group-hover:scale-110 transition-transform duration-300">
                       <span className="text-2xl font-bold">{policy.num}</span>
                     </div>
                     <policy.icon className="w-10 h-10 text-[#4A72F6]" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 pt-1">
-                    <h3 className="text-2xl font-bold text-foreground mb-4">{policy.title}</h3>
+                    <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-[#4A72F6] transition-colors">{policy.title}</h3>
                     <ul className="space-y-4">
                       {policy.items.map((item, i) => (
                         <li key={i} className="flex items-center gap-3">
@@ -224,11 +257,52 @@ export default function Home() {
                         </li>
                       ))}
                     </ul>
+                    <div className="mt-6 flex items-center text-sm font-semibold text-[#4A72F6] opacity-0 group-hover:opacity-100 transition-opacity">
+                      상세 내용 및 기대 효과 보기 <ArrowRight className="ml-1 w-4 h-4" />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
+
+          {/* Policy Detail Modal */}
+          <Dialog open={!!selectedPolicy} onOpenChange={(open) => !open && setSelectedPolicy(null)}>
+            <DialogContent className="sm:max-w-xl">
+              {selectedPolicy && (
+                <>
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold text-foreground mb-2">
+                      {selectedPolicy.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-base text-muted-foreground leading-relaxed">
+                      {selectedPolicy.details}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <h4 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-[#4A72F6]" />
+                      기대 효과 분석: {selectedPolicy.chartLabel}
+                    </h4>
+                    <div className="h-[250px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={selectedPolicy.chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: '#64748b' }} dy={10} />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 13, fill: '#64748b' }} />
+                          <Tooltip 
+                            cursor={{ fill: '#f1f5f9' }}
+                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                          />
+                          <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={50} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
 
