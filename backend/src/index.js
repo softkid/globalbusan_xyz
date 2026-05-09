@@ -10,6 +10,7 @@ import investmentRoutes from './routes/investment.js'
 import projectRoutes from './routes/project.js'
 import statsRoutes from './routes/stats.js'
 import authRoutes from './routes/auth.js'
+import chatRoutes from './routes/chat.js'
 
 const app = new Hono()
 
@@ -48,6 +49,7 @@ app.route('/api/investments', investmentRoutes)
 app.route('/api/projects', projectRoutes)
 app.route('/api/stats', statsRoutes)
 app.route('/api/auth', authRoutes)
+app.route('/api/chat', chatRoutes)
 
 // 404 handler
 app.notFound((c) => {
