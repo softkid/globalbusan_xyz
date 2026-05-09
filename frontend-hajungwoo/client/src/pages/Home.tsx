@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Users, Globe, TrendingUp, Lightbulb, Heart, Facebook, Youtube, Instagram, MessageCircle, X, Share2 } from "lucide-react";
+import { ArrowRight, Zap, Users, Globe, TrendingUp, Lightbulb, Heart, Facebook, Youtube, Instagram, MessageCircle, X, Share2, Truck, Store } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Streamdown } from "streamdown";
@@ -176,6 +176,7 @@ export default function Home() {
             {[
               {
                 num: "1",
+                icon: Truck,
                 title: "AI 기반 '지능형 통합 물류 시스템'",
                 items: [
                   "김해 생산량과 부산 소비 데이터를 AI로 분석",
@@ -185,6 +186,7 @@ export default function Home() {
               },
               {
                 num: "2",
+                icon: Store,
                 title: "구포시장 'AI 로컬 브랜드' 팩토리",
                 items: [
                   "전 세계 미식 데이터를 분석한 독창적인 육가공품 개발",
@@ -194,6 +196,7 @@ export default function Home() {
               },
               {
                 num: "3",
+                icon: Heart,
                 title: "'북구 실버-AI 케어' 모델의 산업화",
                 items: [
                   "고령화 문제를 데이터 산업 기회로 전환",
@@ -202,19 +205,20 @@ export default function Home() {
                 ]
               }
             ].map((policy, idx) => (
-              <div key={idx} className="p-8 md:p-12 rounded-2xl border-2 border-accent/20 bg-white hover:border-accent/50 transition-all">
-                <div className="flex items-start gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-16 w-16 rounded-xl bg-accent text-accent-foreground">
+              <div key={idx} className="p-8 md:p-12 rounded-2xl border border-accent/20 bg-white hover:border-accent/40 shadow-sm transition-all">
+                <div className="flex items-start gap-6 md:gap-8">
+                  <div className="flex flex-col items-center gap-4 flex-shrink-0">
+                    <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-[#4A72F6] text-white">
                       <span className="text-2xl font-bold">{policy.num}</span>
                     </div>
+                    <policy.icon className="w-10 h-10 text-[#4A72F6]" strokeWidth={1.5} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 pt-1">
                     <h3 className="text-2xl font-bold text-foreground mb-4">{policy.title}</h3>
-                    <ul className="space-y-3">
+                    <ul className="space-y-4">
                       {policy.items.map((item, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent mt-2" />
+                        <li key={i} className="flex items-center gap-3">
+                          <div className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#4A72F6]" />
                           <span className="text-muted-foreground">{item}</span>
                         </li>
                       ))}
