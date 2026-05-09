@@ -70,51 +70,52 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Campaign Banner Section */}
-      <section className="relative w-full bg-[#0a0f2c] overflow-hidden">
-        <div className="container relative z-10 py-0 px-0 md:px-8">
-          <div className="w-full max-w-6xl mx-auto shadow-2xl">
-            {/* 
-              가로형 배너 이미지(2번째 이미지)를 public 폴더에 'main-banner.jpg' 혹은 'main-banner.png'로 저장해주세요. 
-              여기서는 /main-banner.png 경로를 기본으로 사용합니다.
-            */}
-            <img 
-              src="/main-banner.png" 
-              alt="이제 북구의 시간, 준비된 미래 1 하정우" 
-              className="w-full h-auto object-cover md:rounded-b-3xl"
-              onError={(e) => {
-                e.currentTarget.src = "https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=1200&q=80";
-              }}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* AI Project Intro Section */}
-      <section className="relative py-16 md:py-24 bg-gradient-to-b from-background to-white">
-        <div className="container">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <div className="inline-block px-4 py-2 bg-accent/10 rounded-full mb-2">
-              <span className="text-sm font-semibold text-accent">AI 경제 수도 프로젝트</span>
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-[#F8FAFC] to-white overflow-hidden">
+        <div className="container relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left Content */}
+            <div className="space-y-8 text-left">
+              <div className="inline-flex px-4 py-2 bg-blue-100/80 rounded-full">
+                <span className="text-sm font-bold text-[#4A72F6]">AI 경제 수도 프로젝트</span>
+              </div>
+              <h1 className="text-5xl md:text-[3.5rem] font-extrabold text-[#111827] leading-[1.2] tracking-tight">
+                대한민국 AI 경<br className="hidden md:block"/>제 수도, <span className="text-[#4A72F6]">북구</span>
+              </h1>
+              <p className="text-lg md:text-xl text-[#4B5563] leading-relaxed max-w-lg font-medium">
+                기술이 정치를 바꿀 때, 북구의 가치가 바뀝니다. 김해의 신선함과 구포의 기술을 연결하여 세계로 수출하는 미래를 만들겠습니다.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <a 
+                  href="/manus-storage/대한민국_AI_경제_수도,_북구의_미래.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center h-14 px-8 rounded-xl bg-[#4A72F6] hover:bg-[#3A5CE0] text-white font-bold text-lg transition-colors shadow-lg shadow-blue-500/25"
+                >
+                  정책 자세히 보기 <ArrowRight className="ml-2 w-5 h-5" />
+                </a>
+                <Button size="lg" variant="outline" className="h-14 px-8 border-[#CBD5E1] text-[#4A72F6] hover:bg-blue-50 hover:border-[#4A72F6] rounded-xl text-lg font-bold bg-white transition-colors">
+                  선거 전략 알아보기
+                </Button>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
-              대한민국 AI 경제 수도, <span className="text-accent">북구</span>
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              기술이 정치를 바꿀 때, 북구의 가치가 바뀝니다. 김해의 신선함과 구포의 기술을 연결하여 세계로 수출하는 미래를 만들겠습니다.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <a 
-                href="/manus-storage/대한민국_AI_경제_수도,_북구의_미래.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center h-11 px-8 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-lg transition-colors"
-              >
-                정책 자세히 보기 <ArrowRight className="ml-2 w-4 h-4" />
-              </a>
-              <Button size="lg" variant="outline" className="border-accent text-accent hover:bg-accent/5">
-                선거 전략 알아보기
-              </Button>
+
+            {/* Right Image */}
+            <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl shadow-slate-200/50">
+              <img 
+                src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=1200&q=80" 
+                alt="AI Food-Tech Belt Bridge"
+                className="w-full h-full object-cover"
+              />
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1E293B]/90 via-[#1E293B]/40 to-black/10"></div>
+              
+              {/* Overlay Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
+                <h2 className="text-7xl md:text-8xl font-black mb-4 tracking-tight drop-shadow-lg">AI</h2>
+                <h3 className="text-2xl md:text-3xl font-bold mb-3 drop-shadow-md">Food-Tech 벨트</h3>
+                <p className="text-lg md:text-xl font-medium text-white/90 drop-shadow-sm">K-푸드의 실리콘밸리</p>
+              </div>
             </div>
           </div>
         </div>
