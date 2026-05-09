@@ -105,7 +105,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <a 
-                href={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent('https://hajungwoo-xbw3ssaj.manus.space/manus-storage/대한민국_AI_경제_수도,_북구의_미래_848977c8.pptx')}`}
+                href="/manus-storage/대한민국_AI_경제_수도,_북구의_미래.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center h-11 px-8 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-lg transition-colors"
