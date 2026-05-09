@@ -128,8 +128,52 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Candidate Profile Section */}
+      <section className="py-20 bg-white">
+        <div className="container">
+          <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+            <div className="w-full md:w-5/12 flex justify-center">
+              <div className="relative w-full max-w-[400px] aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl shadow-[#4A72F6]/20">
+                <img 
+                  src="/candidate-portrait.jpg" 
+                  alt="하정우 후보" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80";
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1033]/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-8 left-8 text-white">
+                  <p className="text-xl font-bold mb-1 text-white/90">준비된 미래</p>
+                  <h3 className="text-5xl font-black tracking-tight">하정우</h3>
+                </div>
+              </div>
+            </div>
+            <div className="w-full md:w-7/12 space-y-6">
+              <div className="inline-flex px-4 py-2 bg-blue-50 rounded-full border border-blue-100">
+                <span className="text-sm font-bold text-[#4A72F6]">더불어민주당 부산 북구갑 국회의원 보궐선거</span>
+              </div>
+              <h2 className="text-4xl md:text-[3rem] font-extrabold text-[#111827] leading-[1.2] tracking-tight">
+                이제 북구의 시간,<br/>
+                <span className="text-[#4A72F6]">준비된 미래</span>를 엽니다
+              </h2>
+              <div className="w-12 h-1.5 bg-[#4A72F6] rounded-full my-6"></div>
+              <p className="text-lg md:text-xl text-[#4B5563] leading-relaxed">
+                저는 현장에서 검증된 AI 전문가로서, 막연한 구호가 아닌 <strong>확실한 데이터와 기술력</strong>으로 북구를 변화시키겠습니다.<br/><br/>
+                과거의 낡은 정치를 넘어, 대한민국 AI 경제 수도로서 북구가 다시 도약할 수 있도록 가장 확실한 실력을 증명하겠습니다.
+              </p>
+              <div className="pt-6">
+                <Button size="lg" className="h-14 px-8 rounded-xl bg-[#0a1033] hover:bg-[#1a235c] text-white text-lg font-bold">
+                  후보자 이력 보기
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Vision Section */}
-      <section id="vision" className="py-20 md:py-32 bg-white">
+      <section id="vision" className="py-20 md:py-32 bg-[#F8FAFC]">
         <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -370,7 +414,7 @@ export default function Home() {
       </section>
 
       {/* Call to Action Section */}
-      <section id="action" className="py-20 md:py-32 bg-gradient-to-br from-accent via-accent/90 to-accent/80 text-white relative overflow-hidden">
+      <section id="action" className="py-20 md:py-32 bg-gradient-to-br from-[#4A72F6] to-[#3A5CE0] text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl" />
@@ -378,40 +422,54 @@ export default function Home() {
         
         <div className="container relative z-10">
           <div className="text-center space-y-8">
-            <h2 className="text-4xl md:text-5xl font-bold">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
               데이터의 길로 뚫는 북구의 미래
             </h2>
-            <p className="text-lg text-white/90 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
               김해의 신선함을 구포의 기술로 가공하여 세계로 수출하는 대한민국 AI 경제 수도, 북구를 만들겠습니다.
             </p>
             
-            <div className="grid md:grid-cols-3 gap-8 mt-12">
+            <div className="grid md:grid-cols-3 gap-8 mt-12 max-w-4xl mx-auto">
               {[
                 { icon: Globe, label: "글로벌 수출" },
                 { icon: TrendingUp, label: "경제 성장" },
                 { icon: Heart, label: "주민 행복" }
               ].map((item, idx) => (
-                <div key={idx} className="flex flex-col items-center gap-3">
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-                    <item.icon className="w-8 h-8 text-white" />
+                <div key={idx} className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
+                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg">
+                    <item.icon className="w-8 h-8 text-[#4A72F6]" strokeWidth={2} />
                   </div>
-                  <p className="font-semibold">{item.label}</p>
+                  <p className="font-bold text-lg">{item.label}</p>
                 </div>
               ))}
             </div>
 
-            <div className="pt-8 flex justify-center gap-6">
-              <a href="https://www.facebook.com/jungwoo.ha.921" target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+            <div className="pt-12 flex justify-center gap-6">
+              <a href="https://www.facebook.com/jungwoo.ha.921" target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all hover:scale-110">
                 <Facebook className="w-7 h-7 text-white" />
               </a>
-              <a href="https://www.youtube.com/@HA_GPT_jungwoo" target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+              <a href="https://www.youtube.com/@HA_GPT_jungwoo" target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all hover:scale-110">
                 <Youtube className="w-7 h-7 text-white" />
               </a>
-              <a href="https://www.instagram.com/hjw9096" target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+              <a href="https://www.instagram.com/hjw9096" target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all hover:scale-110">
                 <Instagram className="w-7 h-7 text-white" />
               </a>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Campaign Banner Section */}
+      <section className="w-full bg-[#0a1033] py-0">
+        <div className="w-full max-w-7xl mx-auto shadow-2xl">
+          <img 
+            src="/campaign-banner.jpg" 
+            alt="이제 북구의 시간 준비된 미래 1 하정우" 
+            className="w-full h-auto"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
       </section>
 
