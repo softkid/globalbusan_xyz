@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busan Digital Hub 2.0 - Time Machine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #00f0ff;
+      --secondary: #1d7eff;
+      --accent: #68ffb3;
+      --bg: #040b14;
+      --panel-bg: rgba(10, 20, 35, 0.65);
+      --panel-border: rgba(0, 240, 255, 0.25);
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+    body {
+      background-color: var(--bg); color: var(--text); overflow: hidden; height: 100vh;
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(29, 126, 255, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #02060d, #061122);
+    }
+    
+    /* Layout */
+    .app-container {
+      display: grid; grid-template-rows: 90px 1fr; height: 100vh; padding: 20px 30px; gap: 20px;
+    }
+    
+    /* Header & Time Machine */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--panel-bg); backdrop-filter: blur(24px); border: 1px solid var(--panel-border);
+      border-radius: 20px; padding: 0 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .brand h1 { font-size: 26px; font-weight: 800; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; letter-spacing: -0.5px;}
+    .brand p { font-size: 12px; color: var(--text-muted); letter-spacing: 3px; font-weight: 500;}
+    
+    .time-machine { flex-grow: 1; max-width: 650px; text-align: center; margin: 0 40px; }
+    .time-display { font-size: 32px; font-weight: 800; color: var(--primary); margin-bottom: 8px; font-variant-numeric: tabular-nums; text-shadow: 0 0 15px rgba(0,240,255,0.6); letter-spacing: 1px;}
+    .slider-container { position: relative; width: 100%; }
+    input[type=range] {
+      -webkit-appearance: none; width: 100%; background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%;
+      background: #fff; border: 4px solid var(--primary); cursor: pointer; margin-top: -9px; box-shadow: 0 0 20px var(--primary); transition: transform 0.1s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.15); border-radius: 2px; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+    }
+    .timeline-labels { display: flex; justify-content: space-between; font-size: 12px; color: #7e8c9f; margin-top: 10px; font-weight: 500; }
+    .timeline-labels span.active { color: var(--primary); font-weight: 700; text-shadow: 0 0 5px var(--primary); }
+    
+    .controls button {
+      background: rgba(0, 240, 255, 0.1); border: 1px solid var(--primary); color: var(--primary);
+      padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 700; font-size: 14px; transition: all 0.3s;
+      box-shadow: 0 0 10px rgba(0,240,255,0.2);
+    }
+    .controls button:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary); transform: translateY(-2px);}
+
+    /* Main Content */
+    .main-content {
+      display: grid; grid-template-columns: 360px 1fr 360px; gap: 24px; height: 100%; overflow: hidden;
+    }
+    
+    .glass-panel {
+      background: var(--panel-bg); backdrop-filter: blur(24px); border: 1px solid var(--panel-border);
+      border-radius: 24px; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .glass-panel::-webkit-scrollbar { width: 6px; }
+    .glass-panel::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.3); border-radius: 3px; }
+
+    .panel-title { font-size: 18px; font-weight: 700; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;}
+    .panel-title::before { content: ''; display: block; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); }
+
+    /* Policy Cards */
+    .policy-card {
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 18px; transition: 0.3s;
+    }
+    .policy-card:hover { border-color: rgba(0,240,255,0.4); background: rgba(0,240,255,0.05); transform: translateX(4px);}
+    .policy-card h3 { font-size: 15px; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+    .policy-card p { font-size: 13px; color: #cbd5e1; line-height: 1.5; word-break: keep-all;}
+    .progress-bar { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 3px; margin-top: 14px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.5s ease-out; box-shadow: 0 0 10px var(--primary);}
+
+    /* Map Area */
+    .map-container {
+      position: relative; border-radius: 24px; display: flex; justify-content: center; align-items: center; overflow: hidden;
+      background: radial-gradient(circle at center, rgba(15, 30, 50, 0.8), rgba(4,11,20,1)); border: 1px solid var(--panel-border);
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .map-container::before {
+      content: ''; position: absolute; inset: 0; 
+      background-image: linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px; z-index: 0; pointer-events: none;
+    }
+    .map-wrapper { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 1; }
+    
+    .district {
+      position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: crosshair;
+    }
+    .district-dot {
+      width: 16px; height: 16px; background: rgba(0,240,255,0.1); border: 2px solid var(--primary); border-radius: 50%;
+      box-shadow: 0 0 0 rgba(0,240,255,0); transition: all 0.4s; position: relative;
+    }
+    .district-dot::after {
+      content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 4px; height: 4px; background: #fff; border-radius: 50%; opacity: 0; transition: 0.3s;
+    }
+    .district-name {
+      font-size: 13px; font-weight: 700; color: #fff; margin-top: 10px; text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+      white-space: nowrap; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px); transition: 0.3s;
+    }
+    .district-info {
+      position: absolute; top: -75px; left: 50%; transform: translateX(-50%); background: rgba(10,20,35,0.95);
+      border: 1px solid var(--primary); padding: 12px 16px; border-radius: 10px; width: max-content;
+      font-size: 12px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 10; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px); text-align: center;
+    }
+    .district:hover .district-info { opacity: 1; top: -85px; }
+    .district:hover .district-dot { transform: scale(1.6); background: var(--primary); box-shadow: 0 0 25px var(--primary); }
+    .district:hover .district-dot::after { opacity: 1; }
+    .district:hover .district-name { border-color: var(--primary); color: var(--primary); }
+
+    /* Map Coordinates (Approximate relative positioning to simulate Busan shape) */
+    .d-gijang { top: 15%; right: 15%; }
+    .d-geumjeong { top: 22%; right: 35%; }
+    .d-buk { top: 32%; left: 40%; }
+    .d-dongnae { top: 35%; right: 40%; }
+    .d-haeundae { top: 38%; right: 20%; }
+    .d-yeonje { top: 45%; right: 38%; }
+    .d-suyeong { top: 48%; right: 28%; }
+    .d-busanjin { top: 52%; left: 50%; transform: translate(-50%, -50%); }
+    .d-sasang { top: 50%; left: 35%; }
+    .d-nam { top: 62%; right: 30%; }
+    .d-dong { top: 62%; right: 45%; }
+    .d-seo { top: 68%; right: 48%; }
+    .d-jung { top: 72%; right: 42%; }
+    .d-yeongdo { top: 82%; right: 38%; }
+    .d-saha { top: 75%; left: 40%; }
+    .d-gangseo { top: 55%; left: 15%; }
+
+    /* KPI Cards */
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .kpi-item { background: rgba(0,240,255,0.04); border: 1px solid rgba(0,240,255,0.15); border-radius: 14px; padding: 20px; text-align: center; position: relative; overflow: hidden;}
+    .kpi-item::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--primary), transparent); }
+    .kpi-value { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 6px; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,255,255,0.3);}
+    .kpi-label { font-size: 12px; color: var(--text-muted); font-weight: 500;}
+
+    /* Risks & Environment */
+    .risk-item { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 20px; background: rgba(255,100,100,0.03); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,100,100,0.1); transition: 0.3s;}
+    .risk-item:hover { background: rgba(255,100,100,0.08); border-color: rgba(255,100,100,0.3); transform: translateX(4px); }
+    .risk-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,100,100,0.15); color: #ff6464; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(255,100,100,0.2);}
+    .risk-content h4 { font-size: 14px; color: #ff8a8a; margin-bottom: 6px; font-weight: 700;}
+    .risk-content p { font-size: 13px; color: #cbd5e1; line-height: 1.5; word-break: keep-all;}
+    
+    .stance-box { background: linear-gradient(135deg, rgba(29,126,255,0.15), rgba(0,240,255,0.05)); border-left: 4px solid var(--secondary); padding: 20px; border-radius: 0 16px 16px 0; margin-top: 10px; position: relative; overflow: hidden;}
+    .stance-box::after { content: ''; position: absolute; right: -20px; top: -20px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(0,240,255,0.1) 0%, transparent 70%); border-radius: 50%;}
+    .stance-box h4 { font-size: 15px; color: var(--primary); margin-bottom: 10px; font-weight: 700;}
+    .stance-box p { font-size: 14px; color: #e2e8f0; line-height: 1.6; word-break: keep-all;}
+
+    /* Map overall progress */
+    .map-footer {
+      position: absolute; bottom: 24px; left: 24px; background: rgba(10,20,35,0.85); padding: 16px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header class="header">
+      <div class="brand">
+        <h1>BUSAN DIGITAL HUB 2.0</h1>
+        <p>TIME MACHINE VIRTUAL OS</p>
+      </div>
+      
+      <div class="time-machine">
+        <div class="time-display" id="timeDisplay">2026. 06</div>
+        <div class="slider-container">
+          <input type="range" id="timeSlider" min="0" max="48" value="0" step="1">
+          <div class="timeline-labels">
+            <span id="l-0">26.06 (임기시작)</span>
+            <span id="l-12">27.06</span>
+            <span id="l-24">28.06</span>
+            <span id="l-36">29.06</span>
+            <span id="l-48">30.06 (종료)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="autoPlayBtn">▶ Auto Play</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Left Panel: Policy Progress -->
+      <aside class="glass-panel">
+        <div class="panel-title">정책 실행 로드맵 및 성과</div>
+        
+        <div class="kpi-grid">
+          <div class="kpi-item">
+            <div class="kpi-value" id="kpiBudget">0.0조</div>
+            <div class="kpi-label">누적 예산 (목표 3.45조)</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-value" id="kpiPort">0%</div>
+            <div class="kpi-label">스마트 항만 자동화율</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-value" id="kpiJobs">0명</div>
+            <div class="kpi-label">신규 디지털 일자리</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-value" id="kpiCompany">0개</div>
+            <div class="kpi-label">디지털 전환 기업 수</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <h3 style="font-size: 15px; color: var(--primary); margin-bottom: 16px; font-weight: 700;">현재 단계 중점 사업</h3>
+          <div id="policyCardsContainer" style="display: flex; flex-direction: column; gap: 14px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center: Visual Map -->
+      <section class="map-container">
+        <div class="map-wrapper" id="mapWrapper">
+          <!-- Rendered via JS -->
+        </div>
+        <div class="map-footer">
+          <div style="font-size: 13px; color: #fff; margin-bottom: 8px; font-weight: 600; display:flex; justify-content:space-between;">
+            <span>디지털 생태계 전환율</span>
+            <span id="totalProgressText" style="color:var(--primary);">0%</span>
+          </div>
+          <div style="width: 240px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);">
+            <div id="totalProgress" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--secondary), var(--primary)); transition: width 0.4s ease-out; box-shadow: 0 0 10px var(--primary);"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Risk & Environment -->
+      <aside class="glass-panel">
+        <div class="panel-title">환경 요인 및 RISK 예측</div>
+        
+        <div class="stance-box">
+          <h4>정부 기조 및 정책 환경</h4>
+          <p id="govStanceText">2026년 3분기: 통합추진단 구성 및 예산 재조정 시작. 해양수도 및 디지털허브 공감대 형성 초기 단계.</p>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h3 style="font-size: 15px; color: #ff8a8a; margin-bottom: 16px; font-weight: 700;">주요 위험 요인 및 완화 전략</h3>
+          <div id="riskContainer">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // Data Definition
+    const districts = [
+      { id: 'gangseo', name: '강서구', class: 'd-gangseo', focus: '스마트물류 · 공항 · 에코델타' },
+      { id: 'haeundae', name: '해운대구', class: 'd-haeundae', focus: 'AI 콘텐츠 · 관광테크 · MICE' },
+      { id: 'yeongdo', name: '영도구', class: 'd-yeongdo', focus: '해양MRO · 자율선박 실증' },
+      { id: 'sasang', name: '사상구', class: 'd-sasang', focus: '제조 AI · 스마트팩토리 산단' },
+      { id: 'nam', name: '남구', class: 'd-nam', focus: 'AI 바이오 · 국방해양 SW' },
+      { id: 'busanjin', name: '부산진구', class: 'd-busanjin', focus: '스타트업 밸리 · 커머스 SaaS' },
+      { id: 'jung', name: '중구', class: 'd-jung', focus: '핀테크 · 해양금융 · 무역 SaaS' },
+      { id: 'seo', name: '서구', class: 'd-seo', focus: '의료데이터 특구 · 웰니스' },
+      { id: 'dong', name: '동구', class: 'd-dong', focus: '북항 스마트재생 · 워터프론트' },
+      { id: 'suyeong', name: '수영구', class: 'd-suyeong', focus: '야간관광 데이터 · 로컬크리에이터' },
+      { id: 'dongnae', name: '동래구', class: 'd-dongnae', focus: '에듀테크 · 실버 헬스케어' },
+      { id: 'buk', name: '북구', class: 'd-buk', focus: 'AI 경제자본 생태계 (구포)' },
+      { id: 'saha', name: '사하구', class: 'd-saha', focus: '친환경 스마트산단 · 스마트제조' },
+      { id: 'yeonje', name: '연제구', class: 'd-yeonje', focus: '부산시 통합 행정 데이터 센터' },
+      { id: 'geumjeong', name: '금정구', class: 'd-geumjeong', focus: '산학협력 R&D · AI 클러스터' },
+      { id: 'gijang', name: '기장군', class: 'd-gijang', focus: '원전해체기술 · 청정에너지 허브' }
+    ];
+
+    // Map month indices to detailed phase information
+    const timelineData = [
+      { // Phase 1: 2026 (0~5)
+        limit: 5,
+        period: "2026년 하반기 (착수)",
+        govStance: "통합추진단 구성 및 세부계획 수립, 3,450억 중 일부 예산 재조정. 국비 및 공모사업 추가 확보를 위한 중앙정부 설득 총력전 전개.",
+        risks: [
+          { title: "재정 위험 (초기 예산 확보)", desc: "국비 지원이 목표에 미치지 못할 가능성.<br><strong style='color:#68ffb3'>→ 완화:</strong> 유사사업 통폐합 및 예비비 활용, 시범사업 중심의 선택과 집중." },
+          { title: "거버넌스 리스크", desc: "기존 부처간 칸막이 및 구·군간 협력 미흡 우려.<br><strong style='color:#68ffb3'>→ 완화:</strong> 시장 직속 '부산해양디지털전략 추진단' 구성을 통한 일원화." }
+        ],
+        policies: [
+          { title: "스마트물류·AI 환적 허브 (시범)", desc: "부산항 컨테이너 자동 분류 시스템 및 하역 로봇 도입 시범사업 착수 (강서/영도 중심)" },
+          { title: "부산 Urban OS 기반설계", desc: "행정·교통·물류 데이터를 아우르는 통합 플랫폼 기본 아키텍처 수립 및 시범 연동" }
+        ],
+        targetKpis: { budget: 0.16, port: 2, jobs: 1200, company: 100 },
+        baseProgress: 5 // map node base scale
+      },
+      { // Phase 2: 2027 (6~17)
+        limit: 17,
+        period: "2027년 (인프라 구축)",
+        govStance: "핵심 인프라 확장 본격화. 정부의 '디지털 뉴딜 2.0' 예산 연계로 추진력 확보. AI 컨테이너 시스템 1차 완성 및 도시 시스템 연계 개시.",
+        risks: [
+          { title: "기술·인력 부재", desc: "해양 산업 특수성으로 인한 AI 적용 실증 지연 우려.<br><strong style='color:#68ffb3'>→ 완화:</strong> 해외 선진 기술 제휴(항만자동화) 및 지역 대학 연계 인력풀 신설." },
+          { title: "이해관계자 갈등", desc: "기존 항만 노조 및 전통 산업계의 디지털 전환 반발.<br><strong style='color:#68ffb3'>→ 완화:</strong> 디지털 전환 재교육 프로그램 및 상생 기금 조성." }
+        ],
+        policies: [
+          { title: "해양산업 디지털 전환 지원", desc: "조선·수산·에너지 산업에 스마트제조(디지털 트윈, IoT) 본격 적용 및 R&D 클러스터 가동" },
+          { title: "디지털 관광·서비스 확대", desc: "데이터 기반 관광객 맞춤서비스 런칭, 글로벌 홍보 플랫폼 구축 및 MICE 연계" }
+        ],
+        targetKpis: { budget: 1.1, port: 10, jobs: 15000, company: 800 },
+        baseProgress: 35
+      },
+      { // Phase 3: 2028 (18~29)
+        limit: 29,
+        period: "2028년 (전국 확장 및 성과)",
+        govStance: "시제품의 성공적 사업화 및 타 지자체 확산 단계. 글로벌 컨퍼런스 개최로 민간투자 및 외국인 직접투자(FDI) 유치 극대화 달성.",
+        risks: [
+          { title: "국제환경 변화", desc: "글로벌 물동량 감소 및 보호무역주의 심화로 인한 성장 둔화.<br><strong style='color:#68ffb3'>→ 완화:</strong> 러시아 북극항로(NSR) 실증 및 신항로 다각화, 내수 IT 산업 강화." }
+        ],
+        policies: [
+          { title: "스마트항만 전면 가동", desc: "부산항 자동화율 급상승, 지역 내 마이크로그리드(청정항만) 구축 완료" },
+          { title: "물류·산단 연계 교통 인프라", desc: "부두-산단-도심 간 자율주행 차로 우선 시스템 및 항만-시내 물류센터 통합 플랫폼 운영" }
+        ],
+        targetKpis: { budget: 2.2, port: 18, jobs: 38000, company: 2100 },
+        baseProgress: 65
+      },
+      { // Phase 4: 2029 (30~41)
+        limit: 41,
+        period: "2029년 (정책 고도화)",
+        govStance: "임기 내 핵심 정책 마무리 및 고도화. 완성된 인프라 안정화 작업 및 연말 종합평가 진행. 차기 시정을 위한 지속가능 전략 마련.",
+        risks: [
+          { title: "플랫폼 운영 비용 증가", desc: "방대한 데이터 센터 유지 및 플랫폼 고도화에 따른 재정 부담.<br><strong style='color:#68ffb3'>→ 완화:</strong> 데이터 오픈 API 유료화 및 민간 서비스 결합형 수익 모델(SaaS) 안착." }
+        ],
+        policies: [
+          { title: "통합 Urban OS 고도화", desc: "투자관리, 교통, 예산 집행률을 실시간 시민에게 공개, 예측 행정 100% 가동" },
+          { title: "교육·인재 양성 생태계 안착", desc: "해양디지털융합 학위과정 배출 인력의 현장 투입, 기업-대학 산학 프로젝트 자생화" }
+        ],
+        targetKpis: { budget: 3.1, port: 23, jobs: 61000, company: 3000 },
+        baseProgress: 85
+      },
+      { // Phase 5: 2030 (42~48)
+        limit: 48,
+        period: "2030년 상반기 (완성)",
+        govStance: "디지털 해양수도의 글로벌 스탠다드 도약. 부울경 메가시티 데이터 연계 확장. 성공적 임기 종료 및 차세대 비전 선포.",
+        risks: [
+          { title: "글로벌 기술 경쟁 심화", desc: "싱가포르, 로테르담 등 선진 항만과의 초격차 경쟁.<br><strong style='color:#68ffb3'>→ 완화:</strong> 차세대 양자 암호 기반 물류망 및 초거대 AI 기반 해양 관제 R&D 투자." }
+        ],
+        policies: [
+          { title: "동북아 디지털 물류 패권 확립", desc: "세계 최고 수준의 스마트 환적 허브 공인 및 글로벌 빅테크 기업 투자유치 완료" },
+          { title: "완전한 디지털 체제 전환", desc: "모든 시정 및 항만 의사결정의 AI 자동화 및 데이터 기반화 정착 완료" }
+        ],
+        targetKpis: { budget: 3.45, port: 25, jobs: 80000, company: 4500 },
+        baseProgress: 100
+      }
+    ];
+
+    // DOM Elements
+    const slider = document.getElementById('timeSlider');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const autoPlayBtn = document.getElementById('autoPlayBtn');
+    const mapWrapper = document.getElementById('mapWrapper');
+    const policyCardsContainer = document.getElementById('policyCardsContainer');
+    const riskContainer = document.getElementById('riskContainer');
+    const govStanceText = document.getElementById('govStanceText');
+    const totalProgress = document.getElementById('totalProgress');
+    const totalProgressText = document.getElementById('totalProgressText');
+
+    const kpiBudget = document.getElementById('kpiBudget');
+    const kpiPort = document.getElementById('kpiPort');
+    const kpiJobs = document.getElementById('kpiJobs');
+    const kpiCompany = document.getElementById('kpiCompany');
+
+    // Initialize Map
+    function initMap() {
+      districts.forEach(d => {
+        const div = document.createElement('div');
+        div.className = `district ${d.class}`;
+        div.id = `dist-${d.id}`;
+        
+        div.innerHTML = `
+          <div class="district-dot" id="dot-${d.id}"></div>
+          <div class="district-name">${d.name}</div>
+          <div class="district-info">
+            <strong style="color:var(--primary); font-size:13px; margin-bottom:4px; display:block;">${d.name}</strong>
+            <span style="color:#e2e8f0;">${d.focus}</span><br>
+            <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="color:#94a3b8;">진행률</span>
+              <strong style="color:var(--accent); font-size:14px;"><span id="prog-${d.id}">0</span>%</strong>
+            </div>
+          </div>
+        `;
+        mapWrapper.appendChild(div);
+      });
+    }
+
+    function getPhaseIndex(val) {
+      for(let i=0; i<timelineData.length; i++){
+        if(val <= timelineData[i].limit) return i;
+      }
+      return timelineData.length - 1;
+    }
+
+    function formatDate(val) {
+      const startYear = 2026;
+      const startMonth = 6; // June 2026 is month 0
+      let totalMonths = startMonth + val;
+      let y = startYear + Math.floor(totalMonths / 12);
+      let m = (totalMonths % 12) + 1;
+      return `${y}. ${m.toString().padStart(2, '0')}`;
+    }
+
+    // Easing for numbers
+    function lerp(start, end, amt) {
+      return (1 - amt) * start + amt * end;
+    }
+
+    // Update UI
+    function updateApp(val) {
+      const pIndex = getPhaseIndex(val);
+      const phase = timelineData[pIndex];
+      const prevPhase = pIndex > 0 ? timelineData[pIndex - 1] : { limit: -1, targetKpis: { budget: 0, port: 0, jobs: 0, company: 0 }, baseProgress: 0 };
+      
+      // Calculate exact progress between phases
+      const range = phase.limit - prevPhase.limit;
+      const currentSteps = val - prevPhase.limit;
+      const t = currentSteps / range; // 0.0 to 1.0
+
+      // 1. Time Update
+      timeDisplay.innerText = formatDate(val);
+
+      // Label highlight
+      document.querySelectorAll('.timeline-labels span').forEach(el => el.classList.remove('active'));
+      let labelId = val < 12 ? 0 : val < 24 ? 12 : val < 36 ? 24 : val < 48 ? 36 : 48;
+      document.getElementById('l-' + labelId).classList.add('active');
+
+      // 2. Interpolate KPIs
+      const curBudget = lerp(prevPhase.targetKpis.budget, phase.targetKpis.budget, t);
+      const curPort = lerp(prevPhase.targetKpis.port, phase.targetKpis.port, t);
+      const curJobs = lerp(prevPhase.targetKpis.jobs, phase.targetKpis.jobs, t);
+      const curCompany = lerp(prevPhase.targetKpis.company, phase.targetKpis.company, t);
+
+      kpiBudget.innerText = curBudget.toFixed(2) + '조';
+      kpiPort.innerText = Math.floor(curPort) + '%';
+      kpiJobs.innerText = Math.floor(curJobs).toLocaleString() + '명';
+      kpiCompany.innerText = Math.floor(curCompany).toLocaleString() + '개';
+
+      // 3. Update Map
+      let avgProg = 0;
+      const globalProgress = lerp(prevPhase.baseProgress, phase.baseProgress, t);
+
+      districts.forEach((d, i) => {
+        // Pseudo-random offset based on index so districts progress slightly differently
+        const offset = (Math.sin(i * 1.5) * 15); 
+        let rawProg = globalProgress + offset;
+        if(val === 0) rawProg = 0;
+        if(val === 48) rawProg = 100 + offset/2; // Ensure near 100 at end
+
+        const finalProg = Math.min(100, Math.max(0, Math.floor(rawProg)));
+        
+        document.getElementById(`prog-${d.id}`).innerText = finalProg;
+        
+        const dot = document.getElementById(`dot-${d.id}`);
+        const scale = 1 + (finalProg / 100) * 0.8;
+        const opacity = 0.1 + (finalProg / 100) * 0.9;
+        
+        dot.style.transform = `scale(${scale})`;
+        dot.style.background = `rgba(0, 240, 255, ${opacity})`;
+        dot.style.boxShadow = `0 0 ${finalProg/3}px var(--primary)`;
+        
+        if(finalProg > 80) {
+            dot.style.borderColor = "var(--accent)";
+            dot.style.boxShadow = `0 0 ${finalProg/2}px var(--accent)`;
+        } else {
+            dot.style.borderColor = "var(--primary)";
+        }
+
+        avgProg += finalProg;
+      });
+
+      const totalPct = Math.floor(avgProg / districts.length);
+      totalProgress.style.width = `${totalPct}%`;
+      totalProgressText.innerText = `${totalPct}%`;
+
+      // 4. Update Policies HTML (Only change if phase changed to avoid layout thrashing)
+      const currentPoliciesHTML = phase.policies.map(p => `
+        <div class="policy-card">
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+          <div class="progress-bar"><div class="progress-fill" style="width: ${Math.min(100, t * 100 + 10)}%"></div></div>
+        </div>
+      `).join('');
+      
+      // Compare raw text to avoid unnecessary DOM updates
+      if(policyCardsContainer.dataset.pid !== pIndex.toString()) {
+          policyCardsContainer.innerHTML = currentPoliciesHTML;
+          policyCardsContainer.dataset.pid = pIndex.toString();
+          
+          govStanceText.innerHTML = phase.govStance;
+          riskContainer.innerHTML = phase.risks.map(r => `
+            <div class="risk-item">
+              <div class="risk-icon">⚠</div>
+              <div class="risk-content">
+                <h4>${r.title}</h4>
+                <p>${r.desc}</p>
+              </div>
+            </div>
+          `).join('');
+      } else {
+          // just update the progress bars within existing cards
+          const bars = policyCardsContainer.querySelectorAll('.progress-fill');
+          bars.forEach(b => b.style.width = `${Math.min(100, t * 100 + 10)}%`);
+      }
+    }
+
+    // Event Listeners
+    slider.addEventListener('input', (e) => {
+      updateApp(parseInt(e.target.value));
+    });
+
+    let playInterval;
+    autoPlayBtn.addEventListener('click', () => {
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+        autoPlayBtn.innerText = "▶ Auto Play";
+        autoPlayBtn.style.background = "rgba(0, 240, 255, 0.1)";
+        autoPlayBtn.style.color = "var(--primary)";
+      } else {
+        autoPlayBtn.innerText = "⏸ Pause";
+        autoPlayBtn.style.background = "var(--primary)";
+        autoPlayBtn.style.color = "#000";
+        playInterval = setInterval(() => {
+          let v = parseInt(slider.value);
+          v += 1;
+          if (v > 48) {
+            clearInterval(playInterval);
+            playInterval = null;
+            autoPlayBtn.innerText = "▶ Auto Play";
+            autoPlayBtn.style.background = "rgba(0, 240, 255, 0.1)";
+            autoPlayBtn.style.color = "var(--primary)";
+            return;
+          }
+          slider.value = v;
+          updateApp(v);
+        }, 400); // Animation speed
+      }
+    });
+
+    // Init
+    initMap();
+    updateApp(0);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+# PRD: Busan Maritime Capital & Digital Hub 2.0 Roadmap Web App
+
+## 1. Project Overview
+- **Project Name**: Busan Maritime Capital & Digital Hub 2.0 Time Machine
+- **Objective**: To visualize the 4-year policy progress (2026.06.30 - 2030.06.30) for Busan's transformation into a Global Maritime Capital and Digital Hub 2.0.
+- **Target Audience**: Policy makers, stakeholders (National Assembly, Busan City), and the public.
+- **Key Vision**: "Visualizing the future of Busan through data-driven storytelling."
+
+## 2. Core Features
+### 2.1. Time Machine Slider
+- **Range**: June 30, 2026, to June 30, 2030 (48 months).
+- **Functionality**: Moving the slider updates the entire UI state, including the map, KPI charts, policy cards, and risk factors.
+- **Auto-Play**: A button to automatically animate the transition from 2026 to 2030.
+
+### 2.2. Interactive Busan Map
+- **Visualization**: A stylized map of Busan's 16 districts.
+- **District Progress**: Each district displays a progress ring or glow effect based on its specific "Digital Hub" policy implementation rate.
+- **District Tooltips**: Hovering over a district shows details: Main Focus (e.g., AI Logistics for Gangseo-gu), Current Progress (%), and Key Projects.
+
+### 2.3. KPI Dashboard
+- **Real-time Metrics**: Visualizing key indicators:
+  - Budget Execution Rate (%)
+  - Agency Relocation Status (e.g., MOF, HMM)
+  - Port Automation Rate (%)
+  - Digital Talent Cultivation (Count)
+  - Foreign Direct Investment (FDI) Target ($)
+- **Charts**: Dynamic bar/line/donut charts updating with the timeline.
+
+### 2.4. Policy & Risk Monitor
+- **Policy Cards**: Status of major projects (Urban OS, Smart Port, Arctic Route Special Law).
+- **Risk Assessment**: Visualizing environmental risks (Political, Economic, Technical) and their mitigation strategies.
+- **Government Stance**: Dynamic text describing the central government's attitude and policy environment at each point in time.
+
+## 3. Technical Stack
+- **Frontend**: React (with Vite), TypeScript, Tailwind CSS (for modern UI), Framer Motion (for animations), Lucide React (icons), Recharts (for data visualization).
+- **Backend**: Hono (running on Cloudflare Workers).
+- **Database/Storage**: Cloudflare D1 (SQL) or KV (Key-Value) for persistence (if needed for the "Record" functionality).
+- **Deployment**: Cloudflare Pages + Workers.
+
+## 4. Implementation Checklist
+
+### Phase 1: Setup & Data Modeling
+- [ ] Initialize Vite + React + TypeScript project.
+- [ ] Set up Hono backend structure.
+- [ ] Define the `RoadmapData` schema (Timeline, Districts, KPIs, Risks).
+- [ ] Create mock data based on the "0511 해양수도 보고서" and "디지털허브 2.0 보고서".
+
+### Phase 2: Core Components Development
+- [ ] Implement `TimeMachineSlider` with state management.
+- [ ] Build the `InteractiveMap` component (using SVG or Canvas).
+- [ ] Create `KPICard` and `Chart` components.
+- [ ] Develop `PolicyCard` and `RiskMonitor` panels.
+
+### Phase 3: Integration & UI/UX Refinement
+- [ ] Connect the slider to all components (state synchronization).
+- [ ] Implement smooth transitions and animations (glassmorphism effects).
+- [ ] Design the "Checklist Record" interface (Admin/User entry).
+- [ ] Responsive design for desktop and mobile.
+
+### Phase 4: Build & Deployment
+- [ ] Build the production assets.
+- [ ] Configure `wrangler.toml` for Cloudflare deployment.
+- [ ] Deploy to Cloudflare Pages/Workers.
+- [ ] Final verification and user feedback loop.
+
+## 5. Design Principles
+- **Modern & Dynamic**: High-end glassmorphism, neon accents (Cyan/Blue/Mint), deep dark background.
+- **Data-Driven**: Every visual element must represent a specific data point from the reports.
+- **Immersive**: Use subtle micro-animations to make the "Time Machine" feel alive.
