@@ -137,6 +137,98 @@ ${contactForm.message}
           </div>
         </section>
 
+        {/* Platform Services Hub */}
+        <section className="py-16 relative">
+          <div className="container mx-auto px-5 sm:px-10">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-white mb-4">통합 플랫폼 서비스</h2>
+                <p className="text-blue-200 text-lg">부산의 미래를 설계하는 3대 핵심 플랫폼</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Hub - 정책로드맵 */}
+                <a
+                  href="https://hub.globalbusan.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative bg-gradient-to-br from-cyan-500/20 to-blue-600/20 backdrop-blur-lg rounded-2xl p-8 border border-cyan-400/30 hover:border-cyan-400/60 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(0,240,255,0.15)] overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 rounded-full blur-3xl group-hover:bg-cyan-400/20 transition-all" />
+                  <div className="relative z-10">
+                    <div className="w-14 h-14 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center mb-5 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform">
+                      <FaChartLine className="text-white text-2xl" />
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-xl font-bold text-white">부산시 정책 로드맵</h3>
+                      <span className="px-2 py-0.5 bg-cyan-400/20 text-cyan-300 text-[10px] font-bold rounded-full">LIVE</span>
+                    </div>
+                    <p className="text-blue-200 text-sm leading-relaxed mb-4">
+                      해양수도 · 디지털허브 2.0 통합 정책 모니터링. 2026~2030 로드맵을 실시간으로 추적합니다.
+                    </p>
+                    <div className="text-cyan-300 text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                      hub.globalbusan.xyz
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                    </div>
+                  </div>
+                </a>
+
+                {/* EDU - AI 교육 */}
+                <a
+                  href="https://edu.globalbusan.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative bg-gradient-to-br from-purple-500/20 to-indigo-600/20 backdrop-blur-lg rounded-2xl p-8 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(147,51,234,0.15)] overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-400/10 rounded-full blur-3xl group-hover:bg-purple-400/20 transition-all" />
+                  <div className="relative z-10">
+                    <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-xl flex items-center justify-center mb-5 shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
+                      <FaGlobe className="text-white text-2xl" />
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-xl font-bold text-white">AI 교육 플랫폼</h3>
+                      <span className="px-2 py-0.5 bg-purple-400/20 text-purple-300 text-[10px] font-bold rounded-full">EDU</span>
+                    </div>
+                    <p className="text-blue-200 text-sm leading-relaxed mb-4">
+                      글로벌 AI 교육 허브. 차세대 인재 양성과 디지털 리터러시 향상을 위한 교육 플랫폼입니다.
+                    </p>
+                    <div className="text-purple-300 text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                      edu.globalbusan.xyz
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                    </div>
+                  </div>
+                </a>
+
+                {/* HA - 북구 발전로드맵 */}
+                <a
+                  href="https://ha.globalbusan.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative bg-gradient-to-br from-emerald-500/20 to-teal-600/20 backdrop-blur-lg rounded-2xl p-8 border border-emerald-400/30 hover:border-emerald-400/60 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(52,211,153,0.15)] overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl group-hover:bg-emerald-400/20 transition-all" />
+                  <div className="relative z-10">
+                    <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
+                      <FaMapMarkerAlt className="text-white text-2xl" />
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-xl font-bold text-white">북구 발전 로드맵</h3>
+                      <span className="px-2 py-0.5 bg-emerald-400/20 text-emerald-300 text-[10px] font-bold rounded-full">LOCAL</span>
+                    </div>
+                    <p className="text-blue-200 text-sm leading-relaxed mb-4">
+                      AI 경제자본 생태계 구축. 구포 지역 혁신과 북구 발전 전략을 시각화합니다.
+                    </p>
+                    <div className="text-emerald-300 text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                      ha.globalbusan.xyz
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Team Info Section */}
         <section className="py-16">
           <div className="container mx-auto px-5 sm:px-10">

@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "home": "홈",
+    "courses": "AI 교육",
+    "community": "커뮤니티",
+    "projects": "프로젝트",
+    "marketplace": "마켓플레이스",
+    "news": "뉴스/이벤트",
+    "chat": "AI 챗봇",
+    "profile": "프로필",
+    "logout": "로그아웃",
+    "login": "로그인"
+  },
+  "hero": {
+    "title": "부산 AI 생태계의 중심,",
+    "subtitle": "GlobalBusan",
+    "description": "교육에서 수익화까지, 부산의 AI 인재들이 함께 성장하는 통합 플랫폼입니다.",
+    "description2": "기술과 사람, 시장을 연결하는 AI 경제권을 만들어가고 있습니다.",
+    "startBtn": "시작하기",
+    "learnBtn": "더 알아보기"
+  },
+  "modules": {
+    "education": "AI 교육 허브",
+    "educationDesc": "AI 전문가들이 설계한 실무 중심 강좌로 기술을 습득하세요.",
+    "networking": "네트워킹 커뮤니티",
+    "networkingDesc": "부산의 AI 인재들과 연결되어 함께 성장하는 커뮤니티입니다.",
+    "projects": "프로젝트 빌딩",
+    "projectsDesc": "아이디어를 현실로 만드는 AI 프로젝트를 함께 구축하세요.",
+    "marketplace": "AI 마켓플레이스",
+    "marketplaceDesc": "AI 서비스와 솔루션을 판매하고 구매하는 플랫폼입니다.",
+    "news": "뉴스/이벤트",
+    "newsDesc": "부산 AI 생태계의 최신 소식과 이벤트를 놓치지 마세요."
+  },
+  "courses": {
+    "title": "AI 교육 허브",
+    "description": "부산의 AI 인재를 양성하는 실무 중심 강좌들",
+    "filterAll": "전체",
+    "filterBeginner": "초급",
+    "filterIntermediate": "중급",
+    "filterAdvanced": "고급",
+    "instructor": "강사",
+    "duration": "수강시간",
+    "rating": "평점",
+    "price": "가격",
+    "enroll": "수강신청"
+  },
+  "community": {
+    "title": "네트워킹 커뮤니티",
+    "description": "부산 AI 생태계의 인재들이 모여 함께 성장하는 공간",
+    "members": "회원",
+    "posts": "게시물",
+    "views": "조회",
+    "comments": "댓글",
+    "likes": "좋아요"
+  },
+  "projects": {
+    "title": "프로젝트 빌딩",
+    "description": "AI 프로젝트를 함께 구축하고 팀을 모집하세요",
+    "status": "상태",
+    "team": "팀",
+    "skills": "필요 기술",
+    "recruiting": "모집 중",
+    "inProgress": "진행 중",
+    "completed": "완료"
+  },
+  "marketplace": {
+    "title": "AI 마켓플레이스",
+    "description": "AI 서비스와 솔루션을 판매하고 구매하세요",
+    "category": "카테고리",
+    "price": "가격",
+    "rating": "평점",
+    "reviews": "리뷰"
+  },
+  "news": {
+    "title": "뉴스/이벤트",
+    "description": "부산 AI 생태계의 최신 소식과 이벤트",
+    "upcomingEvents": "예정된 이벤트",
+    "date": "날짜",
+    "location": "장소",
+    "register": "등록하기"
+  },
+  "profile": {
+    "title": "내 프로필",
+    "description": "부산 AI 생태계에서의 활동 현황을 확인하세요",
+    "edit": "편집",
+    "logout": "로그아웃",
+    "bio": "소개",
+    "email": "이메일",
+    "job": "직업",
+    "interests": "관심 분야",
+    "skills": "기술 스택",
+    "stats": "활동 통계",
+    "courses": "수강한 강좌",
+    "projects": "참여 프로젝트",
+    "posts": "커뮤니티 게시물",
+    "followers": "팔로워"
+  },
+  "chat": {
+    "title": "AI 챗봇",
+    "description": "부산 AI 생태계에 대해 물어보세요. LLM 기반 도우미가 도움을 드립니다.",
+    "placeholder": "메시지를 입력하세요...",
+    "send": "전송",
+    "loginRequired": "AI 도우미와 대화하려면 로그인이 필요합니다.",
+    "loginBtn": "로그인하기"
+  },
+  "footer": {
+    "about": "GlobalBusan은 부산의 AI 생태계를 연결하는 통합 플랫폼입니다.",
+    "platform": "플랫폼",
+    "company": "회사",
+    "support": "지원",
+    "contact": "연락처",
+    "copyright": "© 2026 GlobalBusan. All rights reserved."
+  }
+}

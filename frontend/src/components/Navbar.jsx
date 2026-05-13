@@ -156,7 +156,7 @@ const Navbar = ({ isAdmin = false }) => {
                 <FaWallet />
                 Connect Wallet
               </button>
-            )}}
+            )}
 
             {/* 로그인 정보 */}
             {user ? (

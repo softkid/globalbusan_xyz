@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,20 +14,25 @@
 @layer base {
   body {
     @apply bg-busan-dark text-slate-200 antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-image: 
-      radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 85% 30%, rgba(29, 126, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 85% 30%, rgba(29, 126, 255, 0.06) 0%, transparent 50%),
       linear-gradient(180deg, #02060d, #061122);
   }
+
+  /* Improved contrast: minimum 4.5:1 ratio */
+  h1, h2, h3 { @apply text-white; }
+  p { @apply text-slate-300; }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-busan-panel backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl;
+    @apply bg-busan-panel backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl;
   }
   
   .glass-card {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all duration-300 hover:border-busan-primary/40 hover:bg-busan-primary/5;
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 transition-all duration-300 hover:border-busan-primary/40 hover:bg-busan-primary/5;
   }
   
   .neon-text {
@@ -36,15 +43,48 @@
   .neon-border {
     @apply border border-busan-primary/30 shadow-[0_0_15px_rgba(0,240,255,0.2)];
   }
+
+  /* Section headers — larger, clearer */
+  .section-title {
+    @apply text-sm font-black text-white tracking-tight;
+  }
+  .section-label {
+    @apply text-[10px] font-bold uppercase tracking-widest;
+  }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 ::-webkit-scrollbar-thumb {
   @apply bg-busan-primary/20 rounded-full;
 }
 ::-webkit-scrollbar-track {
   @apply bg-transparent;
+}
+
+/* Range slider custom styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  background: transparent;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: -6px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  transition: transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
 }

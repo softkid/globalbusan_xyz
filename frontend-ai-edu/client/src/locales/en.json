@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "home": "Home",
+    "courses": "AI Education",
+    "community": "Community",
+    "projects": "Projects",
+    "marketplace": "Marketplace",
+    "news": "News/Events",
+    "chat": "AI Chatbot",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "The Center of Busan's AI Ecosystem,",
+    "subtitle": "GlobalBusan",
+    "description": "An integrated platform where Busan's AI talents grow together, from education to monetization.",
+    "description2": "We are building an AI economy that connects technology, people, and markets.",
+    "startBtn": "Get Started",
+    "learnBtn": "Learn More"
+  },
+  "modules": {
+    "education": "AI Education Hub",
+    "educationDesc": "Acquire skills through practice-oriented courses designed by AI experts.",
+    "networking": "Networking Community",
+    "networkingDesc": "A community where Busan's AI talents connect and grow together.",
+    "projects": "Project Building",
+    "projectsDesc": "Build AI projects together and turn your ideas into reality.",
+    "marketplace": "AI Marketplace",
+    "marketplaceDesc": "A platform to buy and sell AI services and solutions.",
+    "news": "News/Events",
+    "newsDesc": "Don't miss the latest news and events in Busan's AI ecosystem."
+  },
+  "courses": {
+    "title": "AI Education Hub",
+    "description": "Practice-oriented courses to develop Busan's AI talents",
+    "filterAll": "All",
+    "filterBeginner": "Beginner",
+    "filterIntermediate": "Intermediate",
+    "filterAdvanced": "Advanced",
+    "instructor": "Instructor",
+    "duration": "Duration",
+    "rating": "Rating",
+    "price": "Price",
+    "enroll": "Enroll"
+  },
+  "community": {
+    "title": "Networking Community",
+    "description": "A space where Busan's AI talents gather and grow together",
+    "members": "Members",
+    "posts": "Posts",
+    "views": "Views",
+    "comments": "Comments",
+    "likes": "Likes"
+  },
+  "projects": {
+    "title": "Project Building",
+    "description": "Build AI projects together and recruit team members",
+    "status": "Status",
+    "team": "Team",
+    "skills": "Required Skills",
+    "recruiting": "Recruiting",
+    "inProgress": "In Progress",
+    "completed": "Completed"
+  },
+  "marketplace": {
+    "title": "AI Marketplace",
+    "description": "Buy and sell AI services and solutions",
+    "category": "Category",
+    "price": "Price",
+    "rating": "Rating",
+    "reviews": "Reviews"
+  },
+  "news": {
+    "title": "News/Events",
+    "description": "Latest news and events in Busan's AI ecosystem",
+    "upcomingEvents": "Upcoming Events",
+    "date": "Date",
+    "location": "Location",
+    "register": "Register"
+  },
+  "profile": {
+    "title": "My Profile",
+    "description": "Check your activity status in Busan's AI ecosystem",
+    "edit": "Edit",
+    "logout": "Logout",
+    "bio": "Bio",
+    "email": "Email",
+    "job": "Job",
+    "interests": "Interests",
+    "skills": "Tech Stack",
+    "stats": "Activity Stats",
+    "courses": "Courses Taken",
+    "projects": "Projects Participated",
+    "posts": "Community Posts",
+    "followers": "Followers"
+  },
+  "chat": {
+    "title": "AI Chatbot",
+    "description": "Ask about Busan's AI ecosystem. Our LLM-based assistant will help you.",
+    "placeholder": "Enter your message...",
+    "send": "Send",
+    "loginRequired": "Login is required to chat with the AI assistant.",
+    "loginBtn": "Login"
+  },
+  "footer": {
+    "about": "GlobalBusan is an integrated platform connecting Busan's AI ecosystem.",
+    "platform": "Platform",
+    "company": "Company",
+    "support": "Support",
+    "contact": "Contact",
+    "copyright": "© 2026 GlobalBusan. All rights reserved."
+  }
+}
