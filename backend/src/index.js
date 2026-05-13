@@ -11,6 +11,7 @@ import statsRoutes from './routes/stats.js'
 import authRoutes from './routes/auth.js'
 import chatRoutes from './routes/chat.js'
 import telegramRoutes from './routes/telegram.js'
+import aiRoutes from './routes/ai.js'
 
 const app = new Hono()
 
@@ -73,6 +74,7 @@ app.route('/api/stats', statsRoutes)
 app.route('/api/auth', authRoutes)
 app.route('/api/chat', chatRoutes)
 app.route('/api/telegram', telegramRoutes)
+app.route('/api/ai', aiRoutes)
 
 // 404 handler
 app.notFound((c) => {

@@ -11,10 +11,12 @@ export default function GlobalNav() {
   const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     setMobileMenuOpen(false);
+    setProfileMenuOpen(false);
   };
 
   const navItems = [
@@ -23,6 +25,7 @@ export default function GlobalNav() {
     { label: t("nav.community"), href: "/community" },
     { label: t("nav.projects"), href: "/projects" },
     { label: t("nav.marketplace"), href: "/marketplace" },
+    { label: t("nav.prompts") || "프롬프트", href: "/prompts" },
     { label: t("nav.saas"), href: "/chat" },
   ];
 
@@ -55,7 +58,10 @@ export default function GlobalNav() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setLangMenuOpen(!langMenuOpen)}
+              onClick={() => {
+                setLangMenuOpen(!langMenuOpen);
+                setProfileMenuOpen(false);
+              }}
               className="gap-2"
             >
               <Globe className="w-4 h-4" />
@@ -90,23 +96,56 @@ export default function GlobalNav() {
           </div>
 
           {isAuthenticated ? (
-            <>
-              <Link href="/profile">
-                <a className="px-3 py-2 text-sm font-medium rounded-md hover:bg-accent/10 transition-colors flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  {user?.name || t("nav.profile")}
-                </a>
-              </Link>
+            <div className="relative">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                onClick={handleLogout}
-                className="gap-2"
+                onClick={() => {
+                  setProfileMenuOpen(!profileMenuOpen);
+                  setLangMenuOpen(false);
+                }}
+                className="gap-2 font-medium"
               >
-                <LogOut className="w-4 h-4" />
-                {t("nav.logout")}
+                <User className="w-4 h-4" />
+                {user?.name || t("nav.profile")}
               </Button>
-            </>
+              {profileMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg z-10 py-1">
+                  <div className="px-4 py-2 border-b border-border">
+                    <p className="text-sm font-medium">{user?.name || "사용자"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email || ""}</p>
+                  </div>
+                  <div className="py-1">
+                    <Link href="/profile">
+                      <a 
+                        className="block px-4 py-2 text-sm hover:bg-accent/10 w-full text-left"
+                        onClick={() => setProfileMenuOpen(false)}
+                      >
+                        {t("nav.profile")} 설정
+                      </a>
+                    </Link>
+                    {/* Add links to dashboards later */}
+                    <Link href="/profile?tab=courses">
+                      <a 
+                        className="block px-4 py-2 text-sm hover:bg-accent/10 w-full text-left"
+                        onClick={() => setProfileMenuOpen(false)}
+                      >
+                        내 학습 대시보드
+                      </a>
+                    </Link>
+                  </div>
+                  <div className="border-t border-border py-1">
+                    <button
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      {t("nav.logout")}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <Button asChild size="sm" className="bg-accent hover:bg-accent/90">
               <a href={getLoginUrl()}>{t("nav.login")}</a>

@@ -6,52 +6,9 @@ import { Input } from "@/components/ui/input";
 import { MessageSquare, Heart, Eye, Search, Plus } from "lucide-react";
 import { Link } from "wouter";
 
-const mockPosts = [
-  {
-    id: 1,
-    title: "LLM 파인튜닝 경험 공유",
-    excerpt: "최근에 GPT-3.5를 우리 도메인 데이터로 파인튜닝했습니다. 결과가 정말 좋네요!",
-    author: "김AI개발자",
-    tags: ["LLM", "파인튜닝", "경험공유"],
-    views: 342,
-    comments: 18,
-    likes: 45,
-    date: "2시간 전",
-  },
-  {
-    id: 2,
-    title: "부산 AI 커뮤니티 첫 오프라인 밋업 후기",
-    excerpt: "정말 좋은 사람들을 만났습니다. 다음 밋업도 기대됩니다!",
-    author: "이네트워킹",
-    tags: ["커뮤니티", "밋업", "부산"],
-    views: 521,
-    comments: 32,
-    likes: 89,
-    date: "1일 전",
-  },
-  {
-    id: 3,
-    title: "이미지 생성 AI 프로젝트 팀원 모집",
-    excerpt: "Stable Diffusion을 활용한 상용 서비스를 만들고 있습니다. 백엔드 개발자를 찾고 있어요.",
-    author: "박프로젝트",
-    tags: ["프로젝트", "모집", "이미지AI"],
-    views: 287,
-    comments: 12,
-    likes: 34,
-    date: "3일 전",
-  },
-  {
-    id: 4,
-    title: "RAG 시스템 구축 팁과 주의사항",
-    excerpt: "실무에서 배운 RAG 시스템 구축의 노하우를 공유합니다. 특히 청킹 전략이 중요합니다.",
-    author: "최데이터",
-    tags: ["RAG", "LLM", "팁"],
-    views: 612,
-    comments: 28,
-    likes: 76,
-    date: "5일 전",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Loader2 } from "lucide-react";
 
 const mockMembers = [
   {
@@ -83,12 +40,26 @@ const mockMembers = [
 export default function Community() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"posts" | "members">("posts");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  const filteredPosts = mockPosts.filter(
-    (post) =>
+  const { data: posts = [], isLoading, error } = useQuery({
+    queryKey: ['communityPosts'],
+    queryFn: api.community.getPosts,
+  });
+
+  const filteredPosts = posts.filter(
+    (post: any) =>
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+      (post.content || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const allTags = Array.from(new Set(mockMembers.flatMap(m => m.expertise)));
+
+  const filteredMembers = mockMembers.filter((member) => {
+    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) || member.bio.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTag = selectedTag ? member.expertise.includes(selectedTag) : true;
+    return matchesSearch && matchesTag;
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,20 +76,23 @@ export default function Community() {
       {/* Search and Actions */}
       <section className="border-b border-border bg-background py-6 sticky top-16 z-40">
         <div className="container">
-          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-            <div className="relative flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+            <div className="relative flex-1 max-w-xl">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="게시물 검색..."
+                placeholder={activeTab === "posts" ? "게시물 제목 또는 내용 검색..." : "회원 이름 또는 소개 검색..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <Button className="bg-accent hover:bg-accent/90 gap-2">
-              <Plus className="w-4 h-4" />
-              새 게시물
-            </Button>
+            {activeTab === "posts" && (
+              <Button asChild className="bg-accent hover:bg-accent/90 gap-2">
+                <Link href="/community/posts/new">
+                  <a className="flex items-center gap-2"><Plus className="w-4 h-4" />새 게시물</a>
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -156,8 +130,14 @@ export default function Community() {
         <div className="container">
           {activeTab === "posts" && (
             <div className="space-y-4">
-              {filteredPosts.length > 0 ? (
-                filteredPosts.map((post) => (
+              {isLoading ? (
+                <div className="flex justify-center items-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-accent" />
+                </div>
+              ) : error ? (
+                <div className="text-center py-20 text-red-500">데이터를 불러오는 중 오류가 발생했습니다.</div>
+              ) : filteredPosts.length > 0 ? (
+                filteredPosts.map((post: any) => (
                   <Link key={post.id} href={`/community/posts/${post.id}`}>
                     <a className="group">
                       <Card className="border-2 border-border hover:border-accent/50 transition-all hover:shadow-md cursor-pointer">
@@ -215,42 +195,72 @@ export default function Community() {
           )}
 
           {activeTab === "members" && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockMembers.map((member) => (
-                <Link key={member.id} href={`/community/members/${member.id}`}>
-                  <a className="group">
-                    <Card className="h-full border-2 border-border hover:border-accent/50 transition-all hover:shadow-md cursor-pointer">
-                      <CardHeader>
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold">
-                            {member.name.charAt(0)}
-                          </div>
-                          <div className="flex-1">
-                            <CardTitle className="group-hover:text-accent transition-colors">
-                              {member.name}
-                            </CardTitle>
-                            <CardDescription className="text-xs mt-1">
-                              {member.bio}
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-2">
-                          {member.expertise.map((exp) => (
-                            <Badge key={exp} variant="secondary" className="text-xs">
-                              {exp}
-                            </Badge>
-                          ))}
-                        </div>
-                        <Button className="w-full mt-4 bg-accent hover:bg-accent/90" size="sm">
-                          프로필 보기
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </a>
-                </Link>
-              ))}
+            <div className="space-y-6">
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant={selectedTag === null ? "default" : "outline"} 
+                  size="sm" 
+                  onClick={() => setSelectedTag(null)}
+                  className={selectedTag === null ? "bg-accent text-accent-foreground" : ""}
+                >
+                  전체보기
+                </Button>
+                {allTags.map(tag => (
+                  <Button 
+                    key={tag}
+                    variant={selectedTag === tag ? "default" : "outline"} 
+                    size="sm" 
+                    onClick={() => setSelectedTag(tag)}
+                    className={selectedTag === tag ? "bg-accent text-accent-foreground" : ""}
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </div>
+
+              {filteredMembers.length > 0 ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredMembers.map((member) => (
+                    <Link key={member.id} href={`/community/members/${member.id}`}>
+                      <a className="group">
+                        <Card className="h-full border-2 border-border hover:border-accent/50 transition-all hover:shadow-md cursor-pointer">
+                          <CardHeader>
+                            <div className="flex items-start gap-4">
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold shadow-sm">
+                                {member.name.charAt(0)}
+                              </div>
+                              <div className="flex-1">
+                                <CardTitle className="group-hover:text-accent transition-colors">
+                                  {member.name}
+                                </CardTitle>
+                                <CardDescription className="text-xs mt-1">
+                                  {member.bio}
+                                </CardDescription>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex flex-wrap gap-2">
+                              {member.expertise.map((exp) => (
+                                <Badge key={exp} variant="secondary" className="text-xs">
+                                  {exp}
+                                </Badge>
+                              ))}
+                            </div>
+                            <Button className="w-full mt-4 bg-accent hover:bg-accent/90" size="sm">
+                              프로필 보기
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </a>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">검색 결과가 없습니다.</p>
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -5,56 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Users, Calendar, Plus, Filter } from "lucide-react";
 import { Link } from "wouter";
 
-const mockProjects = [
-  {
-    id: 1,
-    title: "부산 관광 AI 챗봇",
-    description: "부산 관광정보를 제공하는 LLM 기반 챗봇 개발",
-    category: "LLM",
-    status: "recruiting",
-    creator: "김프로젝트",
-    currentTeam: 2,
-    targetTeam: 5,
-    skills: ["Python", "LLM", "API"],
-    startDate: "2026-05-15",
-  },
-  {
-    id: 2,
-    title: "AI 이미지 편집 도구",
-    description: "Stable Diffusion을 활용한 웹 기반 이미지 편집 플랫폼",
-    category: "Image AI",
-    status: "in_progress",
-    creator: "이디자인",
-    currentTeam: 3,
-    targetTeam: 4,
-    skills: ["React", "Python", "Stable Diffusion"],
-    startDate: "2026-04-01",
-  },
-  {
-    id: 3,
-    title: "부산 기업 데이터 분석 AI",
-    description: "부산 중소기업 데이터를 분석하는 머신러닝 모델",
-    category: "ML",
-    status: "recruiting",
-    creator: "박데이터",
-    currentTeam: 1,
-    targetTeam: 6,
-    skills: ["Python", "ML", "데이터분석"],
-    startDate: "2026-05-20",
-  },
-  {
-    id: 4,
-    title: "음성 기반 회의록 자동 생성",
-    description: "Whisper를 활용한 회의 음성을 텍스트로 변환 및 요약",
-    category: "Voice AI",
-    status: "recruiting",
-    creator: "최음성",
-    currentTeam: 2,
-    targetTeam: 4,
-    skills: ["Whisper", "LLM", "Node.js"],
-    startDate: "2026-06-01",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Loader2 } from "lucide-react";
 
 const statusMap: Record<string, { label: string; color: string }> = {
   planning: { label: "계획 중", color: "bg-gray-500" },
@@ -66,9 +19,14 @@ const statusMap: Record<string, { label: string; color: string }> = {
 export default function Projects() {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
+  const { data: projects = [], isLoading, error } = useQuery({
+    queryKey: ['projects'],
+    queryFn: api.projects.getAll,
+  });
+
   const filteredProjects = selectedStatus
-    ? mockProjects.filter((p) => p.status === selectedStatus)
-    : mockProjects;
+    ? projects.filter((p: any) => p.status === selectedStatus)
+    : projects;
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,9 +66,10 @@ export default function Projects() {
                 </Button>
               ))}
             </div>
-            <Button className="bg-accent hover:bg-accent/90 gap-2 whitespace-nowrap">
-              <Plus className="w-4 h-4" />
-              프로젝트 등록
+            <Button asChild className="bg-accent hover:bg-accent/90 gap-2 whitespace-nowrap">
+              <Link href="/projects/new">
+                <a className="flex items-center gap-2"><Plus className="w-4 h-4" />프로젝트 등록</a>
+              </Link>
             </Button>
           </div>
         </div>
@@ -119,8 +78,22 @@ export default function Projects() {
       {/* Projects Grid */}
       <section className="py-12">
         <div className="container">
-          <div className="grid md:grid-cols-2 gap-6">
-            {filteredProjects.map((project) => {
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-20 text-red-500">데이터를 불러오는 중 오류가 발생했습니다.</div>
+          ) : filteredProjects.length === 0 ? (
+            <div className="text-center py-20 border-2 border-dashed border-border rounded-xl bg-muted/20">
+              <p className="text-muted-foreground mb-4">해당 상태의 프로젝트가 없습니다.</p>
+              <Button variant="outline" onClick={() => setSelectedStatus(null)}>
+                필터 초기화
+              </Button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {filteredProjects.map((project: any) => {
               const status = statusMap[project.status];
               return (
                 <Link key={project.id} href={`/projects/${project.id}`}>
@@ -198,11 +171,6 @@ export default function Projects() {
               );
             })}
           </div>
-
-          {filteredProjects.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">해당하는 프로젝트가 없습니다.</p>
-            </div>
           )}
         </div>
       </section>

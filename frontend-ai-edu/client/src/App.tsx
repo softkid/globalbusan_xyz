@@ -14,16 +14,40 @@ import Marketplace from "./pages/Marketplace";
 import News from "./pages/News";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
+import CourseDetail from "./pages/CourseDetail";
+import CommunityPostCreate from "./pages/CommunityPostCreate";
+import CommunityPostDetail from "./pages/CommunityPostDetail";
+import UserProfile from "./pages/UserProfile";
+import ProjectCreate from "./pages/ProjectCreate";
+import ProjectDetail from "./pages/ProjectDetail";
+import MarketplaceCreate from "./pages/MarketplaceCreate";
+import MarketplaceDetail from "./pages/MarketplaceDetail";
+import NewsCreate from "./pages/NewsCreate";
+import NewsDetail from "./pages/NewsDetail";
+import SmartRFP from "./pages/SmartRFP";
+import Prompts from "./pages/Prompts";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/courses" component={Courses} />
+      <Route path="/courses/:id" component={CourseDetail} />
       <Route path="/community" component={Community} />
+      <Route path="/community/posts/new" component={CommunityPostCreate} />
+      <Route path="/community/posts/:id" component={CommunityPostDetail} />
+      <Route path="/community/members/:id" component={UserProfile} />
       <Route path="/projects" component={Projects} />
+      <Route path="/projects/new" component={ProjectCreate} />
+      <Route path="/projects/:id" component={ProjectDetail} />
       <Route path="/marketplace" component={Marketplace} />
+      <Route path="/marketplace/new" component={MarketplaceCreate} />
+      <Route path="/marketplace/:id" component={MarketplaceDetail} />
+      <Route path="/smart-rfp" component={SmartRFP} />
+      <Route path="/prompts" component={Prompts} />
       <Route path="/news" component={News} />
+      <Route path="/news/new" component={NewsCreate} />
+      <Route path="/news/:id" component={NewsDetail} />
       <Route path="/profile" component={Profile} />
       <Route path="/chat" component={Chat} />
       <Route path="/404" component={NotFound} />
