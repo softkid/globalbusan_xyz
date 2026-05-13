@@ -11,43 +11,36 @@ export default function Home() {
   const modules = [
     {
       icon: BookOpen,
-      title: "AI 교육 허브",
-      description: "부산의 AI 전문가들이 직접 운영하는 실전 교육 프로그램. 초급부터 고급까지 다양한 강좌를 제공합니다.",
+      title: "AI 교육 OS",
+      description: "생태계 유입의 관문. 실무 중심의 LMS 통합 교육과 실습용 샌드박스를 제공합니다.",
       href: "/courses",
       color: "from-blue-500 to-blue-600",
     },
     {
       icon: Users,
-      title: "네트워킹 커뮤니티",
-      description: "부산 AI 전문가들과 연결되고, 지식을 공유하며 함께 성장하는 커뮤니티입니다.",
+      title: "전문가 네트워크",
+      description: "검증된 인재들의 휴먼 네트워크. 역량 프로필, 서브 커뮤니티, 지역 밋업을 운영합니다.",
       href: "/community",
       color: "from-cyan-500 to-blue-500",
     },
     {
       icon: Briefcase,
-      title: "프로젝트 빌딩",
-      description: "AI 프로젝트를 함께 구축할 팀원을 찾고, 협업하며 실무 경험을 쌓으세요.",
+      title: "프로젝트 빌더",
+      description: "실전 협업 엔진. AI 기반 팀 빌딩, 마일스톤 시각화, 데모데이 쇼케이스를 지원합니다.",
       href: "/projects",
       color: "from-orange-500 to-red-500",
     },
     {
       icon: ShoppingBag,
-      title: "AI 마켓플레이스",
-      description: "AI 기반 서비스와 솔루션을 판매하고 구매하는 생태계입니다.",
+      title: "마켓플레이스",
+      description: "부산 상공인 수요와 전문가 연결. Smart RFP, 에스크로 결제로 안전하게 수익을 창출합니다.",
       href: "/marketplace",
       color: "from-amber-500 to-orange-500",
     },
     {
-      icon: Newspaper,
-      title: "뉴스/이벤트",
-      description: "부산 AI 생태계의 최신 뉴스, 이벤트, 세미나 정보를 한눈에 확인하세요.",
-      href: "/news",
-      color: "from-pink-500 to-rose-500",
-    },
-    {
       icon: MessageCircle,
-      title: "AI 챗봇",
-      description: "LLM 기반 AI 도우미가 강좌 추천, 프로젝트 매칭, 생태계 정보를 제공합니다.",
+      title: "커뮤니티 SaaS",
+      description: "프롬프트 라이브러리, 워크플로우 템플릿, AI 챗봇 통합으로 생태계의 생산성을 극대화합니다.",
       href: "/chat",
       color: "from-purple-500 to-indigo-500",
     },
@@ -128,16 +121,16 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                title: "인재 풀",
-                description: "검증된 AI 역량을 가진 부산의 전문가 네트워크",
+                title: "커뮤니티 파워",
+                description: "AI로 실제 가치를 창출하는 검증된 지역 인재들의 강력한 네트워크",
               },
               {
-                title: "프로젝트",
-                description: "실제 AI 구축 사례를 통한 실전 경험",
+                title: "협업과 빌딩",
+                description: "아이디어를 실제 프로젝트로 구현하는 실전 기반의 팀 빌딩 생태계",
               },
               {
-                title: "수익화",
-                description: "마켓플레이스를 통한 구축 서비스 수익화",
+                title: "자생적 경제권",
+                description: "지역 상공인의 디지털 전환 수요를 해결하며 창출되는 선순환 수익 구조",
               },
             ].map((item, idx) => (
               <Card key={idx} className="border-2 border-accent/20 hover:border-accent/50 transition-colors">
@@ -237,8 +230,7 @@ export default function Home() {
               <h4 className="font-semibold mb-4 text-base tracking-tight">서비스</h4>
               <ul className="space-y-2 text-base">
                 <li><Link href="/marketplace"><a className="text-muted-foreground hover:text-foreground">마켓플레이스</a></Link></li>
-                <li><Link href="/news"><a className="text-muted-foreground hover:text-foreground">뉴스/이벤트</a></Link></li>
-                <li><Link href="/chat"><a className="text-muted-foreground hover:text-foreground">AI 챗봇</a></Link></li>
+                <li><Link href="/chat"><a className="text-muted-foreground hover:text-foreground">커뮤니티 SaaS</a></Link></li>
               </ul>
             </div>
             <div>

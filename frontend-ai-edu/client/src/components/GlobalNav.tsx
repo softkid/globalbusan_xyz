@@ -23,7 +23,7 @@ export default function GlobalNav() {
     { label: t("nav.community"), href: "/community" },
     { label: t("nav.projects"), href: "/projects" },
     { label: t("nav.marketplace"), href: "/marketplace" },
-    { label: t("nav.news"), href: "/news" },
+    { label: t("nav.saas"), href: "/chat" },
   ];
 
   return (
@@ -91,11 +91,6 @@ export default function GlobalNav() {
 
           {isAuthenticated ? (
             <>
-              <Link href="/chat">
-                <a className="px-3 py-2 text-sm font-medium rounded-md hover:bg-accent/10 transition-colors">
-                  {t("nav.chat")}
-                </a>
-              </Link>
               <Link href="/profile">
                 <a className="px-3 py-2 text-sm font-medium rounded-md hover:bg-accent/10 transition-colors flex items-center gap-2">
                   <User className="w-4 h-4" />
@@ -192,14 +187,6 @@ export default function GlobalNav() {
             <div className="border-t border-border pt-4 mt-4 space-y-2">
               {isAuthenticated ? (
                 <>
-                  <Link href="/chat">
-                    <a
-                      className="block px-3 py-2 text-sm font-medium rounded-md hover:bg-accent/10 transition-colors"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {t("nav.chat")}
-                    </a>
-                  </Link>
                   <Link href="/profile">
                     <a
                       className="block px-3 py-2 text-sm font-medium rounded-md hover:bg-accent/10 transition-colors"
