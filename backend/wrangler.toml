@@ -1,7 +1,7 @@
 name = "globalbusan-backend"
 main = "src/index.js"
 compatibility_date = "2024-01-27"
-node_compat = true
+compatibility_flags = ["nodejs_compat"]
 
 [env.production]
 name = "globalbusan-backend-prod"
@@ -15,3 +15,5 @@ name = "globalbusan-backend-dev"
 # SUI_RPC_URL
 # SUI_PACKAGE_ID
 # SUI_DONATION_POOL_ID
+# TELEGRAM_BOT_TOKEN   — @BotFather에서 발급한 봇 토큰
+# TELEGRAM_CHAT_ID     — 8414562266 (christopher1004)

@@ -5,16 +5,6 @@ import Joi from 'joi'
 
 const app = new Hono()
 
-// Supabase setup
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-)
-
-// Sui client setup
-const suiClient = new SuiClient({
-  url: process.env.SUI_RPC_URL || 'https://fullnode.testnet.sui.io:443'
-})
 
 // Validation schema
 const donationSchema = Joi.object({
