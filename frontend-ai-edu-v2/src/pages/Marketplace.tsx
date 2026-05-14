@@ -91,7 +91,7 @@ export default function Marketplace() {
                 );
               })}
             </div>
-            <button className="btn btn-ghost" onClick={() => setStep(1)} style={{ marginTop: '1rem' }}>← 이전</button>
+            <button className="btn" onClick={() => setStep(1)} style={{ marginTop: '1rem', border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>← 이전</button>
           </div>
         )}
 
@@ -114,8 +114,8 @@ export default function Marketplace() {
                   placeholder="어떤 AI 솔루션이 필요하신지 자유롭게 적어주세요..."
                   style={{ width: '100%', minHeight: 100, padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '0.9rem', resize: 'vertical', fontFamily: 'inherit' }} />
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button className="btn btn-ghost" onClick={() => setStep(2)}>← 이전</button>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button className="btn" onClick={() => setStep(2)} style={{ border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>← 이전</button>
                 <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => setStep(4)} disabled={!form.budget_range}>
                   다음 → 연락처 입력
                 </button>
@@ -137,8 +137,8 @@ export default function Marketplace() {
               <input type="email" placeholder="이메일 (선택)" value={form.contact_email}
                 onChange={e => setForm({ ...form, contact_email: e.target.value })}
                 style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '0.95rem' }} />
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button className="btn btn-ghost" onClick={() => setStep(3)}>← 이전</button>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button className="btn" onClick={() => setStep(3)} style={{ border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>← 이전</button>
                 <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSubmit} disabled={!form.contact_name || !form.contact_phone}>
                   의뢰 접수하기 <ArrowRight size={16} />
                 </button>
