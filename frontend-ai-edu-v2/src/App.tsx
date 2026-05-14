@@ -3,8 +3,12 @@ import GlobalNav from './components/GlobalNav';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
+import CourseDetail from './pages/CourseDetail';
 import Community from './pages/Community';
 import Events from './pages/Events';
+import Experts from './pages/Experts';
+import Marketplace from './pages/Marketplace';
+import Tools from './pages/Tools';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -14,12 +18,13 @@ function App() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/courses" component={Courses} />
+        <Route path="/courses/:id" component={CourseDetail} />
         <Route path="/community" component={Community} />
         <Route path="/events" component={Events} />
-        <Route path="/projects" component={() => <PlaceholderPage title="🏗️ 프로젝트 빌더" desc="AI 프로젝트 팀빌딩과 협업 공간 — Phase 2에서 런칭 예정" />} />
-        <Route path="/experts" component={() => <PlaceholderPage title="👥 전문가 네트워크" desc="부산 AI 전문가 프로필과 매칭 — Phase 2에서 런칭 예정" />} />
-        <Route path="/market" component={() => <PlaceholderPage title="🛒 AI 구축 마켓" desc="부산 자영업자 ↔ AI 실무자 매칭 플랫폼 — Phase 2에서 런칭 예정" />} />
-        <Route path="/tools" component={() => <PlaceholderPage title="🔧 SaaS 도구" desc="프롬프트 라이브러리, AI 워크플로우 템플릿 — Phase 3에서 런칭 예정" />} />
+        <Route path="/experts" component={Experts} />
+        <Route path="/market" component={Marketplace} />
+        <Route path="/tools" component={Tools} />
+        <Route path="/projects" component={() => <PlaceholderPage title="🏗️ 프로젝트 빌더" desc="AI 프로젝트 팀빌딩과 협업 공간 — Phase 2 고도화 진행 중" />} />
         <Route component={NotFound} />
       </Switch>
       <Footer />

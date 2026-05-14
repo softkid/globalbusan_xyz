@@ -114,4 +114,116 @@ app.get('/community/posts', async (c) => {
   }
 })
 
+// ===== V2 API Endpoints =====
+
+// POST event reservation (무료 설명회 예약)
+app.post('/events/reserve', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const body = await c.req.json()
+    const { data, error } = await supabase.from('ai_event_reservations').insert(body).select().single()
+    if (error) throw error
+    return c.json({ success: true, data })
+  } catch (error) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+// GET event reservations count by event
+app.get('/events/stats', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const { data, error } = await supabase.from('ai_event_reservations').select('event_title, max_spots')
+    if (error) throw error
+    const stats = {}
+    data.forEach(r => {
+      if (!stats[r.event_title]) stats[r.event_title] = { count: 0, max: r.max_spots }
+      stats[r.event_title].count++
+    })
+    return c.json({ success: true, data: stats })
+  } catch (error) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+// GET challenges
+app.get('/challenges', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const { data, error } = await supabase.from('ai_challenges').select('*').order('deadline', { ascending: true })
+    if (error) throw error
+    return c.json({ success: true, data })
+  } catch (error) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+// POST challenge submission
+app.post('/challenges/:id/submit', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const body = await c.req.json()
+    body.challenge_id = parseInt(c.req.param('id'))
+    const { data, error } = await supabase.from('ai_challenge_submissions').insert(body).select().single()
+    if (error) throw error
+    // Increment participants count
+    await supabase.rpc('increment_challenge_participants', { challenge_id: body.challenge_id })
+    return c.json({ success: true, data })
+  } catch (error) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+// GET experts
+app.get('/experts', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const region = c.req.query('region')
+    let query = supabase.from('ai_experts').select('*').order('rating', { ascending: false })
+    if (region) query = query.eq('region', region)
+    const { data, error } = await query
+    if (error) throw error
+    return c.json({ success: true, data })
+  } catch (error) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+// GET expert by ID
+app.get('/experts/:id', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const { data, error } = await supabase.from('ai_experts').select('*').eq('id', c.req.param('id')).single()
+    if (error) throw error
+    return c.json({ success: true, data })
+  } catch (error) {
+    return c.json({ success: false, error: 'Expert not found' }, 404)
+  }
+})
+
+// POST marketplace request (AI 구축 의뢰)
+app.post('/marketplace/request', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const body = await c.req.json()
+    const { data, error } = await supabase.from('ai_marketplace_requests').insert(body).select().single()
+    if (error) throw error
+    return c.json({ success: true, data })
+  } catch (error) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+// GET marketplace requests
+app.get('/marketplace/requests', async (c) => {
+  try {
+    const supabase = getSupabase(c)
+    const { data, error } = await supabase.from('ai_marketplace_requests').select('*').order('created_at', { ascending: false })
+    if (error) throw error
+    return c.json({ success: true, data })
+  } catch (error) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
 export default app
