@@ -27,6 +27,7 @@ app.use('*', cors({
     'http://localhost:3001',
     'https://globalbusan.xyz',
     'https://edu.globalbusan.xyz',
+    'https://ai.globalbusan.xyz',
     'https://hub.globalbusan.xyz',
     'https://hajungwoo.globalbusan.xyz',
     'https://agentumi.xyz',
