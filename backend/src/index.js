@@ -16,7 +16,9 @@ import aiRoutes from './routes/ai.js'
 const app = new Hono()
 
 // Security middleware
-app.use('*', secureHeaders())
+app.use('*', secureHeaders({
+  crossOriginResourcePolicy: "cross-origin",
+}))
 
 // CORS middleware
 app.use('*', cors({

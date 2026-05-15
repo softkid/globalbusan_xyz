@@ -51,7 +51,7 @@ app.post('/send', async (c) => {
     return c.json({ success: true, aiReply })
   } catch (err) {
     console.error('Telegram send error:', err)
-    return c.json({ error: 'Internal Server Error' }, 500)
+    return c.json({ error: err.message || 'Internal Server Error', stack: err.stack }, 500)
   }
 })
 
@@ -143,7 +143,8 @@ app.get('/widget.js', async (c) => {
     headers: {
       'Content-Type': 'application/javascript; charset=utf-8',
       'Cache-Control': 'public, max-age=3600',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Cross-Origin-Resource-Policy': 'cross-origin'
     }
   })
 })
