@@ -190,14 +190,14 @@ export function generateWidgetScript(backendUrl) {
       border-bottom-right-radius: 4px;
       max-width: 80%;
     }
-    .msg.bot {
+    .msg.bot, .msg.admin {
       align-self: flex-start;
       background: var(--bg-secondary);
       color: var(--text);
       border: 1px solid var(--border);
       border-bottom-left-radius: 4px;
     }
-    .msg.bot .label {
+    .msg.bot .label, .msg.admin .label {
       font-size: 11px;
       color: var(--primary);
       font-weight: 600;
@@ -205,6 +205,9 @@ export function generateWidgetScript(backendUrl) {
       display: flex;
       align-items: center;
       gap: 4px;
+    }
+    .msg.admin .label {
+      color: #e67e22; /* High-end operator orange */
     }
     .msg.system {
       align-self: center;
@@ -368,6 +371,14 @@ export function generateWidgetScript(backendUrl) {
   var btnCustomerCenter = shadow.getElementById('btn-customer-center');
   var isOpen = false;
   var sending = false;
+  var pollInterval = null;
+
+  // Initialize or fetch session ID from localStorage
+  var sessionId = localStorage.getItem('agentumi_chat_session_id');
+  if (!sessionId) {
+    sessionId = 'sess_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('agentumi_chat_session_id', sessionId);
+  }
 
   // Render floating quick questions
   if (config.questions) {
@@ -384,6 +395,9 @@ export function generateWidgetScript(backendUrl) {
         btn.classList.add('open');
         panel.classList.add('open');
         floatingMenu.classList.add('hide');
+        // Load history and start polling
+        loadHistory();
+        startPolling();
         // Send msg
         input.value = q.trim();
         sendMessage();
@@ -408,15 +422,73 @@ export function generateWidgetScript(backendUrl) {
     panel.classList.toggle('open', isOpen);
     floatingMenu.classList.toggle('hide', isOpen);
     if (isOpen) {
+      loadHistory();
+      startPolling();
       setTimeout(function() { input.focus(); }, 300);
+    } else {
+      stopPolling();
     }
   });
+
+  async function loadHistory() {
+    try {
+      var res = await fetch(config.backendUrl + '/api/telegram/messages?sessionId=' + sessionId);
+      var data = await res.json();
+      if (data.success && data.messages && data.messages.length > 0) {
+        var initialGuide = messagesEl.firstElementChild;
+        messagesEl.innerHTML = '';
+        if (initialGuide) {
+          messagesEl.appendChild(initialGuide);
+        }
+        data.messages.forEach(function(msg) {
+          addMessage(msg.message, msg.sender);
+        });
+      }
+    } catch (err) {
+      console.error('History load error:', err);
+    }
+  }
+
+  function startPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(async function() {
+      try {
+        var res = await fetch(config.backendUrl + '/api/telegram/messages?sessionId=' + sessionId);
+        var data = await res.json();
+        if (data.success && data.messages) {
+          var initialGuide = messagesEl.firstElementChild;
+          var currentMsgs = messagesEl.querySelectorAll('.msg:not(#typing-indicator)');
+          var domCount = currentMsgs.length - 1; // Subtract 1 for the guide message
+          if (data.messages.length > domCount) {
+            messagesEl.innerHTML = '';
+            if (initialGuide) {
+              messagesEl.appendChild(initialGuide);
+            }
+            data.messages.forEach(function(msg) {
+              addMessage(msg.message, msg.sender);
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    }, 4000);
+  }
+
+  function stopPolling() {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  }
 
   function addMessage(text, type) {
     var div = document.createElement('div');
     div.className = 'msg ' + type;
-    if (type === 'bot') {
-      div.innerHTML = '<div class="label">🤖 AI 어시스턴트</div>' + (text.includes('<br>') ? text : escapeHtml(text));
+    if (type === 'bot' || type === 'admin') {
+      var label = type === 'admin' ? '👤 담당자 답변' : '🤖 AI 어시스턴트';
+      var labelClass = type === 'admin' ? 'label admin' : 'label';
+      div.innerHTML = '<div class="' + labelClass + '">' + label + '</div>' + (text.includes('<br>') ? text : escapeHtml(text));
     } else {
       div.textContent = text;
     }
@@ -462,7 +534,8 @@ export function generateWidgetScript(backendUrl) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          site: config.site
+          site: config.site,
+          sessionId: sessionId
         })
       });
       var data = await res.json();
@@ -499,6 +572,7 @@ export function generateWidgetScript(backendUrl) {
       btn.classList.remove('open');
       panel.classList.remove('open');
       floatingMenu.classList.remove('hide');
+      stopPolling();
     }
   });
 })();`;

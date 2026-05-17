@@ -1,15 +1,26 @@
 import { Hono } from 'hono'
 import { generateWidgetScript } from '../modules/telegram-widget.js'
 import { getLLMReply } from '../modules/llm.js'
+import { createClient } from '@supabase/supabase-js'
 
 const app = new Hono()
+
+/**
+ * Helper to initialize Supabase client
+ */
+const getSupabase = (env) => {
+  if (env.SUPABASE_URL && env.SUPABASE_KEY) {
+    return createClient(env.SUPABASE_URL, env.SUPABASE_KEY)
+  }
+  return null
+}
 
 /**
  * POST /send — Widget sends message → AI auto-reply + forward to Telegram
  */
 app.post('/send', async (c) => {
   try {
-    const { message, name, email, site } = await c.req.json()
+    const { message, name, email, site, sessionId } = await c.req.json()
 
     if (!message?.trim()) {
       return c.json({ error: 'Message is required' }, 400)
@@ -18,10 +29,43 @@ app.post('/send', async (c) => {
     const botToken = c.env.TELEGRAM_BOT_TOKEN
     const chatId = c.env.TELEGRAM_CHAT_ID
 
-    // 1) Get AI reply (non-blocking if no FORGE_API_KEY)
+    // 1) Initialize Supabase
+    const supabase = getSupabase(c.env)
+
+    // 2) Get AI reply (non-blocking if no FORGE_API_KEY)
     const aiReply = await getLLMReply(c.env, message, site)
 
-    // 2) Forward to Telegram (with AI reply included)
+    // 3) Persist user message and AI response to Supabase
+    if (supabase && sessionId) {
+      try {
+        // Upsert chat session
+        await supabase
+          .from('ai_chat_sessions')
+          .upsert({ id: sessionId, site: site || 'Unknown' })
+
+        // Save User Message
+        await supabase
+          .from('ai_chat_messages')
+          .insert({
+            session_id: sessionId,
+            sender: 'user',
+            message: message
+          })
+
+        // Save AI Response
+        await supabase
+          .from('ai_chat_messages')
+          .insert({
+            session_id: sessionId,
+            sender: 'bot',
+            message: aiReply
+          })
+      } catch (dbErr) {
+        console.error('Database write error in /send:', dbErr)
+      }
+    }
+
+    // 4) Forward to Telegram (with AI reply included)
     if (botToken && chatId) {
       const escape = (s) => s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''
 
@@ -41,23 +85,40 @@ app.post('/send', async (c) => {
         `🕐 ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}`
       ].filter(Boolean).join('\n')
 
-      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      const teleRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
-      }).catch(err => console.error('Telegram forward error:', err))
+      })
+
+      if (teleRes.ok && supabase && sessionId) {
+        try {
+          const teleData = await teleRes.json()
+          const telegramMessageId = teleData?.result?.message_id
+          if (telegramMessageId) {
+            // Link this specific Telegram notification message to the web session
+            await supabase
+              .from('ai_chat_sessions')
+              .update({ telegram_message_id: telegramMessageId })
+              .eq('id', sessionId)
+          }
+        } catch (linkErr) {
+          console.error('Failed to link telegram message ID:', linkErr)
+        }
+      }
     }
 
     return c.json({ success: true, aiReply })
   } catch (err) {
     console.error('Telegram send error:', err)
-    return c.json({ error: err.message || 'Internal Server Error', stack: err.stack }, 500)
+    return c.json({ error: err.message || 'Internal Server Error' }, 500)
   }
 })
 
 /**
  * POST /webhook — Telegram sends incoming messages here
- * Users messaging the bot directly get AI auto-replies
+ * Users messaging the bot directly get AI auto-replies.
+ * Admins replying to forwarded messages get routed to the website chatbot.
  */
 app.post('/webhook', async (c) => {
   try {
@@ -76,6 +137,37 @@ app.post('/webhook', async (c) => {
     const userText = msg.text
     const chatId = msg.chat.id
     const userName = [msg.from.first_name, msg.from.last_name].filter(Boolean).join(' ')
+    const adminChatId = c.env.TELEGRAM_CHAT_ID
+
+    // 1) Initialize Supabase
+    const supabase = getSupabase(c.env)
+
+    // 2) Check if this is an admin replying to a forwarded chatbot message
+    const replyToMsg = msg.reply_to_message
+    if (replyToMsg && supabase) {
+      const parentMessageId = replyToMsg.message_id
+
+      // Look up session matching this Telegram message ID
+      const { data: session, error: sessionErr } = await supabase
+        .from('ai_chat_sessions')
+        .select('id')
+        .eq('telegram_message_id', parentMessageId)
+        .maybeSingle()
+
+      if (session) {
+        // Save the admin's message into the database
+        await supabase
+          .from('ai_chat_messages')
+          .insert({
+            session_id: session.id,
+            sender: 'admin',
+            message: userText
+          })
+
+        // Return immediately so the AI does not respond to the admin's reply
+        return c.json({ ok: true })
+      }
+    }
 
     // Skip commands for now (just /start)
     if (userText === '/start') {
@@ -91,10 +183,15 @@ app.post('/webhook', async (c) => {
       return c.json({ ok: true })
     }
 
-    // Get AI reply
+    // 3) Skip AI auto-reply if the message comes from the admin channel/chat without a reply context
+    if (adminChatId && String(chatId) === String(adminChatId)) {
+      return c.json({ ok: true })
+    }
+
+    // 4) Get AI reply for a direct Telegram user
     const aiReply = await getLLMReply(c.env, userText, 'telegram-direct')
 
-    // Send AI reply back to the user
+    // Send AI reply back to the user in Telegram
     await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -106,7 +203,6 @@ app.post('/webhook', async (c) => {
     })
 
     // Also notify admin if it's not the admin chatting
-    const adminChatId = c.env.TELEGRAM_CHAT_ID
     if (adminChatId && String(chatId) !== String(adminChatId)) {
       const escape = (s) => s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''
       const adminText = [
@@ -129,6 +225,38 @@ app.post('/webhook', async (c) => {
   } catch (err) {
     console.error('Webhook error:', err)
     return c.json({ ok: true }) // Always 200 to Telegram
+  }
+})
+
+/**
+ * GET /messages — Retrieve conversation history for a web session
+ */
+app.get('/messages', async (c) => {
+  try {
+    const sessionId = c.req.query('sessionId')
+    if (!sessionId) {
+      return c.json({ error: 'sessionId is required' }, 400)
+    }
+
+    const supabase = getSupabase(c.env)
+    if (!supabase) {
+      return c.json({ success: true, messages: [] })
+    }
+
+    const { data: messages, error } = await supabase
+      .from('ai_chat_messages')
+      .select('sender, message, created_at')
+      .eq('session_id', sessionId)
+      .order('id', { ascending: true })
+
+    if (error) {
+      throw error
+    }
+
+    return c.json({ success: true, messages })
+  } catch (err) {
+    console.error('Retrieve messages error:', err)
+    return c.json({ error: err.message || 'Internal Server Error' }, 500)
   }
 })
 
