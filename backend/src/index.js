@@ -22,17 +22,25 @@ app.use('*', secureHeaders({
 
 // CORS middleware
 app.use('*', cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://globalbusan.xyz',
-    'https://edu.globalbusan.xyz',
-    'https://ai.globalbusan.xyz',
-    'https://hub.globalbusan.xyz',
-    'https://hajungwoo.globalbusan.xyz',
-    'https://agentumi.xyz',
-    'https://www.agentumi.xyz'
-  ],
+  origin: (origin) => {
+    if (!origin) return 'https://globalbusan.xyz'
+    
+    // Allow local development
+    if (origin.startsWith('http://localhost:')) {
+      return origin
+    }
+    
+    try {
+      const hostname = new URL(origin).hostname
+      // Allow any subdomain of globalbusan.xyz or agentumi.xyz
+      if (hostname === 'globalbusan.xyz' || hostname.endsWith('.globalbusan.xyz') || 
+          hostname === 'agentumi.xyz' || hostname.endsWith('.agentumi.xyz')) {
+        return origin
+      }
+    } catch (_) {}
+    
+    return 'https://globalbusan.xyz'
+  },
   credentials: true
 }))
 
@@ -42,6 +50,12 @@ app.use('*', logger())
 // Simple rate limiting (CF Workers compatible)
 const rateLimitMap = new Map()
 app.use('/api/*', async (c, next) => {
+  // Exclude GET requests (polling, static widget) from rate limiting
+  if (c.req.method === 'GET') {
+    await next()
+    return
+  }
+
   const ip = c.req.header('cf-connecting-ip') || 'anonymous'
   const now = Date.now()
   const windowMs = 15 * 60 * 1000
