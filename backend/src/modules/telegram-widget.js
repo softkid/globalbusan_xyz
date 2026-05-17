@@ -181,6 +181,7 @@ export function generateWidgetScript(backendUrl) {
       font-size: 13px;
       line-height: 1.6;
       word-break: break-word;
+      white-space: pre-wrap;
       animation: fadeIn 0.3s ease;
     }
     .msg.user {

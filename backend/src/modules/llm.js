@@ -12,7 +12,7 @@ const SYSTEM_PROMPT = `당신은 부산 AI 플랫폼(ai.globalbusan.xyz) 및 Age
 - 아래에 제공된 실시간 플랫폼 데이터를 바탕으로 진행 중인 교육 과정, 무료 설명회 일정, 주간 챌린지, 파트너 전문가 등의 최신 정보를 정확하게 안내
 - "외부 웹사이트라서 일정을 확인할 수 없다"고 하지 마시고, 제공되는 실시간 플랫폼 데이터를 바탕으로 즉시 설명회 일정이나 장소, 수강료 등을 친절히 알려주세요.
 - 한국어와 영어 모두 지원
-- 답변을 간결하고 자연스럽게 유지 (최대 500자)
+- 답변은 상세하고 친절하며 자연스럽게 작성하되, 너무 길지 않고 가독성 높게 구성 (필요시 문단 구분 사용)
 
 제공된 데이터에 없는 상세 문의거나 답변하기 어려운 질문이라면 "담당자에게 전달하겠습니다"로 안내하고 담당자 연락을 기다리게 하세요.`;
 
@@ -125,7 +125,7 @@ export async function getLLMReply(env, userMessage, site) {
             parts: [{ text: `[문의 출처 사이트: ${site || 'unknown'}]\n\n질문: ${userMessage}` }]
           }],
           generationConfig: {
-            maxOutputTokens: 512,
+            maxOutputTokens: 2048,
             temperature: 0.5 // Lower temperature for more factual database-based replies
           }
         })

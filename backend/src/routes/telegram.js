@@ -261,6 +261,46 @@ app.get('/messages', async (c) => {
 })
 
 /**
+ * GET /webhook-info — Check the current Telegram webhook status
+ */
+app.get('/webhook-info', async (c) => {
+  try {
+    const botToken = c.env.TELEGRAM_BOT_TOKEN
+    if (!botToken) {
+      return c.json({ error: 'TELEGRAM_BOT_TOKEN is not configured' }, 400)
+    }
+
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/getWebhookInfo`)
+    const data = await response.json()
+    return c.json({ success: true, webhookInfo: data })
+  } catch (err) {
+    return c.json({ error: err.message }, 500)
+  }
+})
+
+/**
+ * GET /set-webhook — Set the Telegram webhook to the current origin
+ */
+app.get('/set-webhook', async (c) => {
+  try {
+    const botToken = c.env.TELEGRAM_BOT_TOKEN
+    if (!botToken) {
+      return c.json({ error: 'TELEGRAM_BOT_TOKEN is not configured' }, 400)
+    }
+
+    const origin = new URL(c.req.url).origin
+    // Ensure we use the correct API prefix for Cloudflare Workers routing
+    const webhookUrl = `${origin}/api/telegram/webhook`
+
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/setWebhook?url=${encodeURIComponent(webhookUrl)}`)
+    const data = await response.json()
+    return c.json({ success: true, webhookUrl, result: data })
+  } catch (err) {
+    return c.json({ error: err.message }, 500)
+  }
+})
+
+/**
  * GET /widget.js — Serves the embeddable chatbot widget script
  */
 app.get('/widget.js', async (c) => {
@@ -278,3 +318,4 @@ app.get('/widget.js', async (c) => {
 })
 
 export default app
+
