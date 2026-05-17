@@ -84,8 +84,10 @@ export function generateWidgetScript(backendUrl) {
       transform: scale(1.1);
       box-shadow: 0 6px 28px rgba(0,184,148,0.5);
     }
-    .widget-btn svg { width: 28px; height: 28px; fill: white; transition: transform 0.3s ease; }
-    .widget-btn.open svg { transform: rotate(45deg); }
+    .widget-btn svg { width: 28px; height: 28px; fill: white; transition: transform 0.3s ease, opacity 0.3s ease; }
+    .widget-btn .icon-close { display: none; }
+    .widget-btn.open .icon-chat { display: none; }
+    .widget-btn.open .icon-close { display: inline-block; transform: rotate(90deg); }
     @keyframes pulse {
       0%, 100% { box-shadow: 0 4px 20px rgba(0,184,148,0.4); }
       50% { box-shadow: 0 4px 30px rgba(0,184,148,0.6); }
@@ -337,7 +339,8 @@ export function generateWidgetScript(backendUrl) {
   wrapper.innerHTML = \`
     <div class="quick-floating-menu" id="agentumi-floating-questions"></div>
     <button class="widget-btn" id="agentumi-toggle" aria-label="Open chat">
-      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      <svg class="icon-chat" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
     </button>
 
     <div class="widget-panel" id="agentumi-panel">
