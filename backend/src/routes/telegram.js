@@ -301,6 +301,19 @@ app.get('/set-webhook', async (c) => {
 })
 
 /**
+ * GET /debug-env — Diagnostic endpoint to verify active environment bindings (non-sensitive)
+ */
+app.get('/debug-env', (c) => {
+  return c.json({
+    KEYS: Object.keys(c.env || {}),
+    SUPABASE_URL: c.env.SUPABASE_URL || 'Not Set',
+    HAS_SUPABASE_KEY: !!c.env.SUPABASE_KEY,
+    TELEGRAM_CHAT_ID: c.env.TELEGRAM_CHAT_ID || 'Not Set',
+    HAS_TELEGRAM_BOT_TOKEN: !!c.env.TELEGRAM_BOT_TOKEN
+  })
+})
+
+/**
  * GET /widget.js — Serves the embeddable chatbot widget script
  */
 app.get('/widget.js', async (c) => {

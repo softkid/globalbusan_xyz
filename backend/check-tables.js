@@ -6,20 +6,20 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 async function test() {
-  console.log('Checking ai_chat_sessions table...')
-  const { data: sData, error: sErr } = await supabase.from('ai_chat_sessions').select('*').limit(1)
+  console.log('--- Sessions ---')
+  const { data: sData, error: sErr } = await supabase.from('ai_chat_sessions').select('*').order('created_at', { ascending: false }).limit(20)
   if (sErr) {
     console.error('ai_chat_sessions table error:', sErr.message)
   } else {
-    console.log('ai_chat_sessions table exists! First row:', sData)
+    console.log(JSON.stringify(sData, null, 2))
   }
 
-  console.log('Checking ai_chat_messages table...')
-  const { data: mData, error: mErr } = await supabase.from('ai_chat_messages').select('*').limit(1)
+  console.log('--- Messages ---')
+  const { data: mData, error: mErr } = await supabase.from('ai_chat_messages').select('*').order('created_at', { ascending: false }).limit(20)
   if (mErr) {
     console.error('ai_chat_messages table error:', mErr.message)
   } else {
-    console.log('ai_chat_messages table exists! First row:', mData)
+    console.log(JSON.stringify(mData, null, 2))
   }
 }
 
