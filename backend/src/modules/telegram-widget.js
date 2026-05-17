@@ -10,13 +10,22 @@ export function generateWidgetScript(backendUrl) {
   'use strict';
 
   var scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
+  var siteDomain = (scriptTag && scriptTag.getAttribute('data-site')) || window.location.hostname;
+  var isEduSite = siteDomain.indexOf('ai.') !== -1;
+
+  var defaultQuestions = isEduSite
+    ? '🚀 교육 과정 전체 보기|💰 수강료 및 환급 혜택|⏰ 무료 설명회 일정 안내'
+    : '💼 비즈니스 파트너십 문의|📈 투자 절차 및 안내|🚀 사업 개발 프로젝트 등록';
+
+  var defaultTitle = isEduSite ? '💬 AI 교육 문의' : '💬 글로벌 비즈니스 문의';
+
   var config = {
     backendUrl: '${backendUrl}',
-    site: (scriptTag && scriptTag.getAttribute('data-site')) || window.location.hostname,
+    site: siteDomain,
     color: (scriptTag && scriptTag.getAttribute('data-color')) || '#00b894',
     position: (scriptTag && scriptTag.getAttribute('data-position')) || 'right',
-    title: (scriptTag && scriptTag.getAttribute('data-title')) || '💬 AI 교육 문의',
-    questions: (scriptTag && scriptTag.getAttribute('data-questions')) || '🚀 교육 과정 전체 보기|💰 수강료 및 환급 혜택|⏰ 무료 설명회 일정 안내'
+    title: (scriptTag && scriptTag.getAttribute('data-title')) || defaultTitle,
+    questions: (scriptTag && scriptTag.getAttribute('data-questions')) || defaultQuestions
   };
 
   var container = document.createElement('div');
@@ -320,6 +329,10 @@ export function generateWidgetScript(backendUrl) {
     }
   \`;
 
+  var welcomeMessageHtml = isEduSite 
+    ? '<div class="label">🤖 AI 어시스턴트</div>안녕하세요. 부산 AI 플랫폼 고객님<br>현재는 ⏰24시간 AI 상담 시간입니다.<br>AI 상담사는 답변 오류가 있을 수 있습니다.<br><br>💡 <b>이렇게 질문하시면 AI가 더 정확한 해결법을 찾아드려요!</b><br><br>✅ <b>올바른 질문 예시</b><br>• \\"AI 실전 프로젝트 과정 수강료가 얼마인가요?\\"<br>• \\"초등학생이 들을 수 있는 과정도 있나요?\\"<br>• \\"강의 결제 시 환급 조건은 무엇인가요?\\"<br><br>❌ <b>피해야 할 질문 예시</b><br>• \\"얼마에요?\\" (어떤 과정인지 알 수 없음)<br>• \\"안 돼요\\" (어떤 오류인지 알 수 없음)<br>• \\"교육 문의\\" (구체적인 내용이 없음)<br><br><button class="chat-guide-btn" id="btn-customer-center">고객센터 운영 시간 안내</button>'
+    : '<div class="label">🤖 AI 어시스턴트</div>안녕하세요. Global BUSAN 투자 및 사업 플랫폼 고객님<br>현재는 ⏰24시간 AI 상담 시간입니다.<br>AI 상담사는 답변 오류가 있을 수 있습니다.<br><br>💡 <b>이렇게 질문하시면 AI가 더 정확한 정보를 찾아드려요!</b><br><br>✅ <b>올바른 질문 예시</b><br>• \\"비즈니스 파트너십 등록 절차가 어떻게 되나요?\\"<br>• \\"플랫폼의 주요 투자 프로젝트 목록을 보고 싶어요.\\"<br>• \\"글로벌 사업개발 등록 조건은 무엇인가요?\\"<br><br>❌ <b>피해야 할 질문 예시</b><br>• \\"투자하고 싶어요\\" (구체적인 사업 명칭이 없음)<br>• \\"가입 조건이 뭔가요?\\" (파악하려는 대상을 명시하지 않음)<br><br><button class="chat-guide-btn" id="btn-customer-center">고객센터 운영 시간 안내</button>';
+
   var wrapper = document.createElement('div');
   wrapper.innerHTML = \`
     <div class="quick-floating-menu" id="agentumi-floating-questions"></div>
@@ -334,20 +347,7 @@ export function generateWidgetScript(backendUrl) {
       </div>
       <div class="chat-messages" id="agentumi-messages">
         <div class="msg bot">
-          <div class="label">🤖 AI 어시스턴트</div>
-          안녕하세요. 부산 AI 플랫폼 고객님<br>
-          현재는 ⏰24시간 AI 상담 시간입니다.<br>
-          AI 상담사는 답변 오류가 있을 수 있습니다.<br><br>
-          💡 <b>이렇게 질문하시면 AI가 더 정확한 해결법을 찾아드려요!</b><br><br>
-          ✅ <b>올바른 질문 예시</b><br>
-          • "AI 실전 프로젝트 과정 수강료가 얼마인가요?"<br>
-          • "초등학생이 들을 수 있는 과정도 있나요?"<br>
-          • "강의 결제 시 환급 조건은 무엇인가요?"<br><br>
-          ❌ <b>피해야 할 질문 예시</b><br>
-          • "얼마에요?" (어떤 과정인지 알 수 없음)<br>
-          • "안 돼요" (어떤 오류인지 알 수 없음)<br>
-          • "교육 문의" (구체적인 내용이 없음)<br><br>
-          <button class="chat-guide-btn" id="btn-customer-center">고객센터 운영 시간 안내</button>
+          \${welcomeMessageHtml}
         </div>
       </div>
       <div class="chat-input-area">
@@ -412,7 +412,10 @@ export function generateWidgetScript(backendUrl) {
     btnCustomerCenter.addEventListener('click', function() {
       addMessage('고객센터 운영 시간 안내', 'user');
       setTimeout(function() {
-        addMessage('🏢 <b>부산 AI 플랫폼 고객센터</b><br><br>• 전화 상담: 평일 오전 10:00 ~ 오후 5:00<br>• 점심 시간: 오후 12:00 ~ 오후 1:00<br>• AI 상담: 24시간 연중무휴<br>• 대표 번호: 1544-XXXX<br><br>주말 및 공휴일은 휴무입니다.', 'bot');
+        var msgText = isEduSite 
+          ? '🏢 <b>부산 AI 플랫폼 고객센터</b><br><br>• 전화 상담: 평일 오전 10:00 ~ 오후 5:00<br>• 점심 시간: 오후 12:00 ~ 오후 1:00<br>• AI 상담: 24시간 연중무휴<br>• 대표 번호: 1544-XXXX<br><br>주말 및 공휴일은 휴무입니다.'
+          : '🏢 <b>Global BUSAN 고객센터</b><br><br>• 상담 시간: 평일 오전 10:00 ~ 오후 6:00<br>• 점심 시간: 오후 12:00 ~ 오후 1:00<br>• AI 상담: 24시간 연중무휴<br>• 문의 메일: contact@goldsaju.com<br><br>주말 및 공휴일은 휴무입니다.';
+        addMessage(msgText, 'bot');
       }, 500);
     });
   }
